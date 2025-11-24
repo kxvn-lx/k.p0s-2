@@ -1,11 +1,8 @@
-import BodyText from "@/components/ui/BodyText";
-import HomeCentered from "../../components/ui/Centered";
+import { Text } from "@/components/ui/text";
 
 // ----- Home screen -----
 export default function Home() {
     return (
-        <HomeCentered>
-            <BodyText>Edit features/home/index.tsx to edit this screen.</BodyText>
-        </HomeCentered>
+        <Text>test</Text>
     );
 }
