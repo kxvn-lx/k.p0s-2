@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { Pressable, type PressableProps, Text } from "react-native"
 
 const buttonVariants = cva(
-  "flex items-center justify-center rounded-md transition-colors",
+  "flex items-center justify-center rounded-[--radius] transition-colors",
   {
     variants: {
       variant: {

@@ -78,7 +78,7 @@ npm run deploy                                      # Deploy to production (work
 - **Images**: `expo-image` for optimized image handling and caching
 - **Animations**: `react-native-reanimated` for performant animations on native thread
 - **Gestures**: `react-native-gesture-handler` for native gesture recognition
-- **Storage**: Use `expo-sqlite` for persistent storage, `expo-sqlite/kv-store` for simple key-value storage
+- **Storage**: Use `@react-native-async-storage/async-storage` for persistent storage, `expo-sqlite/kv-store` for simple key-value storage
 
 ## Debugging & Development Tools
 
@@ -112,7 +112,6 @@ If there are errors in **Expo Go** or the project is not running, create a **dev
 When working on this project:
 
 1. **Always start by consulting the appropriate documentation**:
-
    - For general Expo questions: https://docs.expo.dev/llms-full.txt
    - For EAS/deployment questions: https://docs.expo.dev/llms-eas.txt
    - For SDK/API questions: https://docs.expo.dev/llms-sdk.txt

@@ -6,12 +6,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useAuth } from "@/lib/auth-context"
-import { Alert, View } from "react-native"
+import { useThemeStore } from "@/lib/store/theme-store"
+import { Alert, Text, View } from "react-native"
 
 // ----- Menu Screen -----
 export default function Menu() {
   const { signOut, user } = useAuth()
+  const { theme, setTheme } = useThemeStore()
 
   return (
     <View className="flex-1 justify-center items-center bg-background p-4">
@@ -20,7 +29,36 @@ export default function Menu() {
           <CardTitle>Menu</CardTitle>
           <CardDescription>{user?.email}</CardDescription>
         </CardHeader>
-        <CardContent className="gap-4">
+        <CardContent className="gap-6">
+          <View className="gap-2">
+            <Text className="text-sm font-medium text-foreground">
+              Tema Aplikasi
+            </Text>
+            <Select
+              value={{
+                value: theme,
+                label: theme === "sunset" ? "Sunset" : "Metal",
+              }}
+              onValueChange={(option) => {
+                if (option) {
+                  setTheme(option.value as "metal" | "sunset")
+                }
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih Tema" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem label="Metal" value="metal">
+                  Metal
+                </SelectItem>
+                <SelectItem label="Sunset" value="sunset">
+                  Sunset
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </View>
+
           <Button
             title="Keluar"
             variant="destructive"

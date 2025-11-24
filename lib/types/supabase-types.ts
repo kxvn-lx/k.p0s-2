@@ -42,7 +42,7 @@ export type Database = {
       pembelian: {
         Row: {
           created_at: string
-          id: number
+          id: string
           jumlah_total: number
           staff_id: string
           staff_name: string
@@ -51,7 +51,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
           jumlah_total?: number
           staff_id: string
           staff_name: string
@@ -60,7 +60,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           jumlah_total?: number
           staff_id?: string
           staff_name?: string
@@ -73,33 +73,33 @@ export type Database = {
         Row: {
           created_at: string
           harga_beli: number
-          id: number
+          id: string
           jumlah: number
           kode_stock: string
           nama: string
-          pembelian_id: number
+          pembelian_id: string
           satuan_utama: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           harga_beli: number
-          id?: number
+          id?: string
           jumlah: number
           kode_stock: string
           nama: string
-          pembelian_id: number
+          pembelian_id: string
           satuan_utama?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           harga_beli?: number
-          id?: number
+          id?: string
           jumlah?: number
           kode_stock?: string
           nama?: string
-          pembelian_id?: number
+          pembelian_id?: string
           satuan_utama?: string | null
           updated_at?: string
         }
@@ -116,7 +116,7 @@ export type Database = {
       pengeluaran: {
         Row: {
           created_at: string
-          id: number
+          id: string
           jumlah_total: number
           keterangan: string | null
           staff_id: string
@@ -126,7 +126,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
           jumlah_total?: number
           keterangan?: string | null
           staff_id: string
@@ -136,7 +136,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           jumlah_total?: number
           keterangan?: string | null
           staff_id?: string
@@ -149,29 +149,29 @@ export type Database = {
       pengeluaran_detail: {
         Row: {
           created_at: string
-          id: number
+          id: string
           jumlah_total: number
           kategori: Database["public"]["Enums"]["pengeluaran_kategori"]
           keterangan: string | null
-          pengeluaran_id: number
+          pengeluaran_id: string
           updated_at: string
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
           jumlah_total: number
           kategori: Database["public"]["Enums"]["pengeluaran_kategori"]
           keterangan?: string | null
-          pengeluaran_id: number
+          pengeluaran_id: string
           updated_at?: string
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           jumlah_total?: number
           kategori?: Database["public"]["Enums"]["pengeluaran_kategori"]
           keterangan?: string | null
-          pengeluaran_id?: number
+          pengeluaran_id?: string
           updated_at?: string
         }
         Relationships: [
@@ -187,7 +187,7 @@ export type Database = {
       penjualan: {
         Row: {
           created_at: string
-          id: number
+          id: string
           jumlah_total: number
           keterangan: string | null
           staff_id: string
@@ -197,7 +197,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
           jumlah_total?: number
           keterangan?: string | null
           staff_id: string
@@ -207,7 +207,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           jumlah_total?: number
           keterangan?: string | null
           staff_id?: string
@@ -221,11 +221,11 @@ export type Database = {
         Row: {
           created_at: string
           harga_jual: number
-          id: number
+          id: string
           jumlah_total: number
           kode_stock: string
           nama: string
-          penjualan_id: number
+          penjualan_id: string
           qty: number
           satuan_utama: string | null
           updated_at: string
@@ -234,11 +234,11 @@ export type Database = {
         Insert: {
           created_at?: string
           harga_jual: number
-          id?: number
+          id?: string
           jumlah_total: number
           kode_stock: string
           nama: string
-          penjualan_id: number
+          penjualan_id: string
           qty: number
           satuan_utama?: string | null
           updated_at?: string
@@ -247,11 +247,11 @@ export type Database = {
         Update: {
           created_at?: string
           harga_jual?: number
-          id?: number
+          id?: string
           jumlah_total?: number
           kode_stock?: string
           nama?: string
-          penjualan_id?: number
+          penjualan_id?: string
           qty?: number
           satuan_utama?: string | null
           updated_at?: string
@@ -272,7 +272,7 @@ export type Database = {
           created_at: string
           harga_beli: number
           harga_jual: number
-          id: number
+          id: string
           jumlah_stok: number
           kategori: string
           keterangan: string | null
@@ -286,7 +286,7 @@ export type Database = {
           created_at?: string
           harga_beli?: number
           harga_jual?: number
-          id?: number
+          id?: string
           jumlah_stok?: number
           kategori: string
           keterangan?: string | null
@@ -300,7 +300,7 @@ export type Database = {
           created_at?: string
           harga_beli?: number
           harga_jual?: number
-          id?: number
+          id?: string
           jumlah_stok?: number
           kategori?: string
           keterangan?: string | null
@@ -315,13 +315,13 @@ export type Database = {
       stock_logs: {
         Row: {
           created_at: string
-          id: number
+          id: string
           keluar: number
           keterangan: string | null
           kode_stock: string
           masuk: number
           nama_stock: string | null
-          reference_id: number | null
+          reference_id: string | null
           reference_table: string | null
           staff_id: string | null
           staff_name: string | null
@@ -331,13 +331,13 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
           keluar?: number
           keterangan?: string | null
           kode_stock: string
           masuk?: number
           nama_stock?: string | null
-          reference_id?: number | null
+          reference_id?: string | null
           reference_table?: string | null
           staff_id?: string | null
           staff_name?: string | null
@@ -347,13 +347,13 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           keluar?: number
           keterangan?: string | null
           kode_stock?: string
           masuk?: number
           nama_stock?: string | null
-          reference_id?: number | null
+          reference_id?: string | null
           reference_table?: string | null
           staff_id?: string | null
           staff_name?: string | null
@@ -366,7 +366,7 @@ export type Database = {
       tim_penjualan_harian: {
         Row: {
           created_at: string
-          id: number
+          id: string
           rekan: Database["public"]["Enums"]["rekan_name"]
           staff_id: string
           staff_name: string
@@ -374,7 +374,7 @@ export type Database = {
         }
         Insert: {
           created_at: string
-          id?: number
+          id?: string
           rekan: Database["public"]["Enums"]["rekan_name"]
           staff_id: string
           staff_name: string
@@ -382,7 +382,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           rekan?: Database["public"]["Enums"]["rekan_name"]
           staff_id?: string
           staff_name?: string
@@ -394,28 +394,28 @@ export type Database = {
         Row: {
           created_at: string
           harga_jual: number
-          id: number
+          id: string
           min_qty: number
           satuan: string
-          stock_id: number
+          stock_id: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           harga_jual: number
-          id?: number
+          id?: string
           min_qty?: number
           satuan: string
-          stock_id: number
+          stock_id: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           harga_jual?: number
-          id?: number
+          id?: string
           min_qty?: number
           satuan?: string
-          stock_id?: number
+          stock_id?: string
           updated_at?: string
         }
         Relationships: [
