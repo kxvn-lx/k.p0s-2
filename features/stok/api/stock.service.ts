@@ -53,4 +53,30 @@ export const StockService = {
 
     return { data, error }
   },
+
+  async getTruckStocks(search?: string): Promise<{ data: StockRow[] | null; error: PostgrestError | null }> {
+    const query = supabase
+      .from('stock')
+      .select('*, variasi_harga_barang(*)')
+      .eq('lokasi', 'TRUK')
+      .order('nama', { ascending: true })
+
+    if (search && search.trim().length) {
+      const q = `%${search.trim()}%`
+      query.ilike('nama', q).or(`kode.ilike.${q}`)
+    }
+
+    const { data, error } = await query
+    return { data, error }
+  },
+
+  async getVariasiByStock(stockId: string): Promise<{ data: Database['public']['Tables']['variasi_harga_barang']['Row'][] | null; error: PostgrestError | null }> {
+    const { data, error } = await supabase
+      .from('variasi_harga_barang')
+      .select('*')
+      .eq('stock_id', stockId)
+      .order('min_qty', { ascending: true })
+
+    return { data, error }
+  },
 }

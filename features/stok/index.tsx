@@ -7,12 +7,11 @@ import { FlatList, RefreshControl, View, Keyboard } from "react-native"
 import type { StockRow } from "./api/stock.service"
 import StockListRow from "./components/stock-row"
 import { useStocksQuery } from "./hooks/stock.queries"
-import { useDebounce } from "./hooks/use-debounce"
 
 export default function StockIndex() {
   const router = useRouter()
-  const [search, setSearch] = useState("")
-  const debouncedSearch = useDebounce(search, 320)
+  // query contains debounced search values emitted from SearchInput
+  const [query, setQuery] = useState("")
 
   const {
     data = [],
@@ -20,7 +19,7 @@ export default function StockIndex() {
     isError,
     refetch,
     isFetching,
-  } = useStocksQuery(debouncedSearch)
+  } = useStocksQuery(query)
 
   const [refreshing, setRefreshing] = useState(false)
 
@@ -80,11 +79,7 @@ export default function StockIndex() {
   return (
     <View className="flex-1 bg-background">
       <View>
-        <SearchInput
-          placeholder="Cari nama atau kode stok..."
-          value={search}
-          onChangeText={setSearch}
-        />
+        <SearchInput placeholder="Cari nama atau kode stok..." onSearch={setQuery} />
       </View>
       {renderContent()}
     </View>

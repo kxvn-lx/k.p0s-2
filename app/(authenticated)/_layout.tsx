@@ -12,9 +12,9 @@ export default function AuthenticatedLayout() {
     <SafeAreaView edges={["top"]} className="flex-1 font-mono">
       <Tabs screenOptions={getTabOptions(theme)}>
         <Tabs.Screen
-          name="penjualan"
+          name="keranjang"
           options={{
-            title: "PENJUALAN",
+            title: 'KERANJANG',
           }}
         />
         <Tabs.Screen

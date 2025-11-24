@@ -6,4 +6,8 @@ export const stockKeys = {
       : (["stocks", "all"] as const),
   detail: (id: string) => [...stockKeys.all(), "detail", id] as const,
   logsByKode: (kode: string) => [...stockKeys.all(), "logs", kode] as const,
+  truck: (search?: string) =>
+    search && search.trim()
+      ? (["stocks", "truck", "search", search] as const)
+      : (["stocks", "truck", "all"] as const),
 }
