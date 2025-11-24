@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
 import { stockKeys } from "../api/stock.keys"
-import { StockService, type StockLogRow } from "../api/stock.service"
+import { StockService, type StockLogRow, type StockRow } from "../api/stock.service"
 
 export function useStocksQuery(search?: string) {
-  return useQuery({
-    queryKey: stockKeys.all(),
+  return useQuery<StockRow[]>({
+    queryKey: stockKeys.all(search),
     queryFn: async () => {
       const { data, error } = await StockService.getAll(search)
       if (error) throw new Error(error.message || "Gagal memuat stok")
@@ -27,7 +27,7 @@ export function useStocksQuery(search?: string) {
 }
 
 export function useStockQuery(id: string) {
-  return useQuery({
+  return useQuery<StockRow | null>({
     queryKey: stockKeys.detail(id),
     queryFn: async () => {
       const { data, error } = await StockService.getById(id)

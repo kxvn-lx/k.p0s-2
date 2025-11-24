@@ -9,3 +9,5 @@ https://reactnativereusables.com/docs
 
 global state uses zustand: https://github.com/pmndrs/zustand
 querying uses tanstack/query: https://github.com/tanstack/query
+
+never update bare components from react-native-reusables or nativewind. only extend them in your own components. place under /components/shared/

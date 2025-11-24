@@ -10,6 +10,8 @@ Never use Barell files; always use direct imports.
 organise,structured the file and code so that it has maximise readability. put header comments to section the code like ```// ----- <HEADER> -----.
 ensure you follow useEffect.instructions.md file.
 all UI facing texts MUST use natural indonesian language.
+for styling, use even numbered spacing. starting from 2,4 most common. 6 if really needed and so on. e.g: p-2, m-2, etc.
+files and folders must use kebab-case naming convention.
 
 Response & Style Rules
 

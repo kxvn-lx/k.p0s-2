@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Pressable, type PressableProps, Text } from "react-native"
+import { Pressable, type PressableProps, Text, View } from "react-native"
+import type { ReactNode } from "react"
 
 const buttonVariants = cva(
   "flex items-center justify-center rounded-[--radius] transition-colors",
@@ -17,6 +18,7 @@ const buttonVariants = cva(
         default: "h-10 px-4 py-2",
         sm: "h-9 px-3",
         lg: "h-11 px-8",
+        icon: "h-10 p-2"
       },
     },
     defaultVariants: {
@@ -39,6 +41,7 @@ const buttonTextVariants = cva("font-medium text-center", {
       default: "text-base",
       sm: "text-sm",
       lg: "text-lg",
+      icon: "text-sm",
     },
   },
   defaultVariants: {
@@ -49,7 +52,8 @@ const buttonTextVariants = cva("font-medium text-center", {
 
 type ButtonProps = PressableProps &
   VariantProps<typeof buttonVariants> & {
-    title: string
+    title?: string
+    children?: ReactNode
     textClassName?: string
   }
 
@@ -59,6 +63,7 @@ function Button({
   variant,
   size,
   title,
+  children,
   ...props
 }: ButtonProps) {
   return (
@@ -66,11 +71,24 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      <Text
-        className={cn(buttonTextVariants({ variant, size }), textClassName)}
-      >
-        {title}
-      </Text>
+      {children ? (
+        <View className="flex-row items-center justify-center gap-2">
+          {children}
+          {title ? (
+            <Text
+              className={cn(buttonTextVariants({ variant, size }), textClassName)}
+            >
+              {title}
+            </Text>
+          ) : null}
+        </View>
+      ) : (
+        <Text
+          className={cn(buttonTextVariants({ variant, size }), textClassName)}
+        >
+          {title}
+        </Text>
+      )}
     </Pressable>
   )
 }

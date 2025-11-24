@@ -115,12 +115,12 @@ function SelectContent({
                     native: "p-1",
                   }),
                   position === "popper" &&
-                    Platform.select({
-                      web: cn(
-                        props.side === "bottom" && "translate-y-1",
-                        props.side === "top" && "-translate-y-1"
-                      ),
-                    }),
+                  Platform.select({
+                    web: cn(
+                      props.side === "bottom" && "translate-y-1",
+                      props.side === "top" && "-translate-y-1"
+                    ),
+                  }),
                   className
                 )}
                 position={position}
@@ -131,12 +131,12 @@ function SelectContent({
                   className={cn(
                     "p-1",
                     position === "popper" &&
-                      cn(
-                        "w-full",
-                        Platform.select({
-                          web: "h-[var(--radix-select-trigger-height)] min-w-[var(--radix-select-trigger-width)]",
-                        })
-                      )
+                    cn(
+                      "w-full",
+                      Platform.select({
+                        web: "h-[var(--radix-select-trigger-height)] min-w-[var(--radix-select-trigger-width)]",
+                      })
+                    )
                   )}
                 >
                   {children}
@@ -210,10 +210,7 @@ function SelectSeparator({
   )
 }
 
-/**
- * @platform Web only
- * Returns null on native platforms
- */
+// Web-only helper — returns null on native.
 function SelectScrollUpButton({
   className,
   ...props
@@ -234,10 +231,7 @@ function SelectScrollUpButton({
   )
 }
 
-/**
- * @platform Web only
- * Returns null on native platforms
- */
+// Web-only helper — returns null on native.
 function SelectScrollDownButton({
   className,
   ...props
@@ -258,10 +252,7 @@ function SelectScrollDownButton({
   )
 }
 
-/**
- * @platform Native only
- * Returns the children on the web
- */
+// Native-only scroll view — passthrough on web.
 function NativeSelectScrollView({
   className,
   ...props

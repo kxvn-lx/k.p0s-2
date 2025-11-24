@@ -69,17 +69,15 @@ export default function RootLayout() {
   const darkClass = colorScheme === "dark" ? "dark" : ""
 
   return (
-    <View className={`flex-1 ${darkClass} font-mono`}>
-      <View className={`flex-1 ${themeClass}`}>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider value={navTheme}>
-            <AuthProvider>
-              <ProtectedStackLayout />
-              <PortalHost />
-            </AuthProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </View>
+    <View className={`flex-1 ${darkClass} ${themeClass}`}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={navTheme}>
+          <AuthProvider>
+            <ProtectedStackLayout />
+            <PortalHost />
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </View>
   )
 }
