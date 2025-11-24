@@ -9,6 +9,7 @@ Code principles: Concise, readable, modern, maintainable, cohesive; adhere to DR
 Never use Barell files; always use direct imports.
 organise,structured the file and code so that it has maximise readability. put header comments to section the code like ```// ----- <HEADER> -----.
 ensure you follow useEffect.instructions.md file.
+all UI facing texts MUST use natural indonesian language.
 
 Response & Style Rules
 
