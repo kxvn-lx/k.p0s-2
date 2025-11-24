@@ -22,30 +22,6 @@ These documentation files are specifically formatted for AI agents and should be
 - Expo SDK modules and their usage
 - Development and deployment processes
 
-## Project Structure
-
-```
-/
-├── app/                   # Expo Router file-based routing
-│   ├── (tabs)/            # Tab-based navigation screens
-│   │   ├── index.tsx      # Home screen
-│   │   ├── explore.tsx    # Explore screen
-│   │   └── _layout.tsx    # Tabs layout
-│   ├── _layout.tsx        # Root layout with theme provider
-│   └── modal.tsx          # Modal screen example
-├── components/            # Reusable React components
-│   ├── ui/                # UI primitives (IconSymbol, Collapsible)
-│   └── ...                # Feature components (themed, haptic, parallax)
-├── constants/             # App-wide constants (theme, colors)
-├── hooks/                 # Custom React hooks (color scheme, theme)
-├── assets/                # Static assets (images, fonts)
-├── scripts/               # Utility scripts (reset-project)
-├── .eas/workflows/        # EAS Workflows (CI/CD automation)
-├── app.json               # Expo configuration
-├── eas.json               # EAS Build/Submit configuration
-└── package.json           # Dependencies and scripts
-```
-
 ## Essential Commands
 
 ### Development
@@ -124,23 +100,6 @@ Developers can configure the Expo MCP server with the following doc: https://doc
 - **Visual Testing**: Use MCP `automation_take_screenshot` to verify UI appearance
 - **Interaction Testing**: Use MCP `automation_tap_by_testid` to simulate user interactions
 - **View Verification**: Use MCP `automation_find_view_by_testid` to validate component rendering
-
-## EAS Workflows CI/CD
-
-This project is pre-configured with **EAS Workflows** for automating development and release processes. Workflows are defined in `.eas/workflows/` directory.
-
-When working with EAS Workflows, **always refer to**:
-
-- https://docs.expo.dev/eas/workflows/ for workflow examples
-- The `.eas/workflows/` directory for existing workflow configurations
-- You can check that a workflow YAML is valid using the workflows schema: https://exp.host/--/api/v2/workflows/schema
-
-### Build Profiles (eas.json)
-
-- **development**: Development builds with dev client
-- **development-simulator**: Development builds for iOS simulator
-- **preview**: Internal distribution preview builds
-- **production**: Production builds with auto-increment
 
 ## Troubleshooting
 
