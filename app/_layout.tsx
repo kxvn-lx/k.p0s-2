@@ -5,6 +5,7 @@ import {
 } from "@expo-google-fonts/ubuntu-mono"
 import { ThemeProvider } from "@react-navigation/native"
 import { PortalHost } from "@rn-primitives/portal"
+import { QueryClientProvider } from "@tanstack/react-query"
 import { Stack } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
@@ -12,6 +13,7 @@ import { useColorScheme, View } from "react-native"
 import { SplashScreenController } from "../components/splash-screen-controller"
 import "../global.css"
 import { AuthProvider, useAuth } from "../lib/auth-context"
+import { queryClient } from "../lib/query-client"
 import { useThemeStore } from "../lib/store/theme-store"
 import { getNavTheme } from "../lib/theme"
 
@@ -67,15 +69,17 @@ export default function RootLayout() {
   const darkClass = colorScheme === "dark" ? "dark" : ""
 
   return (
-    <View className={`flex-1 ${darkClass}`}>
+    <View className={`flex-1 ${darkClass} font-mono`}>
       <View className={`flex-1 ${themeClass}`}>
-        <ThemeProvider value={navTheme}>
-          <AuthProvider>
-            <SplashScreenController />
-            <ProtectedStackLayout />
-            <PortalHost />
-          </AuthProvider>
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider value={navTheme}>
+            <AuthProvider>
+              <SplashScreenController />
+              <ProtectedStackLayout />
+              <PortalHost />
+            </AuthProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
       </View>
     </View>
   )

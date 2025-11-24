@@ -2,32 +2,25 @@ import { useTheme } from "@react-navigation/native"
 import { Tabs } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
 
+import { getTabOptions } from "@/lib/navigation"
+
 // ----- Authenticated Tabs Layout -----
 export default function AuthenticatedLayout() {
-  const { colors } = useTheme()
+  const theme = useTheme()
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1">
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            backgroundColor: colors.card,
-            borderTopColor: colors.border,
-            borderTopWidth: 1,
-          },
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.text,
-          tabBarLabelStyle: {
-            fontFamily: "UbuntuMono_700Bold",
-            fontSize: 12,
-          },
-        }}
-      >
+    <SafeAreaView edges={["top"]} className="flex-1 font-mono">
+      <Tabs screenOptions={getTabOptions(theme)}>
         <Tabs.Screen
           name="penjualan"
           options={{
             title: "PENJUALAN",
+          }}
+        />
+        <Tabs.Screen
+          name="stok"
+          options={{
+            title: "STOK",
           }}
         />
         <Tabs.Screen
