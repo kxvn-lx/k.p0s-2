@@ -10,7 +10,6 @@ import { Stack } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
 import { useColorScheme, View } from "react-native"
-import { SplashScreenController } from "../components/splash-screen-controller"
 import "../global.css"
 import { AuthProvider, useAuth } from "../lib/auth-context"
 import { queryClient } from "../lib/query-client"
@@ -53,14 +52,15 @@ export default function RootLayout() {
     UbuntuMono_400Regular,
     UbuntuMono_700Bold,
   })
+  const { isLoading } = useAuth()
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && !isLoading) {
       SplashScreen.hideAsync()
     }
-  }, [loaded])
+  }, [loaded, isLoading])
 
-  if (!loaded) {
+  if (!loaded || isLoading) {
     return null
   }
 
@@ -74,7 +74,6 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <ThemeProvider value={navTheme}>
             <AuthProvider>
-              <SplashScreenController />
               <ProtectedStackLayout />
               <PortalHost />
             </AuthProvider>
