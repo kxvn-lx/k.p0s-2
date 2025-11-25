@@ -7,7 +7,6 @@ import type {
 export function useKeranjangActions() {
   const items = useKeranjangStore((s) => s.items)
   const addItem = useKeranjangStore((s) => s.addItem)
-  const increment = useKeranjangStore((s) => s.increment)
   const removeItem = useKeranjangStore((s) => s.remove)
   const setQty = useKeranjangStore((s) => s.setQty)
 
@@ -40,41 +39,68 @@ export function useKeranjangActions() {
     stock: StockRow,
     variation: VariasiHargaRow | null
   ): Promise<{ ok: boolean; reason?: string }> {
+    const existing = items[stock.id]
+    const totalStock = stock.jumlah_stok ?? 0
+
+    // Selecting Base (Original)
     if (!variation) {
+      if (existing) {
+        // Already on Base: add 1 more
+        if (!existing.variasi_harga_id) {
+          if (remainingFor(stock) < 1)
+            return { ok: false, reason: "STOK_TIDAK_CUKUP" }
+          addItem(stock, 1, null, stock.harga_jual)
+          return { ok: true }
+        }
+        // Switching from Variation to Base: reset to 1
+        if (totalStock < 1) return { ok: false, reason: "STOK_TIDAK_CUKUP" }
+        setQty(stock.id, 1, stock.harga_jual, null)
+        return { ok: true }
+      }
+      // New item (Base)
       return addToBasket(stock, 1, null, stock.harga_jual)
     }
 
-    const minQty = variation.min_qty ?? 1
-    if (minQty <= 0) {
-      return { ok: false, reason: "INVALID_MIN_QTY" }
-    }
+    // Selecting a Variation
+    const minQty = variation.min_qty > 0 ? variation.min_qty : 1
+    if (minQty <= 0) return { ok: false, reason: "INVALID_MIN_QTY" }
 
-    const existing = items[stock.id]
-
-    if (existing && existing.variasiId === variation.id) {
-      if (remainingFor(stock) < minQty) {
-        return { ok: false, reason: "STOK_TIDAK_CUKUP" }
+    if (existing) {
+      // Already on same variation: add minQty more
+      if (existing.variasi_harga_id === variation.id) {
+        if (remainingFor(stock) < minQty)
+          return { ok: false, reason: "STOK_TIDAK_CUKUP" }
+        addItem(stock, minQty, variation.id, variation.harga_jual)
+        return { ok: true }
       }
-      increment(stock.id, minQty)
+
+      // Switching to different variation: reset to minQty
+      if (totalStock < minQty) return { ok: false, reason: "STOK_TIDAK_CUKUP" }
+      setQty(stock.id, minQty, variation.harga_jual, variation.id)
       return { ok: true }
     }
 
-    if (remainingFor(stock) < minQty) {
+    // New item (Variation)
+    if (remainingFor(stock) < minQty)
       return { ok: false, reason: "STOK_TIDAK_CUKUP" }
-    }
-
     addItem(stock, minQty, variation.id, variation.harga_jual)
     return { ok: true }
+  }
+
+  function adjustQty(stockId: string, delta: number) {
+    const item = items[stockId]
+    if (!item) return
+    addItem(item.stock, delta, item.variasi_harga_id, item.harga_jual)
   }
 
   return {
     items,
     addToBasket,
     selectVariation,
-    remainingFor,
-    increment,
-    setQty,
+    adjustQty,
     removeItem,
+    setQty,
+    remainingFor,
   }
 }
 

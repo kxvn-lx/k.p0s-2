@@ -20,24 +20,54 @@ export default function BadgeStepper({
   onRemove,
 }: Props) {
   return (
-    <View className="p-2 w-40">
-      <View className="flex-row items-center justify-between mb-2">
-        <Button size="icon" variant="outline" title="-" onPress={onDecrement} />
-        <Text className="font-medium">
-          {qty} {satuan ?? ""}
+    <View className="p-3 w-48 bg-card border border-primary">
+      <View className="flex-row items-center justify-between mb-3">
+        <Button
+          size="icon"
+          variant="outline"
+          className="rounded-none border-primary h-8 w-8"
+          onPress={onDecrement}
+        >
+          <Text className="text-primary font-mono font-bold">-</Text>
+        </Button>
+
+        <Text className="font-mono font-bold text-lg text-primary">
+          {qty}{" "}
+          <Text className="text-xs text-muted-foreground">{satuan ?? ""}</Text>
         </Text>
-        <Button size="icon" variant="outline" title="+" onPress={onIncrement} />
+
+        <Button
+          size="icon"
+          variant="outline"
+          className="rounded-none border-primary h-8 w-8"
+          onPress={onIncrement}
+        >
+          <Text className="text-primary font-mono font-bold">+</Text>
+        </Button>
       </View>
 
-      <View className="flex-row justify-between">
-        <Button variant="outline" size="sm" title="Hapus" onPress={onRemove} />
+      <View className="flex-row justify-between gap-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1 rounded-none border-destructive"
+          onPress={onRemove}
+        >
+          <Text className="text-destructive font-mono text-xs uppercase">
+            HAPUS
+          </Text>
+        </Button>
         <Button
           size="sm"
-          title="Tutup"
+          className="flex-1 rounded-none bg-primary"
           onPress={() => {
             /* handled by Popover */
           }}
-        />
+        >
+          <Text className="text-primary-foreground font-mono text-xs uppercase font-bold">
+            TUTUP
+          </Text>
+        </Button>
       </View>
     </View>
   )

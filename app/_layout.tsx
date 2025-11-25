@@ -16,6 +16,16 @@ import { queryClient } from "../lib/query-client"
 import { useThemeStore } from "../lib/store/theme-store"
 import { getNavTheme } from "../lib/theme"
 
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated"
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
+})
+
 // ----- Protected Stack Layout -----
 function ProtectedStackLayout() {
   const { session } = useAuth()

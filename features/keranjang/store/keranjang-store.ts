@@ -12,8 +12,6 @@ export type KeranjangState = {
     variasiId?: string | null,
     hargaUnit?: number
   ) => void
-  increment: (stockId: string, step?: number) => void
-  decrement: (stockId: string, step?: number) => void
   setQty: (
     stockId: string,
     qty: number,
@@ -26,6 +24,21 @@ export type KeranjangState = {
   types: () => number
 }
 
+const logBasket = (items: Record<string, BasketItem>, action: string) => {
+  if (__DEV__) {
+    return
+    console.group(`[KERANJANG] ${action}`)
+    console.log("Time:", new Date().toLocaleTimeString())
+    console.log("Items Count:", Object.values(items).length)
+    if (Object.values(items).length > 0) {
+      console.log(items)
+    } else {
+      console.log("Basket is empty")
+    }
+    console.groupEnd()
+  }
+}
+
 export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
   items: {},
 
@@ -35,60 +48,38 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
     variasiId: string | null = null,
     hargaUnit?: number
   ) {
-    if (qty <= 0) return
+    if (qty === 0) return
 
     set((s) => {
       const existing = s.items[stock.id]
-      const newQty = existing ? existing.qty + qty : qty
+      const currentQty = existing ? existing.qty : 0
+      const newQty = currentQty + qty
 
-      return {
+      // If new quantity is 0 or less, remove the item
+      if (newQty <= 0) {
+        if (!existing) return s // Nothing to remove
+        const copy = { ...s.items }
+        delete copy[stock.id]
+        const nextState = { items: copy }
+        logBasket(nextState.items, "ADD_ITEM (REMOVE)")
+        return nextState
+      }
+
+      const nextState = {
         items: {
           ...s.items,
           [stock.id]: {
             stock,
             qty: newQty,
-            harga_unit:
-              hargaUnit ?? existing?.harga_unit ?? stock.harga_jual ?? 0,
-            variasiId: variasiId ?? existing?.variasiId ?? null,
+            harga_jual:
+              hargaUnit ?? existing?.harga_jual ?? stock.harga_jual ?? 0,
+            variasi_harga_id: variasiId ?? existing?.variasi_harga_id ?? null,
           },
         },
       }
-    })
-  },
 
-  increment(stockId: string, step = 1) {
-    if (step <= 0) return
-
-    set((s) => {
-      const existing = s.items[stockId]
-      if (!existing) return s
-
-      return {
-        items: {
-          ...s.items,
-          [stockId]: { ...existing, qty: existing.qty + step },
-        },
-      }
-    })
-  },
-
-  decrement(stockId: string, step = 1) {
-    if (step <= 0) return
-
-    set((s) => {
-      const existing = s.items[stockId]
-      if (!existing) return s
-
-      const newQty = existing.qty - step
-      const copy = { ...s.items }
-
-      if (newQty <= 0) {
-        delete copy[stockId]
-      } else {
-        copy[stockId] = { ...existing, qty: newQty }
-      }
-
-      return { items: copy }
+      logBasket(nextState.items, "ADD_ITEM")
+      return nextState
     })
   },
 
@@ -96,7 +87,7 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
     stockId: string,
     qty: number,
     hargaUnit?: number,
-    variasiId?: string | null
+    variasi_harga_id?: string | null
   ) {
     if (qty < 0) return
 
@@ -107,23 +98,28 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
       if (qty === 0) {
         const copy = { ...s.items }
         delete copy[stockId]
-        return { items: copy }
+        const nextState = { items: copy }
+        logBasket(nextState.items, "SET_QTY (REMOVE)")
+        return nextState
       }
 
-      return {
+      const nextState = {
         items: {
           ...s.items,
           [stockId]: {
             ...existing,
             qty,
-            harga_unit: hargaUnit ?? existing.harga_unit,
-            variasiId:
-              variasiId !== undefined
-                ? (variasiId ?? null)
-                : existing.variasiId,
+            harga_jual: hargaUnit ?? existing.harga_jual,
+            variasi_harga_id:
+              variasi_harga_id !== undefined
+                ? (variasi_harga_id ?? null)
+                : existing.variasi_harga_id,
           },
         },
       }
+
+      logBasket(nextState.items, "SET_QTY")
+      return nextState
     })
   },
 
@@ -131,12 +127,19 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
     set((s) => {
       const copy = { ...s.items }
       delete copy[stockId]
-      return { items: copy }
+
+      const nextState = { items: copy }
+      logBasket(nextState.items, "REMOVE")
+      return nextState
     })
   },
 
   reset() {
-    set({ items: {} })
+    set(() => {
+      const nextState = { items: {} }
+      logBasket(nextState.items, "RESET")
+      return nextState
+    })
   },
 
   totalQty() {
