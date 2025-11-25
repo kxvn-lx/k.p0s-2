@@ -1,44 +1,77 @@
-import { View } from 'react-native'
-import { Text } from '@/components/ui/text'
-import { Button } from '@/components/ui/button'
-import type { StockRow } from '@/features/stok/api/stock.service'
+import { View } from "react-native"
+import { Text } from "@/components/ui/text"
+import { Button } from "@/components/ui/button"
+import type {
+  StockWithVariations,
+  VariasiHargaRow,
+} from "@/features/keranjang/types/keranjang.types"
 
-type Variation = { id: string; min_qty: number; harga_jual: number; satuan?: string }
-
-type Props = {
-    stock: StockRow
-    options: Variation[]
-    onSelectOriginal: () => void
-    onSelectVariation: (v: Variation) => void
+type VariationPopoverProps = {
+  stock: StockWithVariations
+  options: VariasiHargaRow[]
+  onSelectOriginal: () => void
+  onSelectVariation: (v: VariasiHargaRow) => void
 }
 
-export default function VariationPopover({ stock, options, onSelectOriginal, onSelectVariation }: Props) {
-    return (
-        <View className="py-2">
-            <Text className="font-medium mb-2">{stock.nama}</Text>
-            <View className="py-1 border-t border-border" />
+export default function VariationPopover({
+  stock,
+  options,
+  onSelectOriginal,
+  onSelectVariation,
+}: VariationPopoverProps) {
+  const displayPrice = stock.harga_jual?.toLocaleString() ?? "-"
 
-            <View className="flex-row justify-between items-center p-2">
-                <View>
-                    <Text className="text-xs text-muted-foreground">Minimal 1 {stock.satuan_utama ?? ''}</Text>
-                    <Text className="font-medium">{stock.harga_jual?.toLocaleString() ?? '-'}</Text>
-                </View>
-                <Button size="sm" variant="outline" title="Pilih" onPress={onSelectOriginal} />
+  return (
+    <View className="py-2">
+      <Text className="font-medium mb-2">{stock.nama}</Text>
+      <View className="py-1 border-t border-border" />
+
+      <View className="flex-row justify-between items-center p-2">
+        <View>
+          <Text className="text-xs text-muted-foreground">
+            Minimal 1 {stock.satuan_utama ?? ""}
+          </Text>
+          <Text className="font-medium">{displayPrice}</Text>
+        </View>
+        <Button
+          size="sm"
+          variant="outline"
+          title="Pilih"
+          onPress={onSelectOriginal}
+        />
+      </View>
+
+      {options.map((v) => {
+        const minQty = v.min_qty > 0 ? v.min_qty : 1
+        const satuan = v.satuan || stock.satuan_utama || ""
+
+        return (
+          <View
+            key={v.id}
+            className="flex-row justify-between items-center p-2"
+          >
+            <View>
+              <Text className="text-xs text-muted-foreground">
+                Minimal {minQty} {satuan}
+              </Text>
+              <View className="flex-row items-center gap-x-2">
+                <Text className="text-muted-foreground text-sm line-through">
+                  {displayPrice}
+                </Text>
+                <Text className="text-sm text-green-600 font-medium">
+                  {v.harga_jual.toLocaleString()}
+                </Text>
+              </View>
             </View>
 
-            {options.map((v) => (
-                <View key={v.id} className="flex-row justify-between items-center p-2">
-                    <View>
-                        <Text className="text-xs text-muted-foreground">Minimal {v.min_qty} {v.satuan ?? stock.satuan_utama ?? ''}</Text>
-                        <View className="flex-row items-center gap-x-2">
-                            <Text className="text-muted-foreground text-sm line-through">{stock.harga_jual?.toLocaleString()}</Text>
-                            <Text className="text-sm text-green-600 font-medium">{v.harga_jual.toLocaleString()}</Text>
-                        </View>
-                    </View>
-
-                    <Button size="sm" title={`Pilih ${v.min_qty}`} onPress={() => onSelectVariation(v)} />
-                </View>
-            ))}
-        </View>
-    )
+            <Button
+              size="sm"
+              title={`Pilih ${minQty}`}
+              onPress={() => onSelectVariation(v)}
+            />
+          </View>
+        )
+      })}
+    </View>
+  )
 }
