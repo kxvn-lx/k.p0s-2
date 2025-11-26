@@ -10,13 +10,14 @@ import { Stack } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
 import { useColorScheme, View } from "react-native"
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
 import "../global.css"
 import { AuthProvider, useAuth } from "../lib/auth-context"
 import { queryClient } from "../lib/query-client"
 import { useThemeStore } from "../lib/store/theme-store"
 import { getNavTheme } from "../lib/theme"
+import { ToastProvider } from "@/components/ui/toast"
 
 import {
   configureReanimatedLogger,
@@ -90,6 +91,7 @@ function InnerLayout() {
       <ThemeProvider value={navTheme}>
         <BottomSheetModalProvider>
           <ProtectedStackLayout />
+          <ToastProvider />
           <PortalHost />
         </BottomSheetModalProvider>
       </ThemeProvider>

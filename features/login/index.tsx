@@ -2,9 +2,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/lib/auth-context"
 import { useState } from "react"
-import { Alert, KeyboardAvoidingView, Platform, View } from "react-native"
+import { KeyboardAvoidingView, Platform, View } from "react-native"
 
 // ----- Login Screen -----
 export default function Login() {
@@ -50,7 +51,7 @@ export default function Login() {
               title={isLoading ? "Masuk..." : "Masuk"}
               onPress={async () => {
                 if (!email || !password) {
-                  Alert.alert("Error", "Silakan masukkan email dan password")
+                  toast.error("Error", "Silakan masukkan email dan password")
                   return
                 }
 
@@ -58,7 +59,7 @@ export default function Login() {
                 try {
                   await signIn(email, password)
                 } catch (error) {
-                  Alert.alert(
+                  toast.error(
                     "Gagal Masuk",
                     error instanceof Error ? error.message : "Gagal masuk"
                   )

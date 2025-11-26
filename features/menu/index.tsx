@@ -13,9 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/lib/auth-context"
 import { useThemeStore } from "@/lib/store/theme-store"
-import { Alert, Text, View } from "react-native"
+import { Text, View } from "react-native"
 
 // ----- Theme Labels -----
 const THEME_LABELS = {
@@ -78,7 +79,7 @@ export default function Menu() {
               try {
                 await signOut()
               } catch (error) {
-                Alert.alert(
+                toast.error(
                   "Gagal Keluar",
                   error instanceof Error ? error.message : "Gagal keluar"
                 )

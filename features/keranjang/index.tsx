@@ -16,6 +16,7 @@ import useKeranjangStore, {
   KeranjangState,
 } from "@/features/keranjang/store/keranjang-store"
 import { Separator } from "@/components/ui/separator"
+import { toast } from "@/components/ui/toast"
 
 export default function Keranjang() {
   const router = useRouter()
@@ -47,13 +48,6 @@ export default function Keranjang() {
     remainingFor,
   } = useKeranjangActions()
   const resetBasket = useKeranjangStore((s: KeranjangState) => s.reset)
-  const [alertMsg, setAlertMsg] = useState<string | null>(null)
-
-  const showAlert = useCallback((message: string) => {
-    setAlertMsg(message)
-    const timer = setTimeout(() => setAlertMsg(null), 2200)
-    return () => clearTimeout(timer)
-  }, [])
 
   const renderItem = useCallback(
     ({ item }: { item: StockWithVariations }) => {
@@ -69,36 +63,28 @@ export default function Keranjang() {
           options={options}
           onAdd={() => {
             const r = addToBasket(item, 1, null, item.harga_jual)
-            if (!r.ok) showAlert(r.message)
+            if (!r.ok) toast.error(r.message)
           }}
           onSelectOriginal={() => {
             const r = selectVariation(item, null)
-            if (!r.ok) showAlert(r.message)
+            if (!r.ok) toast.error(r.message)
           }}
           onSelectVariation={(v: VariasiHargaRow) => {
             const r = selectVariation(item, v)
-            if (!r.ok) showAlert(r.message)
+            if (!r.ok) toast.error(r.message)
           }}
           onIncrement={() => {
             const r = adjustQty(item.id, 1)
-            if (!r.ok) showAlert(r.message)
+            if (!r.ok) toast.error(r.message)
           }}
           onDecrement={() => {
             const r = adjustQty(item.id, -1)
-            if (!r.ok) showAlert(r.message)
+            if (!r.ok) toast.error(r.message)
           }}
         />
       )
     },
-    [
-      items,
-      remainingFor,
-      addToBasket,
-      selectVariation,
-      adjustQty,
-      removeItem,
-      showAlert,
-    ]
+    [items, remainingFor, addToBasket, selectVariation, adjustQty, removeItem]
   )
 
   const itemCount = useMemo(() => Object.keys(items).length, [items])
@@ -143,14 +129,6 @@ export default function Keranjang() {
         onSearch={setQuery}
       />
 
-      {alertMsg ? (
-        <View className="bg-destructive p-1">
-          <Text className="text-destructive-foreground text-sm text-center uppercase">
-            *** {alertMsg} ***
-          </Text>
-        </View>
-      ) : null}
-
       {/* Main Content Area */}
       <View className="flex-1">{renderContent()}</View>
 
@@ -159,12 +137,19 @@ export default function Keranjang() {
         <View className="flex-row items-center justify-between">
           <Text>STOK: {itemCount}</Text>
 
-          <Button variant="bare" size="bare" onPress={resetBasket} disabled={!itemCount} textClassName="text-destructive" title="BATAL" />
+          <Button
+            variant="bare"
+            size="bare"
+            onPress={resetBasket}
+            disabled={!itemCount}
+            textClassName="text-destructive"
+            title="BATAL"
+          />
         </View>
 
         <Button
           onPress={() => {
-            console.warn("Summary route not yet implemented")
+            toast.info("Summary route not yet implemented")
           }}
           disabled={!canProceed}
           title="LANJUT"
