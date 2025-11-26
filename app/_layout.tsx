@@ -56,15 +56,15 @@ function ProtectedStackLayout() {
   )
 }
 
-// ----- Root Layout -----
-export default function RootLayout() {
+// ----- Inner Layout (requires AuthProvider) -----
+function InnerLayout() {
   const colorScheme = useColorScheme() ?? "light"
   const { theme } = useThemeStore()
+  const { isLoading } = useAuth()
   const [loaded] = useFonts({
     UbuntuMono_400Regular,
     UbuntuMono_700Bold,
   })
-  const { isLoading } = useAuth()
 
   useEffect(() => {
     if (loaded && !isLoading) {
@@ -76,24 +76,36 @@ export default function RootLayout() {
     return null
   }
 
-  const navTheme = getNavTheme(theme, colorScheme ?? "light")
-  const themeClass = theme === "sunset" ? "theme-sunset" : ""
+  const navTheme = getNavTheme(theme, colorScheme)
+  const themeClassMap = {
+    metal: "",
+    sunset: "theme-sunset",
+    solarized: "theme-solarized",
+  }
+  const themeClass = themeClassMap[theme]
   const darkClass = colorScheme === "dark" ? "dark" : ""
 
   return (
+    <View className={`flex-1 ${darkClass} ${themeClass}`}>
+      <ThemeProvider value={navTheme}>
+        <BottomSheetModalProvider>
+          <ProtectedStackLayout />
+          <PortalHost />
+        </BottomSheetModalProvider>
+      </ThemeProvider>
+    </View>
+  )
+}
+
+// ----- Root Layout -----
+export default function RootLayout() {
+  return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View className={`flex-1 ${darkClass} ${themeClass}`}>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider value={navTheme}>
-            <AuthProvider>
-              <BottomSheetModalProvider>
-                <ProtectedStackLayout />
-                <PortalHost />
-              </BottomSheetModalProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </View>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <InnerLayout />
+        </AuthProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   )
 }

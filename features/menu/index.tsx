@@ -17,6 +17,15 @@ import { useAuth } from "@/lib/auth-context"
 import { useThemeStore } from "@/lib/store/theme-store"
 import { Alert, Text, View } from "react-native"
 
+// ----- Theme Labels -----
+const THEME_LABELS = {
+  metal: "Metal",
+  sunset: "Sunset",
+  solarized: "Solarized",
+} as const
+
+type ThemeType = keyof typeof THEME_LABELS
+
 // ----- Menu Screen -----
 export default function Menu() {
   const { signOut, user } = useAuth()
@@ -37,11 +46,11 @@ export default function Menu() {
             <Select
               value={{
                 value: theme,
-                label: theme === "sunset" ? "Sunset" : "Metal",
+                label: THEME_LABELS[theme as ThemeType],
               }}
               onValueChange={(option) => {
                 if (option) {
-                  setTheme(option.value as "metal" | "sunset")
+                  setTheme(option.value as ThemeType)
                 }
               }}
             >
@@ -54,6 +63,9 @@ export default function Menu() {
                 </SelectItem>
                 <SelectItem label="Sunset" value="sunset">
                   Sunset
+                </SelectItem>
+                <SelectItem label="Solarized" value="solarized">
+                  Solarized
                 </SelectItem>
               </SelectContent>
             </Select>

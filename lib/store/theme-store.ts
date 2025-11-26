@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
-type ThemeType = "metal" | "sunset"
+type ThemeType = "metal" | "sunset" | "solarized"
 
 interface ThemeState {
   theme: ThemeType

@@ -1,57 +1,60 @@
 import { DarkTheme, DefaultTheme, type Theme } from "@react-navigation/native"
 
-// --- Sunset Colors ---
+// ----- Theme Type -----
+type ThemeType = "metal" | "sunset" | "solarized"
+
+// ----- Sunset Colors (Bloomberg Terminal Inspired) -----
 const SUNSET_DARK = {
   background: "hsl(0 0% 0%)",
-  foreground: "hsl(34 100% 58%)",
-  card: "hsl(0 0% 5%)",
-  cardForeground: "hsl(34 100% 58%)",
-  popover: "hsl(0 0% 5%)",
-  popoverForeground: "hsl(34 100% 58%)",
-  primary: "hsl(34 100% 58%)",
+  foreground: "hsl(36 100% 62%)",
+  card: "hsl(30 15% 5%)",
+  cardForeground: "hsl(36 95% 60%)",
+  popover: "hsl(30 20% 7%)",
+  popoverForeground: "hsl(36 100% 62%)",
+  primary: "hsl(36 100% 50%)",
   primaryForeground: "hsl(0 0% 0%)",
-  secondary: "hsl(0 0% 15%)",
-  secondaryForeground: "hsl(34 100% 58%)",
-  muted: "hsl(0 0% 15%)",
-  mutedForeground: "hsl(34 80% 45%)",
-  accent: "hsl(34 100% 58%)",
+  secondary: "hsl(30 10% 12%)",
+  secondaryForeground: "hsl(36 90% 55%)",
+  muted: "hsl(30 8% 15%)",
+  mutedForeground: "hsl(36 60% 40%)",
+  accent: "hsl(24 100% 50%)",
   accentForeground: "hsl(0 0% 0%)",
-  destructive: "hsl(2 100% 62%)",
+  destructive: "hsl(0 85% 60%)",
   destructiveForeground: "hsl(0 0% 100%)",
-  border: "hsl(34 100% 25%)",
-  input: "hsl(0 0% 10%)",
-  ring: "hsl(34 100% 58%)",
-  radius: "0rem",
+  border: "hsl(32 80% 20%)",
+  input: "hsl(30 10% 12%)",
+  ring: "hsl(36 100% 50%)",
+  radius: "0.125rem",
 }
 
 const SUNSET_LIGHT = {
-  background: "hsl(0 0% 100%)",
-  foreground: "hsl(0 0% 0%)",
-  card: "hsl(0 0% 100%)",
-  cardForeground: "hsl(0 0% 0%)",
-  popover: "hsl(0 0% 100%)",
-  popoverForeground: "hsl(0 0% 0%)",
-  primary: "hsl(34 100% 35%)",
+  background: "hsl(40 33% 98%)",
+  foreground: "hsl(30 10% 15%)",
+  card: "hsl(40 25% 95%)",
+  cardForeground: "hsl(30 10% 15%)",
+  popover: "hsl(40 40% 99%)",
+  popoverForeground: "hsl(30 10% 15%)",
+  primary: "hsl(32 95% 44%)",
   primaryForeground: "hsl(0 0% 100%)",
-  secondary: "hsl(0 0% 94%)",
-  secondaryForeground: "hsl(0 0% 0%)",
-  muted: "hsl(0 0% 94%)",
-  mutedForeground: "hsl(0 0% 40%)",
-  accent: "hsl(34 100% 35%)",
+  secondary: "hsl(35 20% 90%)",
+  secondaryForeground: "hsl(30 10% 15%)",
+  muted: "hsl(35 15% 92%)",
+  mutedForeground: "hsl(30 8% 45%)",
+  accent: "hsl(24 95% 53%)",
   accentForeground: "hsl(0 0% 100%)",
-  destructive: "hsl(4 100% 45%)",
+  destructive: "hsl(0 72% 51%)",
   destructiveForeground: "hsl(0 0% 100%)",
-  border: "hsl(0 0% 85%)",
-  input: "hsl(0 0% 94%)",
-  ring: "hsl(34 100% 35%)",
-  radius: "0rem",
+  border: "hsl(35 15% 82%)",
+  input: "hsl(35 20% 90%)",
+  ring: "hsl(32 95% 44%)",
+  radius: "0.125rem",
 }
 
-// --- Metal Colors (Sleek, Modern, Metallic) ---
+// ----- Metal Colors (Industrial, Minimal, Modern) -----
 const METAL_LIGHT = {
-  background: "hsl(0 0% 98%)",
+  background: "hsl(0 0% 100%)",
   foreground: "hsl(240 10% 3.9%)",
-  card: "hsl(0 0% 100%)",
+  card: "hsl(240 5% 96%)",
   cardForeground: "hsl(240 10% 3.9%)",
   popover: "hsl(0 0% 100%)",
   popoverForeground: "hsl(240 10% 3.9%)",
@@ -61,55 +64,106 @@ const METAL_LIGHT = {
   secondaryForeground: "hsl(240 5.9% 10%)",
   muted: "hsl(240 4.8% 95.9%)",
   mutedForeground: "hsl(240 3.8% 46.1%)",
-  accent: "hsl(240 4.8% 95.9%)",
+  accent: "hsl(240 5% 84%)",
   accentForeground: "hsl(240 5.9% 10%)",
-  destructive: "hsl(0 84.2% 60.2%)",
-  destructiveForeground: "hsl(0 0% 98%)",
-  border: "hsl(240 5.9% 90%)",
-  input: "hsl(240 5.9% 90%)",
-  ring: "hsl(240 5% 64.9%)",
+  destructive: "hsl(0 84% 60%)",
+  destructiveForeground: "hsl(0 0% 100%)",
+  border: "hsl(240 6% 90%)",
+  input: "hsl(240 6% 90%)",
+  ring: "hsl(240 5% 65%)",
   radius: "0.5rem",
 }
 
 const METAL_DARK = {
   background: "hsl(240 10% 3.9%)",
   foreground: "hsl(0 0% 98%)",
-  card: "hsl(240 10% 3.9%)",
+  card: "hsl(240 6% 10%)",
   cardForeground: "hsl(0 0% 98%)",
-  popover: "hsl(240 10% 3.9%)",
+  popover: "hsl(240 6% 10%)",
   popoverForeground: "hsl(0 0% 98%)",
   primary: "hsl(0 0% 98%)",
   primaryForeground: "hsl(240 5.9% 10%)",
-  secondary: "hsl(240 3.7% 15.9%)",
+  secondary: "hsl(240 4% 16%)",
   secondaryForeground: "hsl(0 0% 98%)",
-  muted: "hsl(240 3.7% 15.9%)",
-  mutedForeground: "hsl(240 5% 64.9%)",
-  accent: "hsl(240 3.7% 15.9%)",
+  muted: "hsl(240 4% 16%)",
+  mutedForeground: "hsl(240 5% 65%)",
+  accent: "hsl(240 4% 26%)",
   accentForeground: "hsl(0 0% 98%)",
-  destructive: "hsl(0 62.8% 30.6%)",
+  destructive: "hsl(0 63% 31%)",
   destructiveForeground: "hsl(0 0% 98%)",
-  border: "hsl(240 3.7% 15.9%)",
-  input: "hsl(240 3.7% 15.9%)",
-  ring: "hsl(240 4.9% 83.9%)",
+  border: "hsl(240 4% 16%)",
+  input: "hsl(240 4% 16%)",
+  ring: "hsl(240 5% 84%)",
   radius: "0.5rem",
 }
 
+// ----- Solarized Colors (Eye-Friendly, Scientific Precision) -----
+const SOLARIZED_LIGHT = {
+  background: "hsl(44 87% 94%)",
+  foreground: "hsl(192 81% 14%)",
+  card: "hsl(44 71% 88%)",
+  cardForeground: "hsl(192 81% 14%)",
+  popover: "hsl(44 87% 94%)",
+  popoverForeground: "hsl(192 81% 14%)",
+  primary: "hsl(205 82% 41%)",
+  primaryForeground: "hsl(44 87% 94%)",
+  secondary: "hsl(44 71% 88%)",
+  secondaryForeground: "hsl(196 25% 47%)",
+  muted: "hsl(44 50% 85%)",
+  mutedForeground: "hsl(194 14% 40%)",
+  accent: "hsl(175 59% 40%)",
+  accentForeground: "hsl(44 87% 94%)",
+  destructive: "hsl(1 71% 52%)",
+  destructiveForeground: "hsl(44 87% 94%)",
+  border: "hsl(46 42% 76%)",
+  input: "hsl(44 60% 90%)",
+  ring: "hsl(205 82% 41%)",
+  radius: "0.375rem",
+}
+
+const SOLARIZED_DARK = {
+  background: "hsl(192 100% 11%)",
+  foreground: "hsl(186 8% 55%)",
+  card: "hsl(192 90% 13%)",
+  cardForeground: "hsl(186 13% 59%)",
+  popover: "hsl(192 100% 11%)",
+  popoverForeground: "hsl(186 8% 55%)",
+  primary: "hsl(205 82% 41%)",
+  primaryForeground: "hsl(186 13% 59%)",
+  secondary: "hsl(192 90% 13%)",
+  secondaryForeground: "hsl(186 8% 55%)",
+  muted: "hsl(194 35% 18%)",
+  mutedForeground: "hsl(195 23% 34%)",
+  accent: "hsl(175 59% 40%)",
+  accentForeground: "hsl(192 100% 11%)",
+  destructive: "hsl(1 71% 52%)",
+  destructiveForeground: "hsl(186 13% 59%)",
+  border: "hsl(194 35% 18%)",
+  input: "hsl(192 90% 13%)",
+  ring: "hsl(205 82% 41%)",
+  radius: "0.375rem",
+}
+
 export const getThemeColors = (
-  theme: "metal" | "sunset",
+  theme: ThemeType,
   colorScheme: "light" | "dark"
 ) => {
   if (theme === "sunset") {
     return colorScheme === "dark" ? SUNSET_DARK : SUNSET_LIGHT
   }
+  if (theme === "solarized") {
+    return colorScheme === "dark" ? SOLARIZED_DARK : SOLARIZED_LIGHT
+  }
   return colorScheme === "dark" ? METAL_DARK : METAL_LIGHT
 }
 
 export const getNavTheme = (
-  theme: "metal" | "sunset",
+  theme: ThemeType,
   colorScheme: "light" | "dark"
 ): Theme => {
   const baseTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme
 
+  // ----- Sunset Theme (Bloomberg Terminal) -----
   if (theme === "sunset") {
     if (colorScheme === "dark") {
       return {
@@ -117,11 +171,11 @@ export const getNavTheme = (
         colors: {
           ...baseTheme.colors,
           background: "rgb(0, 0, 0)",
-          border: "rgb(128, 77, 0)",
-          card: "rgb(13, 13, 13)",
-          notification: "rgb(255, 67, 61)",
-          primary: "rgb(255, 160, 40)",
-          text: "rgb(255, 160, 40)",
+          border: "rgb(92, 64, 8)",
+          card: "rgb(15, 13, 10)",
+          notification: "rgb(244, 67, 54)",
+          primary: "rgb(255, 149, 0)",
+          text: "rgb(255, 170, 51)",
         },
       }
     } else {
@@ -129,29 +183,60 @@ export const getNavTheme = (
         ...baseTheme,
         colors: {
           ...baseTheme.colors,
-          background: "rgb(255, 255, 255)",
-          border: "rgb(217, 217, 217)",
-          card: "rgb(255, 255, 255)",
-          notification: "rgb(230, 0, 0)",
-          primary: "rgb(179, 107, 0)",
-          text: "rgb(0, 0, 0)",
+          background: "rgb(253, 252, 250)",
+          border: "rgb(217, 211, 199)",
+          card: "rgb(247, 245, 240)",
+          notification: "rgb(220, 38, 38)",
+          primary: "rgb(218, 139, 6)",
+          text: "rgb(42, 37, 32)",
         },
       }
     }
   }
 
-  // Metal Theme (Default)
+  // ----- Solarized Theme (Eye-Friendly) -----
+  if (theme === "solarized") {
+    if (colorScheme === "dark") {
+      return {
+        ...baseTheme,
+        colors: {
+          ...baseTheme.colors,
+          background: "rgb(0, 43, 54)", // base03
+          border: "rgb(7, 54, 66)", // base02
+          card: "rgb(7, 54, 66)", // base02
+          notification: "rgb(220, 50, 47)", // red
+          primary: "rgb(38, 139, 210)", // blue
+          text: "rgb(131, 148, 150)", // base0
+        },
+      }
+    } else {
+      return {
+        ...baseTheme,
+        colors: {
+          ...baseTheme.colors,
+          background: "rgb(253, 246, 227)", // base3
+          border: "rgb(211, 203, 184)",
+          card: "rgb(238, 232, 213)", // base2
+          notification: "rgb(220, 50, 47)", // red
+          primary: "rgb(38, 139, 210)", // blue
+          text: "rgb(7, 54, 66)", // base02
+        },
+      }
+    }
+  }
+
+  // ----- Metal Theme (Default) -----
   if (colorScheme === "dark") {
     return {
       ...baseTheme,
       colors: {
         ...baseTheme.colors,
-        background: "rgb(9, 9, 11)", // #09090B
-        border: "rgb(39, 39, 42)", // #27272A
-        card: "rgb(9, 9, 11)", // #09090B
-        notification: "rgb(127, 29, 29)", // Dark Red
-        primary: "rgb(250, 250, 250)", // #FAFAFA
-        text: "rgb(250, 250, 250)", // #FAFAFA
+        background: "rgb(9, 9, 11)",
+        border: "rgb(39, 39, 42)",
+        card: "rgb(24, 24, 27)",
+        notification: "rgb(127, 29, 29)",
+        primary: "rgb(250, 250, 250)",
+        text: "rgb(250, 250, 250)",
       },
     }
   } else {
@@ -159,12 +244,12 @@ export const getNavTheme = (
       ...baseTheme,
       colors: {
         ...baseTheme.colors,
-        background: "rgb(250, 250, 250)", // #FAFAFA
-        border: "rgb(228, 228, 231)", // #E4E4E7
-        card: "rgb(255, 255, 255)", // #FFFFFF
-        notification: "rgb(220, 38, 38)", // Red
-        primary: "rgb(24, 24, 27)", // #18181B
-        text: "rgb(9, 9, 11)", // #09090B
+        background: "rgb(255, 255, 255)",
+        border: "rgb(228, 228, 231)",
+        card: "rgb(244, 244, 245)",
+        notification: "rgb(239, 68, 68)",
+        primary: "rgb(24, 24, 27)",
+        text: "rgb(9, 9, 11)",
       },
     }
   }
