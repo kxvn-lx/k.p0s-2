@@ -1,96 +1,117 @@
+// ----- IMPORTS -----
 import useKeranjangStore from "@/features/keranjang/store/keranjang-store"
 import type {
   StockRow,
   VariasiHargaRow,
 } from "@/features/keranjang/types/keranjang.types"
+import type { ActionResult } from "@/lib/types/action.types"
 
+// ----- HOOK -----
 export function useKeranjangActions() {
+  // ----- STORE SELECTORS -----
   const items = useKeranjangStore((s) => s.items)
   const addItem = useKeranjangStore((s) => s.addItem)
   const removeItem = useKeranjangStore((s) => s.remove)
   const setQty = useKeranjangStore((s) => s.setQty)
 
+  // ----- UTILITY FUNCTIONS -----
   function remainingFor(stock: StockRow): number {
-    const currentInBasket = items[stock.id]?.qty ?? 0
-    const available = stock.jumlah_stok ?? 0
-    return Math.max(0, available - currentInBasket)
+    const quantityInCart = items[stock.id]?.qty ?? 0
+    const totalStock = stock.jumlah_stok ?? 0
+    return Math.max(0, totalStock - quantityInCart)
   }
 
-  async function addToBasket(
+  // ----- ACTIONS -----
+  function addToBasket(
     stock: StockRow,
     qtyToAdd = 1,
     variasiId: string | null = null,
-    hargaUnit?: number
-  ): Promise<{ ok: boolean; reason?: string }> {
+    hargaUnit?: number,
+    minQty = 0
+  ): ActionResult {
     if (qtyToAdd <= 0) {
-      return { ok: false, reason: "INVALID_QTY" }
+      return { ok: false, message: "qty nd valid (qty <= 0)" }
     }
 
-    const avail = remainingFor(stock)
-    if (avail < qtyToAdd) {
-      return { ok: false, reason: "STOK_TIDAK_CUKUP" }
+    const availableStock = remainingFor(stock)
+    if (availableStock < qtyToAdd) {
+      return { ok: false, message: "Stok nd cukup" }
     }
 
-    addItem(stock, qtyToAdd, variasiId, hargaUnit)
+    addItem(stock, qtyToAdd, variasiId, hargaUnit, minQty)
     return { ok: true }
   }
 
-  async function selectVariation(
+  function selectVariation(
     stock: StockRow,
     variation: VariasiHargaRow | null
-  ): Promise<{ ok: boolean; reason?: string }> {
-    const existing = items[stock.id]
-    const totalStock = stock.jumlah_stok ?? 0
+  ): ActionResult {
+    const currentCartItem = items[stock.id]
+    const availableStock = stock.jumlah_stok ?? 0
 
-    // Selecting Base (Original)
     if (!variation) {
-      if (existing) {
-        // Already on Base: add 1 more
-        if (!existing.variasi_harga_id) {
+      if (currentCartItem) {
+        if (!currentCartItem.variasi_harga_id) {
           if (remainingFor(stock) < 1)
-            return { ok: false, reason: "STOK_TIDAK_CUKUP" }
-          addItem(stock, 1, null, stock.harga_jual)
+            return { ok: false, message: "Stok nd cukup" }
+          addItem(stock, 1, null, stock.harga_jual, 0)
           return { ok: true }
         }
-        // Switching from Variation to Base: reset to 1
-        if (totalStock < 1) return { ok: false, reason: "STOK_TIDAK_CUKUP" }
-        setQty(stock.id, 1, stock.harga_jual, null)
+        if (availableStock < 1) return { ok: false, message: "Stok nd cukup" }
+        setQty(stock.id, 1, stock.harga_jual, null, 0)
         return { ok: true }
       }
-      // New item (Base)
-      return addToBasket(stock, 1, null, stock.harga_jual)
+      return addToBasket(stock, 1, null, stock.harga_jual, 0)
     }
 
-    // Selecting a Variation
-    const minQty = variation.min_qty > 0 ? variation.min_qty : 1
-    if (minQty <= 0) return { ok: false, reason: "INVALID_MIN_QTY" }
+    const minimumQuantity = variation.min_qty > 0 ? variation.min_qty : 1
+    if (minimumQuantity <= 0) return { ok: false, message: "Jumlah minimum nd valid" }
 
-    if (existing) {
-      // Already on same variation: add minQty more
-      if (existing.variasi_harga_id === variation.id) {
-        if (remainingFor(stock) < minQty)
-          return { ok: false, reason: "STOK_TIDAK_CUKUP" }
-        addItem(stock, minQty, variation.id, variation.harga_jual)
+    if (currentCartItem) {
+      if (currentCartItem.variasi_harga_id === variation.id) {
+        if (remainingFor(stock) < minimumQuantity)
+          return { ok: false, message: "Stok nd cukup" }
+        addItem(stock, minimumQuantity, variation.id, variation.harga_jual, minimumQuantity)
         return { ok: true }
       }
 
-      // Switching to different variation: reset to minQty
-      if (totalStock < minQty) return { ok: false, reason: "STOK_TIDAK_CUKUP" }
-      setQty(stock.id, minQty, variation.harga_jual, variation.id)
+      if (availableStock < minimumQuantity) return { ok: false, message: "Stok nd cukup" }
+      setQty(stock.id, minimumQuantity, variation.harga_jual, variation.id, minimumQuantity)
       return { ok: true }
     }
 
-    // New item (Variation)
-    if (remainingFor(stock) < minQty)
-      return { ok: false, reason: "STOK_TIDAK_CUKUP" }
-    addItem(stock, minQty, variation.id, variation.harga_jual)
+    if (remainingFor(stock) < minimumQuantity)
+      return { ok: false, message: "Stok tidak cukup" }
+    addItem(stock, minimumQuantity, variation.id, variation.harga_jual, minimumQuantity)
     return { ok: true }
   }
 
-  function adjustQty(stockId: string, delta: number) {
-    const item = items[stockId]
-    if (!item) return
-    addItem(item.stock, delta, item.variasi_harga_id, item.harga_jual)
+  function adjustQty(
+    stockId: string,
+    delta: number
+  ): ActionResult {
+    const cartItem = items[stockId]
+    if (!cartItem) return { ok: false, message: "Stok nd ada di keranjang" }
+
+    const currentQuantity = cartItem.qty
+    const newQuantity = currentQuantity + delta
+    const minimumQuantity = cartItem.variasi_harga_id
+      ? cartItem.min_qty
+      : 0
+
+    if (delta < 0 && newQuantity < minimumQuantity) {
+      return { ok: false, message: `Jumlah minimum for ini variasi harga: ${minimumQuantity} ${cartItem.stock.satuan_utama ?? ''}` }
+    }
+
+    if (delta > 0) {
+      const remaining = remainingFor(cartItem.stock)
+      if (remaining < delta) {
+        return { ok: false, message: "Stok nd cukup" }
+      }
+    }
+
+    addItem(cartItem.stock, delta, cartItem.variasi_harga_id, cartItem.harga_jual, minimumQuantity)
+    return { ok: true }
   }
 
   return {

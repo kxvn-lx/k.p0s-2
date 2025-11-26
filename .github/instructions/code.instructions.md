@@ -30,18 +30,3 @@ Bug/Fix Protocol
 
 Trace full user flow to pinpoint root cause (symptoms as clues only).
 Pause for deep reflection; achieve max confidence on cause before fixes; seek clarifications as needed.
-
-Red flags to avoid:
-
-- functions like <button onClick={handleClick} />. handleClick doesn't explain what it does. you lose colocation. need new names for each callback. Inline callbacks can call multiple functions with good names
-
-```
-onClick={() => {
-analytics.event('this-button')
-openModal()
-}}
-```
-
-- useMemo. React devs are terrified of renders and often overuseMemo. memoize things that you pass as props to components that may have expensive children. it's ok for leaf components to over-render. useMemo does not fix bugs, it just makes them happen less often
-
-- a "hooks" directory. A <ContextProvider /> and its useContext() hook belong together, not split into "components" and "hooks" directories. Sorting your codebase by what each function looks like means even small changes will span many directories

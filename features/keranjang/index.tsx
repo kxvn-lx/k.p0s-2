@@ -15,6 +15,7 @@ import type {
 import useKeranjangStore, {
   KeranjangState,
 } from "@/features/keranjang/store/keranjang-store"
+import { Separator } from "@/components/ui/separator"
 
 export default function Keranjang() {
   const router = useRouter()
@@ -64,21 +65,28 @@ export default function Keranjang() {
           stock={item}
           remaining={remainingFor(item)}
           selectedQty={selQty}
+          selectedVariasiId={items[item.id]?.variasi_harga_id ?? undefined}
           options={options}
-          onAdd={async () => {
-            const r = await addToBasket(item, 1, null, item.harga_jual)
-            if (!r.ok) showAlert("Stok tidak cukup")
+          onAdd={() => {
+            const r = addToBasket(item, 1, null, item.harga_jual)
+            if (!r.ok) showAlert(r.message)
           }}
-          onSelectOriginal={async () => {
-            const r = await selectVariation(item, null)
-            if (!r.ok) showAlert("Stok tidak cukup")
+          onSelectOriginal={() => {
+            const r = selectVariation(item, null)
+            if (!r.ok) showAlert(r.message)
           }}
-          onSelectVariation={async (v: VariasiHargaRow) => {
-            const r = await selectVariation(item, v)
-            if (!r.ok) showAlert("Stok tidak cukup untuk variasi")
+          onSelectVariation={(v: VariasiHargaRow) => {
+            const r = selectVariation(item, v)
+            if (!r.ok) showAlert(r.message)
           }}
-          onIncrement={() => adjustQty(item.id, 1)}
-          onDecrement={() => adjustQty(item.id, -1)}
+          onIncrement={() => {
+            const r = adjustQty(item.id, 1)
+            if (!r.ok) showAlert(r.message)
+          }}
+          onDecrement={() => {
+            const r = adjustQty(item.id, -1)
+            if (!r.ok) showAlert(r.message)
+          }}
           onRemove={() => removeItem(item.id)}
         />
       )
@@ -116,36 +124,30 @@ export default function Keranjang() {
         data={data as StockWithVariations[]}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        ItemSeparatorComponent={() => <View className="h-[1px] bg-border/30" />}
+        ItemSeparatorComponent={() => <Separator />}
         ListEmptyComponent={() => (
           <StatusMessage
             type="muted"
-            message="TIDAK ADA DATA"
-            className="mt-12 uppercase font-mono"
+            message="ND ADA DATA"
+            className="mt-12 uppercase"
           />
         )}
-        contentContainerStyle={{ paddingBottom: 100 }}
       />
     )
   }
 
   return (
     <View className="flex-1 bg-background">
-      <View className="border-b border-primary/50 bg-background p-2">
-        <SearchInput
-          placeholder="CARI_STOK..."
-          initialValue={query}
-          onSearch={setQuery}
-          className="bg-transparent border-0 text-primary font-mono h-8 p-0"
-          placeholderTextColor="rgba(255, 160, 40, 0.5)"
-          showClear={false}
-        />
-      </View>
+      <SearchInput
+        placeholder="CARI STOK..."
+        initialValue={query}
+        onSearch={setQuery}
+      />
 
       {alertMsg ? (
         <View className="bg-destructive p-1">
-          <Text className="text-destructive-foreground font-mono text-xs text-center uppercase">
-            *** ALERT: {alertMsg} ***
+          <Text className="text-destructive-foreground text-sm text-center uppercase">
+            *** {alertMsg} ***
           </Text>
         </View>
       ) : null}
@@ -154,37 +156,20 @@ export default function Keranjang() {
       <View className="flex-1">{renderContent()}</View>
 
       {/* Status Bar Footer */}
-      <View className="border-t-2 border-primary bg-card pb-safe">
-        <View className="flex-row justify-between items-center px-4 py-2 bg-primary/10">
-          <View className="flex-row gap-x-4">
-            <Text className="text-primary font-mono text-xs">
-              ITEM: <Text className="font-bold">{itemCount}</Text>
-            </Text>
-          </View>
+      <View className="bg-card border-t border-border">
+        <View className="flex-row items-center justify-between">
+          <Text>STOK: {itemCount}</Text>
+
+          <Button variant="bare" onPress={resetBasket} disabled={!itemCount} textClassName="text-destructive" title="BATAL" />
         </View>
 
-        <View className="flex-row gap-x-2 p-2">
-          <Button
-            variant="outline"
-            className="flex-1 border-primary rounded-none"
-            onPress={resetBasket}
-          >
-            <Text className="text-primary font-mono uppercase">
-              HAPUS_SEMUA
-            </Text>
-          </Button>
-          <Button
-            className="flex-1 bg-primary rounded-none"
-            onPress={() => {
-              console.warn("Summary route not yet implemented")
-            }}
-            disabled={!canProceed}
-          >
-            <Text className="text-primary-foreground font-mono uppercase font-bold">
-              PROSES {">>"}
-            </Text>
-          </Button>
-        </View>
+        <Button
+          onPress={() => {
+            console.warn("Summary route not yet implemented")
+          }}
+          disabled={!canProceed}
+          title="LANJUT"
+        />
       </View>
     </View>
   )

@@ -10,6 +10,7 @@ import { Stack } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
 import { useColorScheme, View } from "react-native"
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import "../global.css"
 import { AuthProvider, useAuth } from "../lib/auth-context"
 import { queryClient } from "../lib/query-client"
@@ -79,15 +80,17 @@ export default function RootLayout() {
   const darkClass = colorScheme === "dark" ? "dark" : ""
 
   return (
-    <View className={`flex-1 ${darkClass} ${themeClass}`}>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider value={navTheme}>
-          <AuthProvider>
-            <ProtectedStackLayout />
-            <PortalHost />
-          </AuthProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View className={`flex-1 ${darkClass} ${themeClass}`}>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider value={navTheme}>
+            <AuthProvider>
+              <ProtectedStackLayout />
+              <PortalHost />
+            </AuthProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </View>
+    </GestureHandlerRootView>
   )
 }

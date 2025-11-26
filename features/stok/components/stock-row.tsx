@@ -1,6 +1,7 @@
 // ----- Stock list row -----
 import { Text } from "@/components/ui/text"
-import { Pressable, View } from "react-native"
+import { View } from "react-native"
+import PressableRow from '@/components/shared/pressable-row'
 import type { StockRow } from "../api/stock.service"
 
 export default function StockRow({
@@ -14,7 +15,7 @@ export default function StockRow({
   const low = qty <= 0
 
   return (
-    <Pressable
+    <PressableRow
       onPress={onPress}
       testID={`stock-row-${stock.id}`}
       className="flex-row items-start justify-between p-2 bg-background active:bg-accent/10"
@@ -45,6 +46,6 @@ export default function StockRow({
           <Text className="text-xs uppercase">[{stock.lokasi}]</Text>
         </View>
       </View>
-    </Pressable>
+    </PressableRow>
   )
 }

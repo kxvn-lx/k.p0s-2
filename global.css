@@ -125,3 +125,9 @@
     --chart-5: 280 100% 50%;
   }
 }
+
+@layer components {
+  .row-pressable {
+    @apply active:opacity-80 active:bg-primary/5;
+  }
+}
