@@ -155,11 +155,11 @@ export default function Keranjang() {
       <View className="flex-1">{renderContent()}</View>
 
       {/* Status Bar Footer */}
-      <View className="bg-card border-t border-border">
+      <View className="bg-card border-t border-border p-2 flex-col gap-y-2">
         <View className="flex-row items-center justify-between">
           <Text>STOK: {itemCount}</Text>
 
-          <Button variant="bare" onPress={resetBasket} disabled={!itemCount} textClassName="text-destructive" title="BATAL" />
+          <Button variant="bare" size="bare" onPress={resetBasket} disabled={!itemCount} textClassName="text-destructive" title="BATAL" />
         </View>
 
         <Button

@@ -24,7 +24,7 @@ const buttonVariants = cva(
       size: {
         default: "h-10 px-2",
         icon: "h-7 px-2",
-        bare: "h-auto",
+        bare: "h-fit",
       },
     },
     defaultVariants: {
@@ -135,6 +135,7 @@ function Button({
     <TextClassContext.Provider value={buttonTextVariants({ variant: variant, size: size, className: 'web:pointer-events-none' })}>
       <Animated.View style={animatedStyle}>
         <Pressable
+          hitSlop={{ top: 8, left: 8, right: 8, bottom: 8 }}
           {...(rest as PressableProps)}
           disabled={disabled}
           onPressIn={handlePressIn}
