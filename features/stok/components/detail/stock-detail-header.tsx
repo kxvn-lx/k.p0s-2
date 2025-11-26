@@ -4,92 +4,96 @@ import { View } from "react-native"
 
 export function StockDetailHeader({ stock }: { stock: StockRow }) {
   const isLowStock = (stock.jumlah_stok ?? 0) <= 0
-  const margin =
-    stock.harga_beli && stock.harga_jual
-      ? ((stock.harga_jual - stock.harga_beli) / stock.harga_beli) * 100
-      : 0
+
+  const tickerFields = [
+    {
+      label: "KATEGORI",
+      value: stock.kategori ?? "-",
+    },
+    {
+      label: "LOKASI",
+      value: stock.lokasi ?? "-",
+    },
+    {
+      label: "SATUAN",
+      value: stock.satuan_utama ?? "-",
+    },
+  ]
+
+  const quantityLabel = `${stock.jumlah_stok ?? 0} ${stock.satuan_utama ?? ""}`.trim()
 
   return (
-    <View className="bg-background border-b border-border">
-      {/* ----- Top Banner: Name & Status ----- */}
-      <View className="p-2 border-b border-border">
-        <Text className="text-accent text-xs uppercase">{stock.kategori}</Text>
-        <Text variant={"h3"}>{stock.nama}</Text>
-      </View>
-
-      {/* ----- Main Metrics Grid ----- */}
-      <View className="flex-row border-b border-border">
-        {/* Price Panel */}
-        <View className="flex-1 p-2 border-r border-border">
-          <Text variant="muted" className="text-xs uppercase">
-            HARGA JUAL (IDR)
-          </Text>
-          <Text variant={"h3"}>
-            {stock.harga_jual?.toLocaleString() ?? "0"}
-          </Text>
-        </View>
-
-        {/* Qty Panel */}
-        <View className="flex-1 p-2">
-          <Text variant="muted" className="text-xs uppercase">
-            Jumlah qty
-          </Text>
-          <View className="flex-row gap-x-2 items-center">
-            <Text
-              variant="h3"
-              className={`${isLowStock ? "text-destructive" : "text-foreground"}`}
-            >
-              {stock.jumlah_stok ?? 0}
+    <View className="bg-background">
+      <View className="rounded-2xl border border-border bg-secondary/20 p-4 mx-4 mt-4">
+        <View className="flex-row items-start justify-between gap-x-4">
+          <View className="flex-1 gap-y-2">
+            <Text className="text-xs uppercase text-muted-foreground">
+              detail stok
             </Text>
-            <Text className="text-sm text-muted-foreground ">
-              {stock.satuan_utama}
+            <Text className="text-2xl font-semibold uppercase text-primary">
+              {stock.nama}
+            </Text>
+            <Text className="text-xs uppercase text-muted-foreground">
+              {stock.kode}
+            </Text>
+          </View>
+          <View className="rounded-2xl border border-border bg-card px-4 py-4">
+            <Text className="text-xs uppercase text-muted-foreground">Jumlah</Text>
+            <Text className={`text-xl font-semibold text-right ${isLowStock ? "text-destructive" : "text-foreground"}`}>
+              {quantityLabel}
+            </Text>
+            <Text className="text-xs uppercase text-muted-foreground">
+              {stock.satuan_utama ?? "-"}
             </Text>
           </View>
         </View>
-      </View>
-
-      {/* ----- Secondary Metrics Grid (3 Columns) ----- */}
-      <View className="flex-row border-b border-border">
-        {/* Col 1: Buy Price */}
-        <View className="flex-1 p-2 border-r border-border">
-          <Text variant="muted" className="text-xs uppercase">
-            Harga beli
-          </Text>
-          <Text variant="h3">{stock.harga_beli?.toLocaleString() ?? "-"}</Text>
-        </View>
-
-        {/* Col 2: Margin */}
-        <View className="flex-1 p-2 border-r border-border">
-          <Text variant="muted" className="text-xs uppercase">
-            Margin
-          </Text>
-          <Text
-            variant="h3"
-            className={`font-mono text-sm mt-1 ${margin > 0 ? "text-[#a8ffb0]" : "text-muted-foreground"}`}
-          >
-            {margin ? `${Math.round(margin)}%` : "-"}
-          </Text>
-        </View>
-
-        {/* Col 3: Location */}
-        <View className="flex-1 p-2">
-          <Text variant="muted" className="text-xs uppercase">
-            LOKASI
-          </Text>
-          <Text variant="h3">{stock.lokasi}</Text>
+        <View className="mt-4 flex-row items-center justify-between gap-x-4 border-t border-border pt-4">
+          {tickerFields.map((field) => (
+            <View
+              key={field.label}
+              className="flex-1 rounded-2xl border border-border bg-background/20 px-4 py-2"
+            >
+              <Text className="text-xs uppercase text-muted-foreground">
+                {field.label}
+              </Text>
+              <Text className="text-sm font-semibold text-foreground">
+                {field.value}
+              </Text>
+            </View>
+          ))}
         </View>
       </View>
 
-      {/* ----- Tertiary Info (Full Width) ----- */}
-      <View className="p-2 border-b border-border">
-        <Text variant="muted" className="text-xs uppercase">
-          Keterangan
-        </Text>
-        <Text>{stock.keterangan ?? "-"}</Text>
+      {/* ----- Additional Info ----- */}
+      <View className="mx-4 mt-4 rounded-2xl border border-border bg-card p-4">
+        <View className="flex-row gap-x-4">
+          <View className="flex-1 rounded-2xl border border-border bg-background/50 p-4">
+            <Text className="text-xs uppercase text-muted-foreground">
+              Harga Jual
+            </Text>
+            <Text className="text-2xl font-semibold">
+              Rp {stock.harga_jual?.toLocaleString("id-ID") ?? "0"}
+            </Text>
+          </View>
+          <View className="flex-1 rounded-2xl border border-border bg-background/50 p-4">
+            <Text className="text-xs uppercase text-muted-foreground">
+              Harga Beli
+            </Text>
+            <Text className="text-2xl font-semibold">
+              Rp {stock.harga_beli?.toLocaleString("id-ID") ?? "-"}
+            </Text>
+          </View>
+        </View>
+        <View className="mt-4 border-t border-border pt-4">
+          <Text className="text-xs uppercase text-muted-foreground">
+            Keterangan
+          </Text>
+          <Text className="text-sm">{stock.keterangan ?? "-"}</Text>
+        </View>
       </View>
 
       {/* ----- Log Header Strip ----- */}
-      <View className="px-2 mt-4">
+      <View className="px-4 mt-4">
         <Text variant="muted" className="text-sm uppercase">
           RIWAYAT PERGERAKAN
         </Text>

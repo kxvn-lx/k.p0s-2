@@ -26,6 +26,7 @@ export type KeranjangState = {
   reset: () => void
   totalQty: () => number
   types: () => number
+  remainingFor: (stock: StockRow) => number
 }
 
 // ----- LOGGING UTILITY -----
@@ -49,7 +50,7 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
   // ----- INITIAL STATE -----
   items: {},
 
-  // ----- ACTIONS -----
+  // ----- ATOMIC ACTIONS -----
   addItem(
     stock: StockRow,
     qty = 1,
@@ -64,6 +65,12 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
       const currentQuantity = existingItem ? existingItem.qty : 0
       const newQuantity = currentQuantity + qty
 
+      // Validate stock availability atomically
+      const availableStock = stock.jumlah_stok ?? 0
+      if (newQuantity > availableStock) {
+        return s // Abort update if would exceed stock
+      }
+
       if (newQuantity <= 0) {
         if (!existingItem) return s
         const itemsCopy = { ...s.items }
@@ -73,19 +80,22 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
         return updatedState
       }
 
+      // Determine the price being used
+      const currentPrice = hargaUnit ?? existingItem?.harga_satuan ?? stock.harga_jual ?? 0
+      
+      // If this is a new item or price is changing, set the original price
+      const originalPrice = existingItem?.harga_satuan_asal ?? existingItem?.harga_satuan ?? currentPrice
+
       const updatedState = {
         items: {
           ...s.items,
           [stock.id]: {
             stock,
             qty: newQuantity,
-            harga_jual:
-              hargaUnit ?? existingItem?.harga_jual ?? stock.harga_jual ?? 0,
+            harga_satuan: currentPrice,
             variasi_harga_id: variasiId ?? existingItem?.variasi_harga_id ?? null,
-            min_qty:
-              minQty ??
-              existingItem?.min_qty ??
-              (variasiId ? 1 : 0),
+            min_qty: minQty ?? existingItem?.min_qty ?? (variasiId ? 1 : 0),
+            harga_satuan_asal: originalPrice,
           },
         },
       }
@@ -108,6 +118,12 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
       const existingItem = s.items[stockId]
       if (!existingItem) return s
 
+      // Validate stock availability atomically
+      const availableStock = existingItem.stock.jumlah_stok ?? 0
+      if (qty > availableStock) {
+        return s // Abort update if would exceed stock
+      }
+
       if (qty === 0) {
         const itemsCopy = { ...s.items }
         delete itemsCopy[stockId]
@@ -122,12 +138,13 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
           [stockId]: {
             ...existingItem,
             qty,
-            harga_jual: hargaUnit ?? existingItem.harga_jual,
+            harga_satuan: hargaUnit ?? existingItem.harga_satuan,
             variasi_harga_id:
               variasiId !== undefined
                 ? (variasiId ?? null)
                 : existingItem.variasi_harga_id,
             min_qty: minQty ?? existingItem.min_qty,
+            harga_satuan_asal: existingItem.harga_satuan_asal ?? existingItem.harga_satuan,
           },
         },
       }
@@ -162,6 +179,12 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
 
   types() {
     return Object.keys(get().items).length
+  },
+
+  remainingFor(stock: StockRow) {
+    const quantityInCart = get().items[stock.id]?.qty ?? 0
+    const totalStock = stock.jumlah_stok ?? 0
+    return Math.max(0, totalStock - quantityInCart)
   },
 }))
 

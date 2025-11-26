@@ -11,15 +11,9 @@ export function useKeranjangActions() {
   // ----- STORE SELECTORS -----
   const items = useKeranjangStore((s) => s.items)
   const addItem = useKeranjangStore((s) => s.addItem)
-  const removeItem = useKeranjangStore((s) => s.remove)
   const setQty = useKeranjangStore((s) => s.setQty)
-
-  // ----- UTILITY FUNCTIONS -----
-  function remainingFor(stock: StockRow): number {
-    const quantityInCart = items[stock.id]?.qty ?? 0
-    const totalStock = stock.jumlah_stok ?? 0
-    return Math.max(0, totalStock - quantityInCart)
-  }
+  const removeItem = useKeranjangStore((s) => s.remove)
+  const remainingFor = useKeranjangStore((s) => s.remainingFor)
 
   // ----- ACTIONS -----
   function addToBasket(
@@ -110,7 +104,7 @@ export function useKeranjangActions() {
       }
     }
 
-    addItem(cartItem.stock, delta, cartItem.variasi_harga_id, cartItem.harga_jual, minimumQuantity)
+    addItem(cartItem.stock, delta, cartItem.variasi_harga_id, cartItem.harga_satuan, minimumQuantity)
     return { ok: true }
   }
 

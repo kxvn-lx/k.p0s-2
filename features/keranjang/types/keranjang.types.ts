@@ -16,7 +16,8 @@ export type StockWithVariations = StockRow & {
 export type BasketItem = {
   stock: StockRow
   qty: number
-  harga_jual: number
+  harga_satuan: number // Current unit price (can be stock price, variasi, or edited)
   variasi_harga_id: string | null
   min_qty: number
+  harga_satuan_asal?: number // Original unit price when first added to basket
 }

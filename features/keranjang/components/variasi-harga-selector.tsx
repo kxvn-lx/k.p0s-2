@@ -147,7 +147,6 @@ export default function VariasiHargaSelector({
     return (
         <BottomSheetFlatList
             data={flatData}
-            // contentContainerStyle={{ paddingVertical: 16 }}
             keyExtractor={(item: typeof flatData[0]) => item.type === 'header' ? item.title : String(item.item.key)}
             renderItem={({ item }: { item: typeof flatData[0] }) => {
                 if (item.type === 'header') {

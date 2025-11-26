@@ -149,7 +149,7 @@ export default function Keranjang() {
 
         <Button
           onPress={() => {
-            toast.info("Summary route not yet implemented")
+            router.push("/keranjang/perincian")
           }}
           disabled={!canProceed}
           title="LANJUT"
