@@ -138,7 +138,7 @@ export default function Keranjang() {
   return (
     <View className="flex-1 bg-background">
       <SearchInput
-        placeholder="CARI STOK..."
+        placeholder="Cari stok..."
         initialValue={query}
         onSearch={setQuery}
       />

@@ -114,7 +114,7 @@ const SharedBottomSheetModal = forwardRef<
         <View className="flex-col flex-1">
           <View className="flex-row items-center justify-between p-2 border-b border-border">
             {headerTitle && (
-              <Text className="text-lg font-semibold">{headerTitle}</Text>
+              <Text variant="h4" className="uppercase">{headerTitle}</Text>
             )}
             <Button
               onPress={onClose || (() => modalRef.current?.dismiss())}
