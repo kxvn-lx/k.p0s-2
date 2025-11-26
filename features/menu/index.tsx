@@ -21,8 +21,8 @@ import { Text, View } from "react-native"
 // ----- Theme Labels -----
 const THEME_LABELS = {
   metal: "Metal",
-  sunset: "Sunset",
-  solarized: "Solarized",
+  solar: "Solar",
+  teduh: "Teduh",
 } as const
 
 type ThemeType = keyof typeof THEME_LABELS
@@ -62,11 +62,11 @@ export default function Menu() {
                 <SelectItem label="Metal" value="metal">
                   Metal
                 </SelectItem>
-                <SelectItem label="Sunset" value="sunset">
-                  Sunset
+                <SelectItem label="Solar" value="solar">
+                  Solar
                 </SelectItem>
-                <SelectItem label="Solarized" value="solarized">
-                  Solarized
+                <SelectItem label="Teduh" value="teduh">
+                  Teduh
                 </SelectItem>
               </SelectContent>
             </Select>

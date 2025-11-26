@@ -80,8 +80,8 @@ function InnerLayout() {
   const navTheme = getNavTheme(theme, colorScheme)
   const themeClassMap = {
     metal: "",
-    sunset: "theme-sunset",
-    solarized: "theme-solarized",
+    solar: "theme-solar",
+    teduh: "theme-teduh",
   }
   const themeClass = themeClassMap[theme]
   const darkClass = colorScheme === "dark" ? "dark" : ""

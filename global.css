@@ -3,197 +3,193 @@
 @tailwind utilities;
 
 @layer base {
-  /* ----- METAL THEME (Default) - Industrial, Minimal, Modern ----- */
+  /* ----- METAL THEME (Default) - Silver-y, Premium, Industrial ----- */
   :root {
-    /* Based on Zinc palette - cool neutral with subtle blue undertones */
-    --background: 0 0% 100%; /* #FFFFFF - Pure white */
-    --foreground: 240 10% 3.9%; /* #09090B - Near black */
-    --card: 240 5% 96%; /* #F4F4F5 - Subtle card elevation */
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%; /* #FFFFFF */
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%; /* #18181B - Dark zinc */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%; /* #F4F4F5 - Light zinc */
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%; /* #71717A - Mid zinc */
-    --accent: 240 5% 84%; /* #D4D4D8 - Accent zinc */
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84% 60%; /* #EF4444 - Red */
+    /* Metal Light - Platinum / Gunmetal */
+    --background: 210 20% 96%;
+    --foreground: 220 10% 20%;
+    --card: 210 20% 92%;
+    --card-foreground: 220 10% 20%;
+    --popover: 210 20% 98%;
+    --popover-foreground: 220 10% 20%;
+    --primary: 220 10% 30%; /* Steel Blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 10% 85%; /* Aluminum */
+    --secondary-foreground: 220 10% 30%;
+    --muted: 210 10% 80%;
+    --muted-foreground: 220 5% 50%;
+    --accent: 210 15% 85%; /* Polished Metal */
+    --accent-foreground: 220 10% 20%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 6% 90%; /* #E4E4E7 */
-    --input: 240 6% 90%;
-    --ring: 240 5% 65%; /* #A1A1AA */
+    --border: 210 10% 75%;
+    --input: 210 10% 85%;
+    --ring: 220 10% 40%;
     --radius: 0.5rem;
 
-    /* Chart Colors - Zinc-based harmonious palette */
-    --chart-1: 240 5% 26%; /* Zinc 700 */
-    --chart-2: 240 4% 46%; /* Zinc 500 */
-    --chart-3: 240 5% 65%; /* Zinc 400 */
-    --chart-4: 240 5% 84%; /* Zinc 300 */
-    --chart-5: 240 5% 96%; /* Zinc 100 */
+    /* Chart Colors - Cool Metal Palette */
+    --chart-1: 220 10% 30%;
+    --chart-2: 210 10% 50%;
+    --chart-3: 200 10% 70%;
+    --chart-4: 190 10% 80%;
+    --chart-5: 180 10% 90%;
   }
 
   .dark:root {
-    /* Metal Dark - Brushed steel in darkness */
-    --background: 240 10% 3.9%; /* #09090B - Deep black */
-    --foreground: 0 0% 98%; /* #FAFAFA - Bright white */
-    --card: 240 6% 10%; /* #18181B - Elevated card */
-    --card-foreground: 0 0% 98%;
-    --popover: 240 6% 10%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%; /* #FAFAFA - White metal */
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 4% 16%; /* #27272A - Dark steel */
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%; /* #A1A1AA */
-    --accent: 240 4% 26%; /* #3F3F46 - Accent steel */
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 63% 31%; /* #7F1D1D - Dark red */
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 4% 16%; /* #27272A */
-    --input: 240 4% 16%;
-    --ring: 240 5% 84%; /* #D4D4D8 */
+    /* Metal Dark - Titanium / White Silver */
+    --background: 220 10% 12%;
+    --foreground: 210 10% 90%;
+    --card: 220 10% 16%;
+    --card-foreground: 210 10% 90%;
+    --popover: 220 10% 14%;
+    --popover-foreground: 210 10% 90%;
+    --primary: 210 10% 80%; /* Bright Steel */
+    --primary-foreground: 220 10% 12%;
+    --secondary: 220 10% 20%;
+    --secondary-foreground: 210 10% 90%;
+    --muted: 220 10% 24%;
+    --muted-foreground: 220 5% 60%;
+    --accent: 220 10% 28%;
+    --accent-foreground: 210 10% 90%;
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 10% 24%;
+    --input: 220 10% 20%;
+    --ring: 210 10% 60%;
     --radius: 0.5rem;
 
-    /* Chart Colors - Dark mode zinc */
-    --chart-1: 0 0% 98%; /* White */
-    --chart-2: 240 5% 84%; /* Zinc 300 */
-    --chart-3: 240 5% 65%; /* Zinc 400 */
-    --chart-4: 240 4% 46%; /* Zinc 500 */
-    --chart-5: 240 4% 26%; /* Zinc 700 */
+    /* Chart Colors - Dark Metal Palette */
+    --chart-1: 210 10% 80%;
+    --chart-2: 210 10% 60%;
+    --chart-3: 210 10% 40%;
+    --chart-4: 210 10% 30%;
+    --chart-5: 210 10% 20%;
   }
 
-  /* ----- SUNSET THEME - Bloomberg Terminal Inspired ----- */
-  /* Classic terminal aesthetic: Amber/Orange on Black */
-  /* High contrast, professional financial data display */
-  .theme-sunset {
-    /* Light Mode - Clean professional with amber accents */
-    --background: 40 33% 98%; /* #FDFCFA - Warm white */
-    --foreground: 30 10% 15%; /* #2A2520 - Warm black */
-    --card: 40 25% 95%; /* #F7F5F0 - Warm card */
-    --card-foreground: 30 10% 15%;
-    --popover: 40 40% 99%; /* #FEFDFB */
-    --popover-foreground: 30 10% 15%;
-    --primary: 32 95% 44%; /* #DA8B06 - Rich amber */
+  /* ----- SOLAR THEME (Formerly Sunset) - Bloomberg Terminal Inspired ----- */
+  .theme-solar {
+    /* Light Mode - High Contrast Professional */
+    --background: 40 20% 96%;
+    --foreground: 0 0% 10%;
+    --card: 40 20% 92%;
+    --card-foreground: 0 0% 10%;
+    --popover: 40 20% 98%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 32 100% 45%; /* Deep Amber */
     --primary-foreground: 0 0% 100%;
-    --secondary: 35 20% 90%; /* #EBE6DD - Warm gray */
-    --secondary-foreground: 30 10% 15%;
-    --muted: 35 15% 92%;
-    --muted-foreground: 30 8% 45%; /* #7A7269 */
-    --accent: 24 95% 53%; /* #F5811F - Bright orange */
+    --secondary: 40 10% 85%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 40 10% 80%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 32 100% 45%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 51%; /* #DC2626 - Red */
+    --destructive: 0 80% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 35 15% 82%; /* #D9D3C7 */
-    --input: 35 20% 90%;
-    --ring: 32 95% 44%;
-    --radius: 0.125rem; /* Sharp corners - terminal aesthetic */
+    --border: 40 10% 70%;
+    --input: 40 10% 85%;
+    --ring: 32 100% 45%;
+    --radius: 0px; /* Sharp corners */
 
-    /* Chart Colors - Financial data palette */
-    --chart-1: 32 95% 44%; /* Amber - Primary */
-    --chart-2: 142 76% 36%; /* Green - Positive */
-    --chart-3: 0 72% 51%; /* Red - Negative */
-    --chart-4: 201 96% 32%; /* Blue - Neutral */
-    --chart-5: 280 68% 50%; /* Purple - Alternative */
+    /* Chart Colors - Financial Data */
+    --chart-1: 32 100% 45%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 0 72% 51%;
+    --chart-4: 201 96% 32%;
+    --chart-5: 280 68% 50%;
   }
 
-  /* Dark Mode - True Bloomberg Terminal Experience */
-  .dark .theme-sunset {
-    --background: 0 0% 0%; /* #000000 - Pure black */
-    --foreground: 36 100% 62%; /* #FFAA33 - Terminal amber */
-    --card: 30 15% 5%; /* #0F0D0A - Slightly warm black */
-    --card-foreground: 36 95% 60%; /* #FFA726 */
-    --popover: 30 20% 7%; /* #141210 */
-    --popover-foreground: 36 100% 62%;
-    --primary: 36 100% 50%; /* #FF9500 - Bright amber */
+  .dark .theme-solar {
+    /* Dark Mode - The Real Terminal Experience */
+    --background: 0 0% 0%; /* Pure Black */
+    --foreground: 36 100% 50%; /* Terminal Amber (Deep) */
+    --card: 0 0% 10%;
+    --card-foreground: 36 100% 50%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 36 100% 50%;
+    --primary: 36 100% 50%; /* Amber */
     --primary-foreground: 0 0% 0%;
-    --secondary: 30 10% 12%; /* #201D18 - Warm dark */
-    --secondary-foreground: 36 90% 55%;
-    --muted: 30 8% 15%;
-    --muted-foreground: 36 60% 40%; /* #A37A26 - Dimmed amber */
-    --accent: 24 100% 50%; /* #FF7A00 - Hot orange */
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 36 100% 50%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 36 60% 40%;
+    --accent: 36 100% 50%;
     --accent-foreground: 0 0% 0%;
-    --destructive: 0 85% 60%; /* #F44336 - Bright red */
+    --destructive: 0 100% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 32 80% 20%; /* #5C4008 - Amber border */
-    --input: 30 10% 12%;
+    --border: 36 100% 30%;
+    --input: 0 0% 15%;
     --ring: 36 100% 50%;
-    --radius: 0.125rem;
+    --radius: 0px;
 
-    /* Chart Colors - Terminal data display */
-    --chart-1: 36 100% 50%; /* Amber */
-    --chart-2: 120 70% 45%; /* Terminal green */
-    --chart-3: 0 85% 60%; /* Alert red */
-    --chart-4: 199 89% 48%; /* Cyan blue */
-    --chart-5: 291 64% 42%; /* Magenta */
+    /* Chart Colors - Neon Terminal */
+    --chart-1: 36 100% 50%;
+    --chart-2: 120 100% 50%; /* Neon Green */
+    --chart-3: 0 100% 50%; /* Neon Red */
+    --chart-4: 180 100% 50%; /* Neon Cyan */
+    --chart-5: 300 100% 50%; /* Neon Magenta */
   }
 
-  /* ----- SOLARIZED THEME - Eye-Friendly, Scientific Precision ----- */
-  /* Based on Ethan Schoonover's Solarized - designed for long reading sessions */
-  /* Reduces eye strain with carefully calibrated CIELAB relationships */
-  .theme-solarized {
-    /* Light Mode - Warm cream base (base3) */
-    --background: 44 87% 94%; /* #FDF6E3 - Solarized base3 */
-    --foreground: 192 81% 14%; /* #073642 - Solarized base02 */
-    --card: 44 71% 88%; /* #EEE8D5 - Solarized base2 */
-    --card-foreground: 192 81% 14%;
-    --popover: 44 87% 94%;
-    --popover-foreground: 192 81% 14%;
-    --primary: 205 82% 41%; /* #268BD2 - Solarized blue */
-    --primary-foreground: 44 87% 94%;
-    --secondary: 44 71% 88%; /* base2 */
-    --secondary-foreground: 196 25% 47%; /* base00 */
-    --muted: 44 50% 85%;
-    --muted-foreground: 194 14% 40%; /* #657B83 - base00 */
-    --accent: 175 59% 40%; /* #2AA198 - Solarized cyan */
-    --accent-foreground: 44 87% 94%;
-    --destructive: 1 71% 52%; /* #DC322F - Solarized red */
-    --destructive-foreground: 44 87% 94%;
-    --border: 46 42% 76%; /* #D3CBB8 */
-    --input: 44 60% 90%;
-    --ring: 205 82% 41%;
+  /* ----- TEDUH THEME (Eye-Friendly) - Sepia/Slate ----- */
+  .theme-teduh {
+    /* Light Mode - Sepia / Cream */
+    --background: 36 30% 94%;
+    --foreground: 30 10% 20%;
+    --card: 36 20% 90%;
+    --card-foreground: 30 10% 20%;
+    --popover: 36 30% 94%;
+    --popover-foreground: 30 10% 20%;
+    --primary: 24 40% 50%; /* Terracotta */
+    --primary-foreground: 36 30% 94%;
+    --secondary: 36 20% 85%;
+    --secondary-foreground: 30 10% 20%;
+    --muted: 36 15% 80%;
+    --muted-foreground: 30 5% 40%;
+    --accent: 24 40% 60%; /* Soft Orange */
+    --accent-foreground: 30 10% 20%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 36 30% 94%;
+    --border: 36 15% 75%;
+    --input: 36 20% 85%;
+    --ring: 24 40% 50%;
     --radius: 0.375rem;
 
-    /* Chart Colors - Solarized accent palette */
-    --chart-1: 205 82% 41%; /* Blue */
-    --chart-2: 175 59% 40%; /* Cyan */
-    --chart-3: 68 100% 30%; /* Green */
-    --chart-4: 45 100% 35%; /* Yellow */
-    --chart-5: 18 89% 44%; /* Orange */
+    /* Chart Colors - Earth Tones */
+    --chart-1: 24 40% 50%;
+    --chart-2: 36 40% 50%;
+    --chart-3: 48 40% 50%;
+    --chart-4: 60 40% 50%;
+    --chart-5: 72 40% 50%;
   }
 
-  /* Dark Mode - Cool teal base (base03) */
-  .dark .theme-solarized {
-    --background: 192 100% 11%; /* #002B36 - Solarized base03 */
-    --foreground: 186 8% 55%; /* #839496 - Solarized base0 */
-    --card: 192 90% 13%; /* #073642 - Solarized base02 */
-    --card-foreground: 186 13% 59%; /* #93A1A1 - base1 */
-    --popover: 192 100% 11%;
-    --popover-foreground: 186 8% 55%;
-    --primary: 205 82% 41%; /* #268BD2 - Solarized blue */
-    --primary-foreground: 186 13% 59%;
-    --secondary: 192 90% 13%; /* base02 */
-    --secondary-foreground: 186 8% 55%; /* base0 */
-    --muted: 194 35% 18%;
-    --muted-foreground: 195 23% 34%; /* #586E75 - base01 */
-    --accent: 175 59% 40%; /* #2AA198 - Solarized cyan */
-    --accent-foreground: 192 100% 11%;
-    --destructive: 1 71% 52%; /* #DC322F */
-    --destructive-foreground: 186 13% 59%;
-    --border: 194 35% 18%; /* #0A4251 */
-    --input: 192 90% 13%;
-    --ring: 205 82% 41%;
+  .dark .theme-teduh {
+    /* Dark Mode - Deep Slate */
+    --background: 220 15% 18%;
+    --foreground: 36 20% 80%;
+    --card: 220 15% 22%;
+    --card-foreground: 36 20% 80%;
+    --popover: 220 15% 18%;
+    --popover-foreground: 36 20% 80%;
+    --primary: 36 40% 60%; /* Warm Sand */
+    --primary-foreground: 220 15% 18%;
+    --secondary: 220 15% 26%;
+    --secondary-foreground: 36 20% 80%;
+    --muted: 220 15% 30%;
+    --muted-foreground: 220 10% 60%;
+    --accent: 36 40% 50%;
+    --accent-foreground: 220 15% 18%;
+    --destructive: 0 50% 50%;
+    --destructive-foreground: 36 20% 80%;
+    --border: 220 15% 30%;
+    --input: 220 15% 26%;
+    --ring: 36 40% 60%;
     --radius: 0.375rem;
 
-    /* Chart Colors */
-    --chart-1: 205 82% 41%; /* Blue */
-    --chart-2: 175 59% 40%; /* Cyan */
-    --chart-3: 68 100% 30%; /* Green */
-    --chart-4: 45 100% 35%; /* Yellow */
-    --chart-5: 331 64% 52%; /* Magenta */
+    /* Chart Colors - Muted Night */
+    --chart-1: 36 40% 60%;
+    --chart-2: 220 40% 60%;
+    --chart-3: 200 40% 60%;
+    --chart-4: 180 40% 60%;
+    --chart-5: 160 40% 60%;
   }
 }
 
