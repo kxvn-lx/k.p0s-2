@@ -42,3 +42,18 @@ export const remToPx = (remString: string): number => {
   const rem = parseFloat(remString)
   return rem * 16
 }
+
+// ----- Date-Time Formatting -----
+export function formatDateTime(dateInput: string | Date, withTime: boolean = false): string {
+  const dateObj = typeof dateInput === "string" ? new Date(dateInput) : dateInput
+  const dd = dateObj.getDate().toString().padStart(2, "0")
+  const mm = (dateObj.getMonth() + 1).toString().padStart(2, "0")
+  const yyyy = dateObj.getFullYear().toString()
+  let result = `${dd}/${mm}/${yyyy}`
+  if (withTime) {
+    const hh = dateObj.getHours().toString().padStart(2, "0")
+    const min = dateObj.getMinutes().toString().padStart(2, "0")
+    result += ` ${hh}:${min}`
+  }
+  return result
+}
