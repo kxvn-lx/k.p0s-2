@@ -45,8 +45,8 @@ export default function SearchInput({
   }
 
   return (
-    <View className="w-full">
-      <View className="flex-row items-center w-full">
+    <View className="w-full p-2">
+      <View className="flex-row items-center w-full gap-x-2">
         <Input
           value={query}
           onChangeText={setQuery}
@@ -55,12 +55,7 @@ export default function SearchInput({
         />
 
         {showClearBtn ? (
-          <Button
-            variant="outline"
-            size="icon"
-            onPress={handleClear}
-            className="mx-2"
-          >
+          <Button variant="outline" onPress={handleClear}>
             <Icon as={X} size={16} className="text-muted-foreground" />
           </Button>
         ) : null}
