@@ -35,7 +35,7 @@ export function StockLogItem({ item }: { item: StockLogRow }) {
 
         {/* Right: Delta */}
         <Text
-          className={`text-sm font-bold ${isPositive
+          className={`text-sm font-mono-bold ${isPositive
             ? "text-green-500"
             : isNegative
               ? "text-red-500"
@@ -49,18 +49,18 @@ export function StockLogItem({ item }: { item: StockLogRow }) {
       <View className="flex-row justify-between items-center mt-1">
         {/* Left: Staff & Ref */}
         <View className="flex-row items-center gap-2">
-          <Text className="text-sm font-bold uppercase">
+          <Text className="text-sm font-mono-bold uppercase">
             {item.staff_name || "SYSTEM"}
           </Text>
           {item.reference_id && (
-            <Text className="text-sm font-bold uppercase">
+            <Text className="text-sm font-mono-bold uppercase">
               #{item.reference_id}
             </Text>
           )}
         </View>
 
         {/* Right: Balance */}
-        <Text className="text-sm font-bold">SISA: {item.stok_akhir}</Text>
+        <Text className="text-sm font-mono-bold">SISA: {item.stok_akhir}</Text>
       </View>
     </View>
   )

@@ -11,15 +11,17 @@ export const getStackOptions = (theme: Theme): NativeStackNavigationOptions => {
     },
     headerTintColor: colors.text,
     headerTitleStyle: {
-      fontFamily: "UbuntuMono_700Bold",
-      fontSize: 16,
+      fontFamily: "UbuntuMono_700Bold"
     },
     headerShadowVisible: true,
     headerBackTitle: "Kembali",
   }
 }
 
-export const getTabOptions = (theme: Theme): BottomTabNavigationOptions => {
+export const getTabOptions = (
+  theme: Theme,
+  mutedColor?: string
+): BottomTabNavigationOptions => {
   const { colors } = theme
   return {
     headerShown: false,
@@ -29,10 +31,9 @@ export const getTabOptions = (theme: Theme): BottomTabNavigationOptions => {
       borderTopWidth: 1,
     },
     tabBarActiveTintColor: colors.primary,
-    tabBarInactiveTintColor: colors.text,
+    tabBarInactiveTintColor: mutedColor || colors.text,
     tabBarLabelStyle: {
       fontFamily: "UbuntuMono_700Bold",
-      fontSize: 12,
     },
   }
 }

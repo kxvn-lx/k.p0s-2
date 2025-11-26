@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 // ----- HSL to RGB Conversion -----
 // React Native StyleSheet requires RGB/Hex, not HSL
-export const hslToRgb = (hslString: string): string => {
+export const hslToRgb = (hslString: string, alpha?: number): string => {
   const match = hslString.match(/(\d+\.?\d*)\s+(\d+\.?\d*)%\s+(\d+\.?\d*)%/)
   if (!match) return "rgb(255, 255, 255)"
 
@@ -34,7 +34,10 @@ export const hslToRgb = (hslString: string): string => {
     b = hue2rgb(p, q, h - 1 / 3)
   }
 
-  return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`
+  const rgb = `${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}`
+  return alpha === undefined
+    ? `rgb(${rgb})`
+    : `rgba(${rgb}, ${Math.max(0, Math.min(1, alpha))})`
 }
 
 // ----- Radius Conversion -----

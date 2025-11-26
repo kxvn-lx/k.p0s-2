@@ -146,15 +146,37 @@ const SOLARIZED_DARK = {
 
 export const getThemeColors = (
   theme: ThemeType,
-  colorScheme: "light" | "dark"
-) => {
+  colorScheme: "light" | "dark",
+  opacity?: number
+): Record<string, string> => {
+  let colors: Record<string, string>
   if (theme === "sunset") {
-    return colorScheme === "dark" ? SUNSET_DARK : SUNSET_LIGHT
+    colors = colorScheme === "dark" ? SUNSET_DARK : SUNSET_LIGHT
+  } else if (theme === "solarized") {
+    colors = colorScheme === "dark" ? SOLARIZED_DARK : SOLARIZED_LIGHT
+  } else {
+    colors = colorScheme === "dark" ? METAL_DARK : METAL_LIGHT
   }
-  if (theme === "solarized") {
-    return colorScheme === "dark" ? SOLARIZED_DARK : SOLARIZED_LIGHT
+
+  if (opacity === undefined) return colors
+
+  // Convert all HSL colors to HSLA with opacity
+  const withOpacity: Record<string, string> = {}
+  for (const key in colors) {
+    const value = colors[key]
+    if (value.startsWith("hsl(")) {
+      // Extract the HSL values
+      const hslMatch = value.match(/hsl\(([^)]+)\)/)
+      if (hslMatch) {
+        withOpacity[key] = `hsla(${hslMatch[1]}, ${opacity})`
+      } else {
+        withOpacity[key] = value
+      }
+    } else {
+      withOpacity[key] = value
+    }
   }
-  return colorScheme === "dark" ? METAL_DARK : METAL_LIGHT
+  return withOpacity
 }
 
 export const getNavTheme = (
@@ -163,94 +185,27 @@ export const getNavTheme = (
 ): Theme => {
   const baseTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme
 
-  // ----- Sunset Theme (Bloomberg Terminal) -----
+  let colors: Record<string, string> = {}
   if (theme === "sunset") {
-    if (colorScheme === "dark") {
-      return {
-        ...baseTheme,
-        colors: {
-          ...baseTheme.colors,
-          background: "rgb(0, 0, 0)",
-          border: "rgb(92, 64, 8)",
-          card: "rgb(15, 13, 10)",
-          notification: "rgb(244, 67, 54)",
-          primary: "rgb(255, 149, 0)",
-          text: "rgb(255, 170, 51)",
-        },
-      }
-    } else {
-      return {
-        ...baseTheme,
-        colors: {
-          ...baseTheme.colors,
-          background: "rgb(253, 252, 250)",
-          border: "rgb(217, 211, 199)",
-          card: "rgb(247, 245, 240)",
-          notification: "rgb(220, 38, 38)",
-          primary: "rgb(218, 139, 6)",
-          text: "rgb(42, 37, 32)",
-        },
-      }
-    }
-  }
-
-  // ----- Solarized Theme (Eye-Friendly) -----
-  if (theme === "solarized") {
-    if (colorScheme === "dark") {
-      return {
-        ...baseTheme,
-        colors: {
-          ...baseTheme.colors,
-          background: "rgb(0, 43, 54)", // base03
-          border: "rgb(7, 54, 66)", // base02
-          card: "rgb(7, 54, 66)", // base02
-          notification: "rgb(220, 50, 47)", // red
-          primary: "rgb(38, 139, 210)", // blue
-          text: "rgb(131, 148, 150)", // base0
-        },
-      }
-    } else {
-      return {
-        ...baseTheme,
-        colors: {
-          ...baseTheme.colors,
-          background: "rgb(253, 246, 227)", // base3
-          border: "rgb(211, 203, 184)",
-          card: "rgb(238, 232, 213)", // base2
-          notification: "rgb(220, 50, 47)", // red
-          primary: "rgb(38, 139, 210)", // blue
-          text: "rgb(7, 54, 66)", // base02
-        },
-      }
-    }
-  }
-
-  // ----- Metal Theme (Default) -----
-  if (colorScheme === "dark") {
-    return {
-      ...baseTheme,
-      colors: {
-        ...baseTheme.colors,
-        background: "rgb(9, 9, 11)",
-        border: "rgb(39, 39, 42)",
-        card: "rgb(24, 24, 27)",
-        notification: "rgb(127, 29, 29)",
-        primary: "rgb(250, 250, 250)",
-        text: "rgb(250, 250, 250)",
-      },
-    }
+    colors = colorScheme === "dark" ? SUNSET_DARK : SUNSET_LIGHT
+  } else if (theme === "solarized") {
+    colors = colorScheme === "dark" ? SOLARIZED_DARK : SOLARIZED_LIGHT
   } else {
-    return {
-      ...baseTheme,
-      colors: {
-        ...baseTheme.colors,
-        background: "rgb(255, 255, 255)",
-        border: "rgb(228, 228, 231)",
-        card: "rgb(244, 244, 245)",
-        notification: "rgb(239, 68, 68)",
-        primary: "rgb(24, 24, 27)",
-        text: "rgb(9, 9, 11)",
-      },
-    }
+    colors = colorScheme === "dark" ? METAL_DARK : METAL_LIGHT
+  }
+
+  // Only assign allowed keys for React Navigation Theme.colors
+  return {
+    ...baseTheme,
+    colors: {
+      ...baseTheme.colors,
+      background: colors.background,
+      card: colors.card,
+      border: colors.border,
+      primary: colors.primary,
+      notification: baseTheme.colors.notification,
+      text: colors.foreground,
+    },
+    // For app-wide usage, use getThemeColors for all tokens
   }
 }

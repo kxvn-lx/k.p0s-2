@@ -12,26 +12,11 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: [
+          mono: [
           "UbuntuMono_400Regular",
-          "Menlo",
-          "Monaco",
-          "Courier New",
-          "monospace",
         ],
-        mono: [
-          "UbuntuMono_400Regular",
-          "Menlo",
-          "Monaco",
-          "Courier New",
-          "monospace",
-        ],
-        "mono-bold": [
+        'mono-bold': [
           "UbuntuMono_700Bold",
-          "Menlo",
-          "Monaco",
-          "Courier New",
-          "monospace",
         ],
       },
       colors: {
