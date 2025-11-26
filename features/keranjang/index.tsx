@@ -87,7 +87,6 @@ export default function Keranjang() {
             const r = adjustQty(item.id, -1)
             if (!r.ok) showAlert(r.message)
           }}
-          onRemove={() => removeItem(item.id)}
         />
       )
     },

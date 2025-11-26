@@ -22,7 +22,6 @@ type KeranjangRowProps = {
   onSelectVariation?: (v: VariasiHargaRow) => void
   onDecrement?: () => void
   onIncrement?: () => void
-  onRemove?: () => void
 }
 
 export default function KeranjangRow({
@@ -35,7 +34,6 @@ export default function KeranjangRow({
   onSelectVariation,
   onDecrement,
   onIncrement,
-  onRemove,
   selectedVariasiId,
 }: KeranjangRowProps) {
   const qty = remaining
@@ -114,8 +112,6 @@ export default function KeranjangRow({
             selectedVariasiId={selectedVariasiId}
             onDecrement={onDecrement}
             onIncrement={onIncrement}
-            onRemove={onRemove}
-            close={() => modalRef.current?.dismiss()}
           />
         </SharedBottomSheetModal>
       </>

@@ -21,10 +21,8 @@ type VariasiHargaSelectorProps = {
     selectedQty: number
     remaining: number
     selectedVariasiId?: string
-    close?: () => void
     onDecrement?: () => void
     onIncrement?: () => void
-    onRemove?: () => void
 }
 
 export default function VariasiHargaSelector({
@@ -37,8 +35,6 @@ export default function VariasiHargaSelector({
     selectedVariasiId,
     onDecrement,
     onIncrement,
-    onRemove,
-    close,
 }: VariasiHargaSelectorProps) {
     // ----- Helpers & layout -----
     const mainPrice = stock.harga_jual ?? 0
