@@ -1,17 +1,17 @@
 // ----- Imports -----
 import { View } from "react-native"
 import PressableRow from '@/components/shared/pressable-row'
-import { useState, useEffect } from 'react'
+import { useRef } from 'react'
 import { Text } from "@/components/ui/text"
-import { DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import BadgeStepper from './badge-stepper'
-import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
+import SharedBottomSheetModal, { BottomSheetModalRef } from '@/components/shared/bottom-sheet-modal'
 import type {
     StockWithVariations,
     VariasiHargaRow,
 } from "@/features/keranjang/types/keranjang.types"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { BottomSheetFlatList } from "@gorhom/bottom-sheet"
 
 type VariasiHargaSelectorProps = {
     stock: StockWithVariations
@@ -75,35 +75,36 @@ export default function VariasiHargaSelector({
         { title: 'VARIASI HARGA', items: variations },
     ]
 
+    // Flatten data for FlatList
+    const flatData: ({ type: 'header'; title: string } | { type: 'item'; item: OptionItem; isVariation: boolean; isLast: boolean })[] = []
+    sections.forEach((section, sidx) => {
+        flatData.push({ type: 'header', title: section.title })
+        section.items.forEach((item, idx) => {
+            flatData.push({ type: 'item', item, isVariation: sidx > 0, isLast: idx === section.items.length - 1 })
+        })
+    })
+
     // ----- Row -----
     function OptionRow({ item, isVariation, isLast }: { item: OptionItem; isVariation?: boolean; isLast?: boolean }) {
         const isSelected = selectedVariasiId === undefined
             ? item.key === mainItem.key
             : String(item.key) === String(selectedVariasiId)
 
-        const [badgeOpen, setBadgeOpen] = useState(false)
-
-        useEffect(() => {
-            if ((!isSelected || selectedQty <= 0) && badgeOpen) {
-                setBadgeOpen(false)
-            }
-        }, [isSelected, selectedQty, badgeOpen])
+        const badgeModalRef = useRef<BottomSheetModalRef>(null)
 
         const badge = (
-            <Dialog open={badgeOpen && isSelected && selectedQty > 0} onOpenChange={setBadgeOpen}>
-                <DialogTrigger asChild>
-                    <Button
-                        title={`QTY: ${selectedQty}`}
-                        variant="outline"
-                        size="icon"
-                        onPress={(e) => {
-                            e.stopPropagation()
-                            setBadgeOpen(true)
-                        }}
-                    />
-                </DialogTrigger>
+            <>
+                <Button
+                    title={`QTY: ${selectedQty}`}
+                    variant="outline"
+                    size="icon"
+                    onPress={(e) => {
+                        e.stopPropagation()
+                        badgeModalRef.current?.present()
+                    }}
+                />
 
-                <DialogContent>
+                <SharedBottomSheetModal ref={badgeModalRef} snapPoints={["25%"]}>
                     <BadgeStepper
                         qty={selectedQty}
                         stockQty={remaining}
@@ -111,8 +112,8 @@ export default function VariasiHargaSelector({
                         onDecrement={() => { if (onDecrement) onDecrement() }}
                         onIncrement={() => { if (onIncrement) onIncrement() }}
                     />
-                </DialogContent>
-            </Dialog>
+                </SharedBottomSheetModal>
+            </>
         )
 
         return (
@@ -121,14 +122,12 @@ export default function VariasiHargaSelector({
                     item.onPress()
                 }}
                 className={cn(
-                    'flex flex-row items-center justify-between p-2 gap-x-2',
-                    isVariation
-                        ? (isLast ? 'border-t border-border' : 'border-y border-border')
-                        : 'border-y border-border'
+                    'flex flex-row items-center justify-between p-2 gap-x-2 border-y border-border',
                 )}
             >
-                <View className="flex-row items-center justify-between flex-1 gap-x-2 h-7">
-                    <Text variant="muted" className="uppercase">[MIN: {item.minQty} {item.satuan}]</Text>
+                <View className="flex-row items-center flex-1 h-7">
+                    <Text className="uppercase w-28">MIN: {item.minQty} {item.satuan}</Text>
+
                     {isVariation ? (
                         <View className="flex-row items-center gap-x-2">
                             <Text variant="muted" className="line-through">{mainPrice.toLocaleString()}</Text>
@@ -140,7 +139,7 @@ export default function VariasiHargaSelector({
                 </View>
 
                 {isSelected && selectedQty > 0 && (
-                    <View >
+                    <View>
                         {badge}
                     </View>
                 )}
@@ -150,29 +149,30 @@ export default function VariasiHargaSelector({
     }
 
     return (
-        <View className="flex-col">
-            <DialogHeader>
-                <DialogTitle>{stock.nama}</DialogTitle>
-            </DialogHeader>
-
-            {sections.map((section, sidx) => (
-                <View key={section.title} className={cn(sidx > 0 ? 'mt-4' : '')}>
-                    <View className="px-2">
-                        <Text className="text-sm uppercase">{section.title}</Text>
-                    </View>
-
-                    <View className="bg-card">
-                        {section.items.map((item, idx) => (
+        <BottomSheetFlatList
+            data={flatData}
+            // contentContainerStyle={{ paddingVertical: 16 }}
+            keyExtractor={(item: typeof flatData[0]) => item.type === 'header' ? item.title : String(item.item.key)}
+            renderItem={({ item }: { item: typeof flatData[0] }) => {
+                if (item.type === 'header') {
+                    return (
+                        <View className="px-2 mt-4">
+                            <Text variant="muted" className="text-sm uppercase">{item.title}</Text>
+                        </View>
+                    )
+                } else {
+                    return (
+                        <View className="bg-card">
                             <OptionRow
-                                key={item.key}
-                                item={item}
-                                isVariation={sidx > 0}
-                                isLast={idx === section.items.length - 1}
+                                item={item.item}
+                                isVariation={item.isVariation}
+                                isLast={item.isLast}
                             />
-                        ))}
-                    </View>
-                </View>
-            ))}
-        </View>
+                        </View>
+                    )
+                }
+            }}
+            showsVerticalScrollIndicator={false}
+        />
     )
 }

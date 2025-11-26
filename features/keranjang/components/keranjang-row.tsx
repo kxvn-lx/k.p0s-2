@@ -1,7 +1,7 @@
 import { Text } from "@/components/ui/text"
 import { View } from "react-native"
-import { useState, useEffect } from 'react'
-import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
+import { useRef } from 'react'
+import SharedBottomSheetModal, { BottomSheetModalRef } from '@/components/shared/bottom-sheet-modal'
 import PressableRow from '@/components/shared/pressable-row'
 import VariasiHargaSelector from './variasi-harga-selector'
 import BadgeStepper from "./badge-stepper"
@@ -43,37 +43,28 @@ export default function KeranjangRow({
   const variasiCount = stock.variasi_harga_barang?.length ?? 0
   const hasVariations = options.length > 0
 
-  const [badgeOpen, setBadgeOpen] = useState(false)
-
-  useEffect(() => {
-    if (selectedQty <= 0 && badgeOpen) setBadgeOpen(false)
-  }, [selectedQty, badgeOpen])
-
+  const badgeModalRef = useRef<BottomSheetModalRef>(null)
   const Badge = (
-    <Dialog open={badgeOpen && selectedQty > 0} onOpenChange={setBadgeOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          title={`QTY: ${selectedQty}`}
-          onPress={(e) => {
-            e.stopPropagation()
-            setBadgeOpen(true)
-          }}
-        />
-      </DialogTrigger>
-
-      <DialogContent>
+    <>
+      <Button
+        variant="outline"
+        size="icon"
+        title={`QTY: ${selectedQty}`}
+        onPress={(e) => {
+          e.stopPropagation()
+          badgeModalRef.current?.present()
+        }}
+      />
+      <SharedBottomSheetModal ref={badgeModalRef} headerTitle="Ganti QTY" snapPoints={["25%"]}>
         <BadgeStepper
           qty={selectedQty}
           stockQty={qty}
           satuan={stock.satuan_utama ?? ""}
           onDecrement={onDecrement ?? (() => { })}
           onIncrement={onIncrement ?? (() => { })}
-          close={() => setBadgeOpen(false)}
         />
-      </DialogContent>
-    </Dialog>
+      </SharedBottomSheetModal>
+    </>
   )
 
   const Content = (
@@ -105,17 +96,14 @@ export default function KeranjangRow({
   )
 
   if (hasVariations) {
-    const [open, setOpen] = useState(false)
+    const modalRef = useRef<BottomSheetModalRef>(null)
 
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <PressableRow onPress={() => setOpen(true)}>
-            {Content}
-          </PressableRow>
-        </DialogTrigger>
-
-        <DialogContent className="w-80">
+      <>
+        <PressableRow onPress={() => modalRef.current?.present()}>
+          {Content}
+        </PressableRow>
+        <SharedBottomSheetModal ref={modalRef} headerTitle={stock.nama}>
           <VariasiHargaSelector
             stock={stock}
             options={options}
@@ -127,10 +115,10 @@ export default function KeranjangRow({
             onDecrement={onDecrement}
             onIncrement={onIncrement}
             onRemove={onRemove}
-            close={() => setOpen(false)}
+            close={() => modalRef.current?.dismiss()}
           />
-        </DialogContent>
-      </Dialog>
+        </SharedBottomSheetModal>
+      </>
     )
   }
 

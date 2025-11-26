@@ -11,6 +11,7 @@ import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
 import { useColorScheme, View } from "react-native"
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import "../global.css"
 import { AuthProvider, useAuth } from "../lib/auth-context"
 import { queryClient } from "../lib/query-client"
@@ -85,8 +86,10 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <ThemeProvider value={navTheme}>
             <AuthProvider>
-              <ProtectedStackLayout />
-              <PortalHost />
+              <BottomSheetModalProvider>
+                <ProtectedStackLayout />
+                <PortalHost />
+              </BottomSheetModalProvider>
             </AuthProvider>
           </ThemeProvider>
         </QueryClientProvider>

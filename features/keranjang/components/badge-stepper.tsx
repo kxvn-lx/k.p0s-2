@@ -2,7 +2,9 @@ import { View } from "react-native"
 import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
 import type { ReactNode } from "react"
-import { DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { BottomSheetView } from "@gorhom/bottom-sheet"
+import { Icon } from "@/components/ui/icon"
+import { Minus, Plus } from "lucide-react-native"
 
 type Props = {
   qty: number
@@ -10,7 +12,6 @@ type Props = {
   satuan?: string
   onDecrement: () => void
   onIncrement: () => void
-  close?: () => void
   children?: ReactNode
 }
 
@@ -23,18 +24,16 @@ export default function BadgeStepper({
 }: Props) {
   const reachedMax = stockQty !== undefined ? qty >= stockQty : false
   return (
-    <View className="w-52">
-      <DialogHeader>
-        <DialogTitle>Ganti Qty</DialogTitle>
-      </DialogHeader>
-
-      <View className="flex-row items-center justify-between p-2 pb-4">
+    <BottomSheetView>
+      <View className="flex-row items-center justify-center gap-x-4 my-4">
         <Button
-          textClassName="text-4xl"
           variant="ghost"
           onPress={onDecrement}
-          title="-"
-        />
+          size="icon"
+          className="w-20 h-20"
+        >
+          <Icon as={Minus} size={40} />
+        </Button>
 
         <View className="flex-row items-end gap-x-2">
           <Text variant="h1">{qty}</Text>
@@ -42,13 +41,15 @@ export default function BadgeStepper({
         </View>
 
         <Button
-          textClassName="text-4xl"
           variant="ghost"
           onPress={onIncrement}
           disabled={reachedMax}
-          title="+"
-        />
+          size="icon"
+          className="w-20 h-20"
+        >
+          <Icon as={Plus} size={40} />
+        </Button>
       </View>
-    </View>
+    </BottomSheetView>
   )
 }
