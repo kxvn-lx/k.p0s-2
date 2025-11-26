@@ -78,9 +78,8 @@ export default function Perincian() {
   }, [resetBasket, router])
 
   const handleProceed = useCallback(() => {
-    toast.info("Pembayaran route belum dibuat")
-    // router.push("/keranjang/pembayaran")
-  }, [])
+    router.push("/keranjang/pembayaran")
+  }, [router])
 
   // ----- RENDER FUNCTIONS -----
   const renderItem = useCallback(
