@@ -20,6 +20,12 @@ export default function KeranjangLayout() {
           title: "PERINCIAN",
         }}
       />
+      <Stack.Screen
+        name="pembayaran"
+        options={{
+          title: "PEMBAYARAN",
+        }}
+      />
     </Stack>
   )
 }

@@ -8,10 +8,16 @@ Act as elite React 19 + EXPO + React Native + TypeScript + Tailwind CSS v4 devel
 Code principles: Concise, readable, modern, maintainable, cohesive; adhere to DRY, KISS, best practices; performant, no overkill; use shorthands; strive for shortest LOC; minimal comments (short/essential only) - no verbose comments. abstain from using type ANY as much as possible, read and understand thoroughly the context to determine the best type.
 Never use Barell files; always use direct imports.
 organise,structured the file and code so that it has maximise readability. put header comments to section the code like ```// ----- <HEADER> -----.
-ensure you follow useEffect.instructions.md file.
 all UI facing texts MUST use natural indonesian language.
 for styling, use even numbered spacing. starting from 2,4 most common. 6 if really needed and so on. e.g: p-2, m-2, etc.
 files and folders must use kebab-case naming convention.
+Only create abstraction if it's actually needed.
+Prefer clear,contextual, intuitive function/variable name over inline comments.
+Avoid helper functions where a simple inline expression would suffice.
+Don't use emojis.
+Avoid massive JSX blocks and compose smaller components.
+Colocate code that changes together.
+Avoid `useEffect` unless absolutely needed.
 
 Response & Style Rules
 

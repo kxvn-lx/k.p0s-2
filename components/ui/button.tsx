@@ -1,23 +1,32 @@
 // ----- Imports -----
-import { cn } from '@/lib/utils'
-import { cva, type VariantProps } from 'class-variance-authority'
-import { View, Pressable, type PressableProps, type GestureResponderEvent } from 'react-native'
-import * as React from 'react'
-import type { ReactNode } from 'react'
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
-import { Text, TextClassContext } from '@/components/ui/text'
-import { haptic, type HapticType } from '@/lib/utils/haptics'
+import { cn } from "@/lib/utils"
+import { cva, type VariantProps } from "class-variance-authority"
+import {
+  View,
+  Pressable,
+  type PressableProps,
+  type GestureResponderEvent,
+} from "react-native"
+import * as React from "react"
+import type { ReactNode } from "react"
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated"
+import { Text, TextClassContext } from "@/components/ui/text"
+import { haptic, type HapticType } from "@/lib/utils/haptics"
 
 // ----- Variants -----
 const buttonVariants = cva(
-  'flex items-center justify-center rounded-[--radius] transition-colors opacity-100 disabled:opacity-25',
+  "flex items-center justify-center rounded-[--radius] transition-colors opacity-100 disabled:opacity-25",
   {
     variants: {
       variant: {
         default: "bg-primary active:opacity-90",
         secondary: "bg-secondary active:opacity-90",
         destructive: "bg-destructive active:opacity-90",
-        outline: "border border-input bg-background active:bg-accent",
+        outline: "border border-primary/25 bg-background active:bg-accent",
         ghost: "active:bg-accent",
         bare: "bg-none",
       },
@@ -34,7 +43,7 @@ const buttonVariants = cva(
   }
 )
 
-const buttonTextVariants = cva('font-medium text-center', {
+const buttonTextVariants = cva("font-medium text-center", {
   variants: {
     variant: {
       default: "text-primary-foreground",
@@ -42,12 +51,12 @@ const buttonTextVariants = cva('font-medium text-center', {
       destructive: "text-destructive-foreground",
       outline: "text-foreground",
       ghost: "text-foreground",
-      bare: "text-foreground"
+      bare: "text-foreground",
     },
     size: {
       default: "text-base",
       icon: "text-sm",
-      bare: ""
+      bare: "",
     },
   },
   defaultVariants: {
@@ -86,43 +95,60 @@ function Button({
   const scale = useSharedValue(1)
   const { style, ...rest } = props as PressableProps
 
+  const safeOnPressIn = React.useCallback(
+    (e?: GestureResponderEvent) => {
+      if (onPressIn && e) onPressIn(e)
+    },
+    [onPressIn]
+  )
 
-  const safeOnPressIn = React.useCallback((e?: GestureResponderEvent) => {
-    if (onPressIn && e) onPressIn(e)
-  }, [onPressIn])
+  const safeOnPressOut = React.useCallback(
+    (e?: GestureResponderEvent) => {
+      if (onPressOut && e) onPressOut(e)
+    },
+    [onPressOut]
+  )
 
-  const safeOnPressOut = React.useCallback((e?: GestureResponderEvent) => {
-    if (onPressOut && e) onPressOut(e)
-  }, [onPressOut])
+  const safeOnPress = React.useCallback(
+    (e?: GestureResponderEvent) => {
+      if (onPress && e) onPress(e)
+    },
+    [onPress]
+  )
 
-  const safeOnPress = React.useCallback((e?: GestureResponderEvent) => {
-    if (onPress && e) onPress(e)
-  }, [onPress])
+  const handlePressIn = React.useCallback(
+    (e?: GestureResponderEvent) => {
+      opacity.value = withTiming(0.75, { duration: 100 })
+      scale.value = withTiming(0.98, { duration: 100 })
+      if (!disableHaptics) haptic(hapticType)
+      safeOnPressIn(e)
+    },
+    [disableHaptics, hapticType, safeOnPressIn, opacity, scale]
+  )
 
-  const handlePressIn = React.useCallback((e?: GestureResponderEvent) => {
-    opacity.value = withTiming(0.75, { duration: 100 })
-    scale.value = withTiming(0.98, { duration: 100 })
-    if (!disableHaptics) haptic(hapticType)
-    safeOnPressIn(e)
-  }, [disableHaptics, hapticType, safeOnPressIn, opacity, scale])
+  const handlePressOut = React.useCallback(
+    (e?: GestureResponderEvent) => {
+      opacity.value = withTiming(1, { duration: 100 })
+      scale.value = withTiming(1, { duration: 100 })
+      safeOnPressOut(e)
+    },
+    [safeOnPressOut, opacity, scale]
+  )
 
-  const handlePressOut = React.useCallback((e?: GestureResponderEvent) => {
-    opacity.value = withTiming(1, { duration: 100 })
-    scale.value = withTiming(1, { duration: 100 })
-    safeOnPressOut(e)
-  }, [safeOnPressOut, opacity, scale])
-
-  const handlePress = React.useCallback((e?: GestureResponderEvent) => {
-    if (disabled) return
-    safeOnPress(e)
-  }, [disabled, safeOnPress])
+  const handlePress = React.useCallback(
+    (e?: GestureResponderEvent) => {
+      if (disabled) return
+      safeOnPress(e)
+    },
+    [disabled, safeOnPress]
+  )
 
   const animatedStyle = useAnimatedStyle(() => {
     // detect simple flex hints coming from className and include them in the animated style
     const flexStyle: Record<string, number | string> = {}
-    if (className?.includes('flex-1')) flexStyle.flex = 1
-    if (className?.includes('flex-none')) flexStyle.flex = 0
-    if (className?.includes('flex-auto')) flexStyle.flex = 'auto'
+    if (className?.includes("flex-1")) flexStyle.flex = 1
+    if (className?.includes("flex-none")) flexStyle.flex = 0
+    if (className?.includes("flex-auto")) flexStyle.flex = "auto"
 
     return {
       opacity: opacity.value,
@@ -132,7 +158,13 @@ function Button({
   })
 
   return (
-    <TextClassContext.Provider value={buttonTextVariants({ variant: variant, size: size, className: 'web:pointer-events-none' })}>
+    <TextClassContext.Provider
+      value={buttonTextVariants({
+        variant: variant,
+        size: size,
+        className: "web:pointer-events-none",
+      })}
+    >
       <Animated.View style={animatedStyle}>
         <Pressable
           hitSlop={{ top: 8, left: 8, right: 8, bottom: 8 }}
@@ -141,9 +173,15 @@ function Button({
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
           onPress={handlePress}
-          className={cn(buttonVariants({ variant, size: size, className }), disabled && 'web:pointer-events-none')}
+          className={cn(
+            buttonVariants({ variant, size: size, className }),
+            disabled && "web:pointer-events-none"
+          )}
         >
-          <View pointerEvents={disabled ? 'none' : 'auto'} style={typeof style === 'function' ? undefined : style}>
+          <View
+            pointerEvents={disabled ? "none" : "auto"}
+            style={typeof style === "function" ? undefined : style}
+          >
             {children ? (
               <View className="flex-row items-center justify-center gap-2">
                 {children}
@@ -160,7 +198,10 @@ function Button({
               </View>
             ) : (
               <Text
-                className={cn(buttonTextVariants({ variant: variant, size: size }), textClassName)}
+                className={cn(
+                  buttonTextVariants({ variant: variant, size: size }),
+                  textClassName
+                )}
               >
                 {title}
               </Text>
