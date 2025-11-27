@@ -41,14 +41,14 @@ export const StockService = {
     return { data, error }
   },
 
-  async getLogsByCode(kode_stock: string): Promise<{
+  async getLogsById(stockId: string): Promise<{
     data: StockLogRow[] | null
     error: PostgrestError | null
   }> {
     const { data, error } = await supabase
       .from("stock_logs")
       .select("*")
-      .eq("kode_stock", kode_stock)
+      .eq("stock_id", stockId)
       .order("tanggal", { ascending: false })
       .limit(200)
 
@@ -73,9 +73,7 @@ export const StockService = {
     return { data, error }
   },
 
-  async getVariasiByStock(
-    stockId: string
-  ): Promise<{
+  async getVariasiByStock(stockId: string): Promise<{
     data: Database["public"]["Tables"]["variasi_harga_barang"]["Row"][] | null
     error: PostgrestError | null
   }> {

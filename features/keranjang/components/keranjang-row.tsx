@@ -1,9 +1,11 @@
 import { Text } from "@/components/ui/text"
 import { View } from "react-native"
-import { useRef } from 'react'
-import SharedBottomSheetModal, { BottomSheetModalRef } from '@/components/shared/bottom-sheet-modal'
-import PressableRow from '@/components/shared/pressable-row'
-import VariasiHargaSelector from './variasi-harga-selector'
+import { useRef } from "react"
+import SharedBottomSheetModal, {
+  BottomSheetModalRef,
+} from "@/components/shared/bottom-sheet-modal"
+import PressableRow from "@/components/shared/pressable-row"
+import VariasiHargaSelector from "./variasi-harga-selector"
 import BadgeStepper from "./badge-stepper"
 import type {
   StockWithVariations,
@@ -53,13 +55,17 @@ export default function KeranjangRow({
           badgeModalRef.current?.present()
         }}
       />
-      <SharedBottomSheetModal ref={badgeModalRef} headerTitle="Ganti QTY" snapPoints={["25%"]}>
+      <SharedBottomSheetModal
+        ref={badgeModalRef}
+        headerTitle="Ganti QTY"
+        snapPoints={["25%"]}
+      >
         <BadgeStepper
           qty={selectedQty}
           stockQty={qty}
           satuan={stock.satuan_utama ?? ""}
-          onDecrement={onDecrement ?? (() => { })}
-          onIncrement={onIncrement ?? (() => { })}
+          onDecrement={onDecrement ?? (() => {})}
+          onIncrement={onIncrement ?? (() => {})}
         />
       </SharedBottomSheetModal>
     </>
@@ -71,25 +77,23 @@ export default function KeranjangRow({
       className="flex-row items-center justify-between p-2 bg-background"
     >
       <View className="flex-col">
-        <Text>
-          {stock.nama}
-        </Text>
+        <Text>{stock.nama}</Text>
 
         <View className="flex-row gap-x-4">
           <Text
-            className={`${low ? 'text-destructive' : 'text-muted-foreground'}`}
+            className={`uppercase ${low ? "text-destructive" : "text-muted-foreground"}`}
           >
             STOK: {qty} {stock.satuan_utama ?? ""}
           </Text>
           <Text>
-            {variasiCount > 0 ? `[${variasiCount} VAR]` : `${stock.harga_jual.toLocaleString()}`}
+            {variasiCount > 0
+              ? `[${variasiCount} VAR]`
+              : `${stock.harga_jual.toLocaleString()}`}
           </Text>
         </View>
       </View>
 
-      {selectedQty > 0 && (
-        Badge
-      )}
+      {selectedQty > 0 && Badge}
     </View>
   )
 
@@ -105,8 +109,8 @@ export default function KeranjangRow({
           <VariasiHargaSelector
             stock={stock}
             options={options}
-            onSelectOriginal={onSelectOriginal ?? (() => { })}
-            onSelectVariation={onSelectVariation ?? (() => { })}
+            onSelectOriginal={onSelectOriginal ?? (() => {})}
+            onSelectVariation={onSelectVariation ?? (() => {})}
             selectedQty={selectedQty}
             remaining={remaining}
             selectedVariasiId={selectedVariasiId}

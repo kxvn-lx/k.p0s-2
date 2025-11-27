@@ -3,7 +3,7 @@ import { View } from "react-native"
 import type { StockLogRow } from "../../api/stock.service"
 import { formatDateTime } from "@/lib/utils"
 
-// ----- Single stock log row (Bloomberg Style) -----
+// ----- Single stock log row  -----
 export function StockLogItem({ item }: { item: StockLogRow }) {
   const delta = (item.masuk ?? 0) - (item.keluar ?? 0)
   const isPositive = delta > 0
@@ -18,9 +18,7 @@ export function StockLogItem({ item }: { item: StockLogRow }) {
       <View className="flex-row justify-between items-center">
         {/* Left: Time & Type */}
         <View className="flex-row items-center gap-2">
-          <Text variant="muted" className="text-sm">
-            {dateStr}
-          </Text>
+          <Text className="text-sm">{dateStr}</Text>
           <Text
             className={`text-sm uppercase ${
               item.tipe_pergerakan === "PEMBELIAN"
@@ -55,8 +53,8 @@ export function StockLogItem({ item }: { item: StockLogRow }) {
             {item.staff_name || "SYSTEM"}
           </Text>
           {item.reference_id && (
-            <Text className="text-sm font-mono-bold uppercase">
-              #{item.reference_id}
+            <Text variant="muted" className="text-sm uppercase">
+              #{item.reference_id.slice(0, 8)}
             </Text>
           )}
         </View>

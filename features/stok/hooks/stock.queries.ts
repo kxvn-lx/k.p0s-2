@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
 import { stockKeys } from "../api/stock.keys"
-import { StockService, type StockLogRow, type StockRow } from "../api/stock.service"
+import {
+  StockService,
+  type StockLogRow,
+  type StockRow,
+} from "../api/stock.service"
 
 export function useStocksQuery(search?: string) {
   return useQuery<StockRow[]>({
@@ -38,16 +42,16 @@ export function useStockQuery(id: string) {
   })
 }
 
-export function useStockLogsQuery(kode: string | undefined) {
+export function useStockLogsQuery(stockId: string | undefined) {
   return useQuery<StockLogRow[]>({
-    queryKey: kode ? stockKeys.logsByKode(kode) : ["stock-logs-disabled"],
+    queryKey: stockId ? stockKeys.logsById(stockId) : ["stock-logs-disabled"],
     queryFn: async () => {
-      if (!kode) return []
-      const { data, error } = await StockService.getLogsByCode(kode)
+      if (!stockId) return []
+      const { data, error } = await StockService.getLogsById(stockId)
       if (error)
         throw new Error(error.message || "Gagal memuat pergerakan stok")
       return data || []
     },
-    enabled: !!kode,
+    enabled: !!stockId,
   })
 }

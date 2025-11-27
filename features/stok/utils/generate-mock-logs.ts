@@ -44,7 +44,10 @@ const DESCRIPTIONS = {
   MANUAL_KELUAR: ["Sample keluar", "Sample for QA"],
 }
 
-export function generateMockLogs(count: number, stock: StockRow): StockLogRow[] {
+export function generateMockLogs(
+  count: number,
+  stock: StockRow
+): StockLogRow[] {
   const logs: StockLogRow[] = []
   let runningStock = stock.jumlah_stok ?? 50
   const now = new Date()
@@ -94,7 +97,7 @@ export function generateMockLogs(count: number, stock: StockRow): StockLogRow[] 
 
     logs.push({
       id: `mock-log-${i + 1}`,
-      kode_stock: stock.kode,
+      stock_id: stock.id,
       nama_stock: stock.nama,
       tanggal: timestamp.toISOString().slice(0, 16).replace("T", " "),
       tipe_pergerakan: movementType,

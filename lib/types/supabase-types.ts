@@ -318,13 +318,13 @@ export type Database = {
           id: string
           keluar: number
           keterangan: string | null
-          kode_stock: string
           masuk: number
           nama_stock: string | null
           reference_id: string | null
           reference_table: string | null
           staff_id: string | null
           staff_name: string | null
+          stock_id: string
           stok_akhir: number
           tanggal: string
           tipe_pergerakan: Database["public"]["Enums"]["tipe_pergerakan_stok"]
@@ -334,13 +334,13 @@ export type Database = {
           id?: string
           keluar?: number
           keterangan?: string | null
-          kode_stock: string
           masuk?: number
           nama_stock?: string | null
           reference_id?: string | null
           reference_table?: string | null
           staff_id?: string | null
           staff_name?: string | null
+          stock_id: string
           stok_akhir: number
           tanggal?: string
           tipe_pergerakan: Database["public"]["Enums"]["tipe_pergerakan_stok"]
@@ -350,13 +350,13 @@ export type Database = {
           id?: string
           keluar?: number
           keterangan?: string | null
-          kode_stock?: string
           masuk?: number
           nama_stock?: string | null
           reference_id?: string | null
           reference_table?: string | null
           staff_id?: string | null
           staff_name?: string | null
+          stock_id?: string
           stok_akhir?: number
           tanggal?: string
           tipe_pergerakan?: Database["public"]["Enums"]["tipe_pergerakan_stok"]
@@ -367,7 +367,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          rekan: Database["public"]["Enums"]["rekan_name"]
+          rekan: string
           staff_id: string
           staff_name: string
           updated_at: string
@@ -375,7 +375,7 @@ export type Database = {
         Insert: {
           created_at: string
           id?: string
-          rekan: Database["public"]["Enums"]["rekan_name"]
+          rekan: string
           staff_id: string
           staff_name: string
           updated_at?: string
@@ -383,7 +383,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
-          rekan?: Database["public"]["Enums"]["rekan_name"]
+          rekan?: string
           staff_id?: string
           staff_name?: string
           updated_at?: string
@@ -438,7 +438,6 @@ export type Database = {
     Enums: {
       lokasi_type: "TOKO" | "TRUK"
       pengeluaran_kategori: "PARKIR" | "BENSIN" | "LAINNYA"
-      rekan_name: "Tole" | "Kia"
       tipe_pergerakan_stok:
         | "PENJUALAN"
         | "PEMBELIAN"
@@ -576,7 +575,6 @@ export const Constants = {
     Enums: {
       lokasi_type: ["TOKO", "TRUK"],
       pengeluaran_kategori: ["PARKIR", "BENSIN", "LAINNYA"],
-      rekan_name: ["Tole", "Kia"],
       tipe_pergerakan_stok: [
         "PENJUALAN",
         "PEMBELIAN",
