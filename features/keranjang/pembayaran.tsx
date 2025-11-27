@@ -1,12 +1,12 @@
 // ----- IMPORTS -----
-import { View, TouchableOpacity } from "react-native"
+import { View } from "react-native"
 import { useState, useMemo, useCallback } from "react"
 import { useRouter } from "expo-router"
 import { Delete } from "lucide-react-native"
 import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { Icon } from "@/components/ui/icon"
+import InfoRow from "@/components/shared/info-row"
 import useKeranjangStore from "./store/keranjang-store"
 import { formatCurrency, formatDateTime, cn } from "@/lib/utils"
 
@@ -25,6 +25,7 @@ export default function PembayaranScreen() {
   // ----- STATE -----
   const router = useRouter()
   const items = useKeranjangStore((s) => s.items)
+  const reset = useKeranjangStore((s) => s.reset)
   const [inputAmount, setInputAmount] = useState("")
 
   // ----- COMPUTED VALUES -----
@@ -61,54 +62,53 @@ export default function PembayaranScreen() {
     setInputAmount(totalAmount.toString())
   }, [totalAmount])
 
-  const handleProceed = useCallback(() => {
+  const handleProceed = useCallback(async () => {
     if (!isValid) return
-    router.push("/(authenticated)/keranjang/selesai")
-  }, [isValid, router])
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      const itemCount = Object.keys(items).length
+      const totalQty = Object.values(items).reduce((sum, item) => sum + item.qty, 0)
+
+      // Clear the basket
+      reset()
+
+      router.push({
+        pathname: "/(authenticated)/keranjang/selesai",
+        params: {
+          totalAmount: totalAmount.toString(),
+          itemCount: itemCount.toString(),
+          totalQty: totalQty.toString(),
+        },
+      })
+    } catch (error) {
+      // Handle error, perhaps show toast
+      console.error("Payment failed:", error)
+    }
+  }, [isValid, items, totalAmount, reset, router])
 
   // ----- RENDER -----
   return (
     <View className="flex-1 bg-background flex-col justify-between">
       {/* Header Info  */}
       <View className="">
-        <View className="flex-row justify-between items-center border-b border-border p-2">
-          <Text variant="muted" className="uppercase text-sm">
-            TANGGAL
-          </Text>
-          <Text>{formatDateTime(new Date())}</Text>
-        </View>
+        <InfoRow label="TANGGAL" value={formatDateTime(new Date())} />
 
-        <View className="flex-row justify-between items-center gap-2 p-2 border-b border-border">
-          <Text variant="muted" className="uppercase text-sm">
-            TOTAL
-          </Text>
-          <Text>{formatCurrency(totalAmount)}</Text>
-        </View>
+        <InfoRow label="TOTAL" value={totalAmount.toLocaleString()} containerClassName="gap-2" />
 
         {change > 0 && (
-          <View className="flex-row justify-between items-center gap-2 p-2 border-b border-border">
-            <Text variant="muted" className="uppercase text-sm">
-              KEMBALIAN
-            </Text>
-            <Text className="text-green-500">{formatCurrency(change)}</Text>
-          </View>
+          <InfoRow label="KEMBALIAN" value={change.toLocaleString()} containerClassName="gap-2" valueClassName="text-green-500" />
         )}
 
         {change < 0 && (
-          <View className="flex-row justify-between items-center gap-2 p-2 border-b border-border">
-            <Text variant="muted" className="uppercase text-sm">
-              KURANG
-            </Text>
-            <Text className="text-destructive">
-              {formatCurrency(Math.abs(change))}
-            </Text>
-          </View>
+          <InfoRow label="KURANG" value={Math.abs(change).toLocaleString()} containerClassName="gap-2" valueClassName="text-destructive" />
         )}
       </View>
 
       <View>
         {/* Payment Input & Keypad */}
-        <View className="">
+        <View>
           <View className="flex-row gap-x-2 items-center justify-end">
             <Text variant="muted">Rp</Text>
             <Text
@@ -136,7 +136,7 @@ export default function PembayaranScreen() {
                       return (
                         <Button
                           key={cellIndex}
-                          variant="ghost"
+                          variant="secondary"
                           onPress={handleClear}
                           className="flex-1"
                           textClassName="text-destructive text-3xl"
@@ -149,7 +149,7 @@ export default function PembayaranScreen() {
                       return (
                         <Button
                           key={cellIndex}
-                          variant="ghost"
+                          variant="secondary"
                           onPress={handleBackspace}
                           className="flex-1"
                         >
@@ -166,7 +166,7 @@ export default function PembayaranScreen() {
                       <Button
                         key={cellIndex}
                         onPress={() => handlePressKey(cell)}
-                        variant="ghost"
+                        variant="secondary"
                         className="flex-1"
                         textClassName="text-3xl"
                         title={cell}

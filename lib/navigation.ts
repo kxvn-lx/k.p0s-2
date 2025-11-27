@@ -14,7 +14,9 @@ export const getStackOptions = (theme: Theme): NativeStackNavigationOptions => {
       fontFamily: "UbuntuMono_700Bold"
     },
     headerShadowVisible: true,
-    headerBackTitle: "Kembali",
+    headerBackTitleStyle: {
+      fontSize: 14
+    }
   }
 }
 

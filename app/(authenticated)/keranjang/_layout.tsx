@@ -26,6 +26,18 @@ export default function KeranjangLayout() {
           title: "PEMBAYARAN",
         }}
       />
+      <Stack.Screen
+        name="selesai"
+        options={{
+          headerShown: false,
+          title: "SELESAI",
+          headerLeft: () => null,
+          headerBackVisible: false,
+          headerBackTitle: undefined,
+          gestureEnabled: false,
+          presentation: "fullScreenModal"
+        }}
+      />
     </Stack>
   )
 }
