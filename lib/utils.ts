@@ -48,17 +48,41 @@ export const remToPx = (remString: string): number => {
 }
 
 // ----- Date-Time Formatting -----
-export function formatDateTime(dateInput: string | Date, withTime: boolean = false): string {
-  const dateObj = typeof dateInput === "string" ? new Date(dateInput) : dateInput
+export function formatDateTime(
+  dateInput: string | Date,
+  withTime: boolean = false,
+  showDay: boolean = false
+): string {
+  const dateObj =
+    typeof dateInput === "string" ? new Date(dateInput) : dateInput
+
+  let result = ""
+
+  if (showDay) {
+    const dayNames = [
+      "Minggu",
+      "Senin",
+      "Selasa",
+      "Rabu",
+      "Kamis",
+      "Jumat",
+      "Sabtu",
+    ]
+    const dayName = dayNames[dateObj.getDay()]
+    result = `${dayName}, `
+  }
+
   const dd = dateObj.getDate().toString().padStart(2, "0")
   const mm = (dateObj.getMonth() + 1).toString().padStart(2, "0")
   const yyyy = dateObj.getFullYear().toString()
-  let result = `${dd}/${mm}/${yyyy}`
+  result += `${dd}/${mm}/${yyyy}`
+
   if (withTime) {
     const hh = dateObj.getHours().toString().padStart(2, "0")
     const min = dateObj.getMinutes().toString().padStart(2, "0")
     result += ` ${hh}:${min}`
   }
+
   return result
 }
 
@@ -66,6 +90,7 @@ export function getLokasiColor(lokasi: StockLokasi): string {
   switch (lokasi) {
     case "TOKO":
       return "text-green-500"
-    case "TRUK": return "text-orange-500"
+    case "TRUK":
+      return "text-orange-500"
   }
 }
