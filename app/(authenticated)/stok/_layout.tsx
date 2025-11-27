@@ -16,10 +16,6 @@ export default function StokLayout() {
       />
       <Stack.Screen
         name="[id]"
-        options={{
-          title: "Detail Stok",
-          headerBackVisible: true,
-        }}
       />
     </Stack>
   )

@@ -1,18 +1,41 @@
 import StockDetail from "@/features/stok/detail"
-import { useLocalSearchParams } from "expo-router"
+import { useLocalSearchParams, useNavigation } from "expo-router"
 import type { StockRow } from "@/features/stok/api/stock.service"
+import { Text } from "@/components/ui/text"
+import { View } from "react-native"
+import { useLayoutEffect } from "react"
 
 export default function StockDetailRoute() {
   const params = useLocalSearchParams()
+  const navigation = useNavigation()
 
-  let initialStock: StockRow | undefined
+  // ----- Parse stock data from route params -----
+  let stock: StockRow | undefined
   if (params.stock) {
     try {
-      initialStock = JSON.parse(String(params.stock)) as StockRow
+      stock = JSON.parse(String(params.stock)) as StockRow
     } catch (_) {
-      initialStock = undefined
+      stock = undefined
     }
   }
 
-  return <StockDetail initialStock={initialStock} />
+  // ----- Set navigation title to stock kode -----
+  useLayoutEffect(() => {
+    if (stock?.kode) {
+      navigation.setOptions({
+        title: stock.kode.toUpperCase(),
+      })
+    }
+  }, [stock?.kode, navigation])
+
+  // ----- Handle missing or invalid stock data -----
+  if (!stock) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background p-4">
+        <Text className="text-destructive uppercase">Stok nd dapa</Text>
+      </View>
+    )
+  }
+
+  return <StockDetail stock={stock} />
 }

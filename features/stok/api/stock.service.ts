@@ -6,6 +6,7 @@ export type StockRow = Database["public"]["Tables"]["stock"]["Row"]
 export type StockLogRow = Database["public"]["Tables"]["stock_logs"]["Row"]
 export type StockInsert = Database["public"]["Tables"]["stock"]["Insert"]
 export type StockUpdate = Database["public"]["Tables"]["stock"]["Update"]
+export type StockLokasi = Database["public"]["Enums"]["lokasi_type"]
 
 export const StockService = {
   async getAll(search?: string): Promise<{

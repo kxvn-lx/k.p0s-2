@@ -1,7 +1,7 @@
 import { Separator } from "@/components/ui/separator"
 import { Text } from "@/components/ui/text"
 import { StockRow } from "@/features/keranjang/types/keranjang.types"
-import { cn } from "@/lib/utils"
+import { cn, getLokasiColor } from "@/lib/utils"
 import { Fragment } from "react"
 import { View } from "react-native"
 
@@ -11,25 +11,9 @@ export function StockDetailHeader({ stock }: { stock: StockRow }) {
   return (
     <Fragment>
       <View className="bg-background flex gap-2 p-2">
-        <View>
-          <Text variant="muted" className="text-sm uppercase mx-4">
-            detail stok
-          </Text>
-          <View className="rounded-[--radius] border border-border bg-card">
-            <View className="flex-row items-center justify-between gap-x-2">
-              <View className="gap-y-2 p-2">
-                <View>
-                  <Text variant="h3" className="uppercase">
-                    {stock.nama}
-                  </Text>
-                  <Text variant="muted" className="text-sm uppercase">
-                    {stock.kode}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
+        <Text variant="h2" className="uppercase text-center mt-8 mb-4">
+          {stock.nama}
+        </Text>
 
         {/* ----- Additional Info ----- */}
         <View className=" rounded-[--radius] border border-border bg-card p-2 gap-2">
@@ -39,7 +23,7 @@ export function StockDetailHeader({ stock }: { stock: StockRow }) {
                 QTY
               </Text>
               <Text
-                variant="h3"
+                variant="h4"
                 className={cn(isLowStock && "text-destructive")}
               >
                 {stock.jumlah_stok}
@@ -50,13 +34,17 @@ export function StockDetailHeader({ stock }: { stock: StockRow }) {
               <Text variant="muted" className="text-sm uppercase">
                 Kategori
               </Text>
-              <Text variant="h3">{stock.kategori ?? "-"}</Text>
+              <Text variant="h4" className="uppercase">
+                {stock.kategori ?? "-"}
+              </Text>
             </View>
             <View className="flex-1 rounded-[--radius] border border-border bg-background p-2">
               <Text variant="muted" className="text-sm uppercase">
                 Lokasi
               </Text>
-              <Text variant="h3">{stock.lokasi ?? "-"}</Text>
+              <Text variant="h4" className={cn(getLokasiColor(stock.lokasi))}>
+                {stock.lokasi ?? "-"}
+              </Text>
             </View>
           </View>
 

@@ -4,7 +4,7 @@ import { useCallback } from "react"
 import { useRouter, useLocalSearchParams } from "expo-router"
 import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
-import { formatCurrency, formatDateTime } from "@/lib/utils"
+import { formatDateTime } from "@/lib/utils"
 import InfoRow from "@/components/shared/info-row"
 
 // ----- COMPONENT -----
@@ -47,7 +47,7 @@ export default function SelesaiScreen() {
           <View>
             <InfoRow label="TANGGAL" containerClassName="border-t" value={formatDateTime(new Date(), true)} />
             <InfoRow label="STOK" value={`${itemCount} TYPE(S) / ${totalQty} UNIT(S)`} />
-            <InfoRow label="TOTAL PAID" containerClassName="border-b-0" value={formatCurrency(totalAmount)} />
+            <InfoRow label="JUMLAH DIBAYAR" containerClassName="border-b-0" value={totalAmount.toLocaleString()} />
           </View>
         </View>
       </View>

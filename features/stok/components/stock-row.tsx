@@ -3,6 +3,7 @@ import { Text } from "@/components/ui/text"
 import { View } from "react-native"
 import PressableRow from '@/components/shared/pressable-row'
 import type { StockRow } from "../api/stock.service"
+import { cn, getLokasiColor } from "@/lib/utils"
 
 export default function StockRow({
   stock,
@@ -18,7 +19,7 @@ export default function StockRow({
     <PressableRow
       onPress={onPress}
       testID={`stock-row-${stock.id}`}
-      className="flex-row items-start justify-between p-2 bg-background active:bg-accent/10"
+      className="flex-row items-start justify-between p-2 bg-background"
     >
 
       <View className="flex-1 flex-col pr-2">
@@ -26,12 +27,12 @@ export default function StockRow({
         {/* qty */}
         <View className="flex-row items-center gap-x-1">
           <Text
-            className={`font-medium ${low ? "text-destructive" : "text-foreground"
+            className={`${low ? "text-destructive" : "text-foreground"
               }`}
           >
             {qty}
           </Text>
-          <Text className="text-muted-foreground text-xs uppercase">
+          <Text variant="muted" className="text-sm uppercase">
             {stock.satuan_utama ?? "-"}
           </Text>
         </View>
@@ -39,11 +40,11 @@ export default function StockRow({
 
 
       <View className="items-end">
-        <Text className="font-medium">
+        <Text>
           {stock.harga_jual ? `${stock.harga_jual.toLocaleString()}` : "-"}
         </Text>
         <View>
-          <Text className="text-xs uppercase">[{stock.lokasi}]</Text>
+          <Text className={cn("text-sm uppercase", getLokasiColor(stock.lokasi))}>[{stock.lokasi}]</Text>
         </View>
       </View>
     </PressableRow>

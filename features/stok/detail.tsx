@@ -6,34 +6,18 @@ import StockDetailHeader from "./components/detail/stock-detail-header"
 import StockLogItem from "./components/detail/stock-log-item"
 import { generateMockLogs } from "./utils/generate-mock-logs"
 
-export default function StockDetail({
-  initialStock,
-}: {
-  initialStock?: StockRow
-}) {
-  // ----- Early return if no stock data -----
-  if (!initialStock) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background p-4">
-        <Text className="text-destructive uppercase">Stok nd dapa</Text>
-      </View>
-    )
-  }
-
+export default function StockDetail({ stock }: { stock: StockRow }) {
   const { data: logs = [], isLoading: loadingLogs } = useStockLogsQuery(
-    initialStock.kode
+    stock.kode
   )
 
   // ----- Use mock logs if DB is empty -----
-  const displayLogs =
-    logs.length > 0 ? logs : generateMockLogs(100, initialStock)
-
-  const header = <StockDetailHeader stock={initialStock} />
+  const displayLogs = logs.length > 0 ? logs : generateMockLogs(100, stock)
 
   if (loadingLogs) {
     return (
       <View className="flex-1 bg-background">
-        {header}
+        <StockDetailHeader stock={stock} />
         <View className="flex-1 items-center justify-center">
           <Text className="animate-pulse uppercase">
             Mo ambe data pergerakan...
@@ -51,7 +35,7 @@ export default function StockDetail({
         onScrollBeginDrag={() => Keyboard.dismiss()}
         data={displayLogs as StockLogRow[]}
         keyExtractor={(r) => r.id}
-        ListHeaderComponent={header}
+        ListHeaderComponent={<StockDetailHeader stock={stock} />}
         renderItem={({ item }) => <StockLogItem item={item as StockLogRow} />}
         ListEmptyComponent={() => (
           <View className="items-center mt-12">

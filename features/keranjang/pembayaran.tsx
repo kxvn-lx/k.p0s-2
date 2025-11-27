@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Icon } from "@/components/ui/icon"
 import InfoRow from "@/components/shared/info-row"
 import useKeranjangStore from "./store/keranjang-store"
-import { formatCurrency, formatDateTime, cn } from "@/lib/utils"
+import { formatDateTime, cn } from "@/lib/utils"
 
 // ----- CONSTANTS -----
 const MAX_INPUT_LENGTH = 12
