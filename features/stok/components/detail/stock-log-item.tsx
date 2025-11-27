@@ -13,7 +13,7 @@ export function StockLogItem({ item }: { item: StockLogRow }) {
   return (
     <View
       testID={`log-${item.id}`}
-      className="border-b border-border p-2 bg-background"
+      className="border-b border-border p-2 bg-card"
     >
       <View className="flex-row justify-between items-center">
         {/* Left: Time & Type */}
@@ -22,12 +22,13 @@ export function StockLogItem({ item }: { item: StockLogRow }) {
             {dateStr}
           </Text>
           <Text
-            className={`text-sm uppercase ${item.tipe_pergerakan === "PEMBELIAN"
-              ? "text-green-500"
-              : item.tipe_pergerakan === "PENJUALAN"
-                ? "text-red-500"
-                : "text-foreground"
-              }`}
+            className={`text-sm uppercase ${
+              item.tipe_pergerakan === "PEMBELIAN"
+                ? "text-green-500"
+                : item.tipe_pergerakan === "PENJUALAN"
+                  ? "text-red-500"
+                  : "text-foreground"
+            }`}
           >
             {item.tipe_pergerakan}
           </Text>
@@ -35,12 +36,13 @@ export function StockLogItem({ item }: { item: StockLogRow }) {
 
         {/* Right: Delta */}
         <Text
-          className={`text-sm font-mono-bold ${isPositive
-            ? "text-green-500"
-            : isNegative
-              ? "text-red-500"
-              : "text-muted-foreground"
-            }`}
+          className={`text-sm font-mono-bold ${
+            isPositive
+              ? "text-green-500"
+              : isNegative
+                ? "text-red-500"
+                : "text-muted-foreground"
+          }`}
         >
           {delta > 0 ? `+${delta}` : delta}
         </Text>

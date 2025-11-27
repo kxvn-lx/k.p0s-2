@@ -3,10 +3,34 @@ import { DarkTheme, DefaultTheme, type Theme } from "@react-navigation/native"
 // ----- Theme Type -----
 type ThemeType = "metal" | "solar" | "teduh"
 
+// ----- Theme Colors Type -----
+export type ThemeColors = {
+  background: string
+  foreground: string
+  card: string
+  cardForeground: string
+  popover: string
+  popoverForeground: string
+  primary: string
+  primaryForeground: string
+  secondary: string
+  secondaryForeground: string
+  muted: string
+  mutedForeground: string
+  accent: string
+  accentForeground: string
+  destructive: string
+  destructiveForeground: string
+  border: string
+  input: string
+  ring: string
+  radius: string
+}
+
 // ----- Solar Colors (Bloomberg Terminal Inspired) -----
 // Concept: High contrast, data-dense, professional.
 // The "Solar" theme mimics the phosphorescent glow of old CRT monitors but modernized.
-const SOLAR_DARK = {
+const SOLAR_DARK: ThemeColors = {
   background: "hsl(0 0% 0%)", // Pure Black
   foreground: "hsl(36 100% 50%)", // Terminal Amber (Deep)
   card: "hsl(0 0% 10%)", // Dark Gray
@@ -29,7 +53,7 @@ const SOLAR_DARK = {
   radius: "0px", // Sharp corners
 }
 
-const SOLAR_LIGHT = {
+const SOLAR_LIGHT: ThemeColors = {
   background: "hsl(40 20% 96%)", // Warm Off-White
   foreground: "hsl(0 0% 10%)", // Sharp Black
   card: "hsl(40 20% 92%)",
@@ -54,7 +78,7 @@ const SOLAR_LIGHT = {
 
 // ----- Metal Colors (Silver-y, Premium, Industrial) -----
 // Concept: Brushed aluminium, steel, titanium. Cool neutrals.
-const METAL_LIGHT = {
+const METAL_LIGHT: ThemeColors = {
   background: "hsl(210 20% 96%)", // Platinum
   foreground: "hsl(220 10% 20%)", // Gunmetal
   card: "hsl(210 20% 92%)", // Light Silver
@@ -77,7 +101,7 @@ const METAL_LIGHT = {
   radius: "0.5rem", // Slight curve
 }
 
-const METAL_DARK = {
+const METAL_DARK: ThemeColors = {
   background: "hsl(220 10% 12%)", // Titanium
   foreground: "hsl(210 10% 90%)", // White Silver
   card: "hsl(220 10% 16%)", // Dark Steel
@@ -103,7 +127,7 @@ const METAL_DARK = {
 // ----- Teduh Colors (Eye-Friendly, Scientific Precision) -----
 // Concept: Sepia/Paper for light, Deep Slate for dark.
 // Reduces blue light exposure and maximizes readability.
-const TEDUH_LIGHT = {
+const TEDUH_LIGHT: ThemeColors = {
   background: "hsl(36 30% 94%)", // Sepia / Cream
   foreground: "hsl(30 10% 20%)", // Warm Charcoal
   card: "hsl(36 20% 90%)", // Darker Cream
@@ -126,7 +150,7 @@ const TEDUH_LIGHT = {
   radius: "0.375rem", // Gentle curve
 }
 
-const TEDUH_DARK = {
+const TEDUH_DARK: ThemeColors = {
   background: "hsl(220 15% 18%)", // Deep Slate (Night Shift style)
   foreground: "hsl(36 20% 80%)", // Warm Grey
   card: "hsl(220 15% 22%)", // Lighter Slate
@@ -153,8 +177,8 @@ export const getThemeColors = (
   theme: ThemeType,
   colorScheme: "light" | "dark",
   opacity?: number
-): Record<string, string> => {
-  let colors: Record<string, string>
+): ThemeColors => {
+  let colors: ThemeColors
   if (theme === "solar") {
     colors = colorScheme === "dark" ? SOLAR_DARK : SOLAR_LIGHT
   } else if (theme === "teduh") {
@@ -166,19 +190,20 @@ export const getThemeColors = (
   if (opacity === undefined) return colors
 
   // Convert all HSL colors to HSLA with opacity
-  const withOpacity: Record<string, string> = {}
+  const withOpacity: ThemeColors = { ...colors }
   for (const key in colors) {
-    const value = colors[key]
+    const colorKey = key as keyof ThemeColors
+    const value = colors[colorKey]
     if (value.startsWith("hsl(")) {
       // Extract the HSL values
       const hslMatch = value.match(/hsl\(([^)]+)\)/)
       if (hslMatch) {
-        withOpacity[key] = `hsla(${hslMatch[1]}, ${opacity})`
+        withOpacity[colorKey] = `hsla(${hslMatch[1]}, ${opacity})`
       } else {
-        withOpacity[key] = value
+        withOpacity[colorKey] = value
       }
     } else {
-      withOpacity[key] = value
+      withOpacity[colorKey] = value
     }
   }
   return withOpacity
@@ -190,7 +215,7 @@ export const getNavTheme = (
 ): Theme => {
   const baseTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme
 
-  let colors: Record<string, string> = {}
+  let colors: ThemeColors = {} as ThemeColors
   if (theme === "solar") {
     colors = colorScheme === "dark" ? SOLAR_DARK : SOLAR_LIGHT
   } else if (theme === "teduh") {

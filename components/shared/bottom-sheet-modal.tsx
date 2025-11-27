@@ -31,7 +31,6 @@ interface SharedBottomSheetModalProps
     React.ComponentProps<typeof BottomSheetModal>,
     "animateOnMount" | "containerHeight"
   > {
-  backgroundClassName?: string
   headerTitle?: string
   onClose?: () => void
 }
@@ -45,7 +44,6 @@ const SharedBottomSheetModal = forwardRef<
     {
       children,
       snapPoints = ["50%"],
-      backgroundClassName = "bg-background",
       onChange,
       style,
       index = 1,
@@ -67,7 +65,7 @@ const SharedBottomSheetModal = forwardRef<
     // ----- Theme-aware styles -----
     const themeStyles = useMemo(() => {
       const colors = getThemeColors(theme, colorScheme)
-      const bgColor = hslToRgb(colors.card)
+      const bgColor = hslToRgb(colors.background)
       const borderColor = hslToRgb(colors.border)
       const radiusPx = remToPx(colors.radius)
 
@@ -85,7 +83,6 @@ const SharedBottomSheetModal = forwardRef<
       }
     }, [theme, colorScheme])
 
-    // ----- Memoized backdrop renderer -----
     const renderBackdrop = useCallback(
       (props: BottomSheetBackdropProps) => (
         <BottomSheetBackdrop
@@ -114,7 +111,9 @@ const SharedBottomSheetModal = forwardRef<
         <View className="flex-col flex-1">
           <View className="flex-row items-center justify-between p-2 border-b border-border">
             {headerTitle && (
-              <Text variant="h4" className="uppercase">{headerTitle}</Text>
+              <Text variant="h4" className="uppercase">
+                {headerTitle}
+              </Text>
             )}
             <Button
               onPress={onClose || (() => modalRef.current?.dismiss())}

@@ -110,7 +110,8 @@ const EditPriceModal = forwardRef<EditPriceModalRef, EditPriceModalProps>(
 
     const handleResetPrice = useCallback(() => {
       if (!editState) return
-      const originalPrice = editState.item.harga_satuan_asal ?? editState.item.harga_satuan
+      const originalPrice =
+        editState.item.harga_satuan_asal ?? editState.item.harga_satuan
       setEditState({ ...editState, price: originalPrice.toString() })
     }, [editState])
 
@@ -150,7 +151,8 @@ const EditPriceModal = forwardRef<EditPriceModalRef, EditPriceModalProps>(
                   {editState.item.harga_satuan.toLocaleString("id-ID")}
                 </Text>
               </View>
-              <View className="flex-1 rounded-[--radius] border border-border p-2">
+
+              <View className="bg-card flex-1 rounded-[--radius] border border-border p-2">
                 <Text variant="muted" className="text-sm">
                   Harga baru
                 </Text>
@@ -159,42 +161,50 @@ const EditPriceModal = forwardRef<EditPriceModalRef, EditPriceModalProps>(
                     ? `${parsedNewPrice.toLocaleString("id-ID")}`
                     : "-"}
                 </Text>
-                {hasValidNewPrice && (
-                  <Text
-                    variant="muted"
-                    className={`text-sm ${deltaColorClass}`}
-                  >
-                    {deltaValue >= 0 ? "+" : "-"}{" "}
-                    {Math.abs(deltaValue).toLocaleString("id-ID")}
-                  </Text>
-                )}
+                <Text variant="muted" className={`text-sm ${deltaColorClass}`}>
+                  {hasValidNewPrice
+                    ? `${deltaValue >= 0 ? "+" : "-"}${Math.abs(
+                        deltaValue
+                      ).toLocaleString("id-ID")}`
+                    : "-"}
+                </Text>
               </View>
             </View>
           </View>
 
-          <View className="rounded-[--radius] border border-border bg-card p-2">
-            <Text variant="muted" className="text-sm">
-              Harga pembaruan
+          <View>
+            <Text variant="muted" className="text-sm uppercase mx-2">
+              Ganti Harga
             </Text>
-            <View className="mt-2 flex-row items-center gap-x-2">
-              <BottomSheetInput
-                ref={inputRef}
-                value={editState.price}
-                onChangeText={handlePriceChange}
-                keyboardType="numeric"
-                autoFocus
-                placeholder="0"
-                className="flex-1"
-              />
-              {editState.price.length > 0 && (
-                <Button variant="outline" onPress={handleResetPrice} className="h-10">
-                  <Icon as={RotateCcw} size={16} className="text-muted-foreground" />
-                </Button>
-              )}
+            <View>
+              <View className="flex-row items-center gap-x-2">
+                <BottomSheetInput
+                  ref={inputRef}
+                  value={editState.price}
+                  onChangeText={handlePriceChange}
+                  keyboardType="numeric"
+                  autoFocus
+                  placeholder="0"
+                  className="flex-1"
+                />
+                {editState.price.length > 0 && (
+                  <Button
+                    variant="outline"
+                    onPress={handleResetPrice}
+                    className="h-10"
+                  >
+                    <Icon
+                      as={RotateCcw}
+                      size={16}
+                      className="text-muted-foreground"
+                    />
+                  </Button>
+                )}
+              </View>
+              <Text variant="muted" className="text-xs uppercase mx-2">
+                Maksimum Rp {maxPriceLabel}
+              </Text>
             </View>
-            <Text variant="muted" className="text-xs mt-2">
-              Maksimum Rp {maxPriceLabel}
-            </Text>
           </View>
 
           <View className="flex-row gap-x-2">
