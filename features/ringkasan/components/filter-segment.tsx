@@ -8,13 +8,13 @@ interface FilterSegmentProps {
   onFilterChange: (filter: PeriodFilter) => void
 }
 
-export function FilterSegment({ filter, onFilterChange }: FilterSegmentProps) {
-  const options: { label: string; value: PeriodFilter }[] = [
-    { label: "HARIAN", value: "daily" },
-    { label: "MINGGUAN", value: "weekly" },
-    { label: "TAHUNAN", value: "yearly" },
-  ]
+const options: { label: string; value: PeriodFilter }[] = [
+  { label: "HARIAN", value: "daily" },
+  { label: "MINGGUAN", value: "weekly" },
+  { label: "TAHUNAN", value: "yearly" },
+]
 
+export function FilterSegment({ filter, onFilterChange }: FilterSegmentProps) {
   return (
     <View className="h-12 flex-row items-center justify-between bg-background p-2 gap-2 border-b border-border">
       {options.map((option) => (

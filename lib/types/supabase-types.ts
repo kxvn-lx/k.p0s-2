@@ -74,34 +74,40 @@ export type Database = {
           created_at: string
           harga_beli: number
           id: string
-          jumlah: number
+          jumlah_total: number
           kode_stock: string
           nama: string
           pembelian_id: string
+          qty: number
           satuan_utama: string | null
           updated_at: string
+          variasi: Json | null
         }
         Insert: {
           created_at?: string
           harga_beli: number
           id?: string
-          jumlah: number
+          jumlah_total: number
           kode_stock: string
           nama: string
           pembelian_id: string
+          qty: number
           satuan_utama?: string | null
           updated_at?: string
+          variasi?: Json | null
         }
         Update: {
           created_at?: string
           harga_beli?: number
           id?: string
-          jumlah?: number
+          jumlah_total?: number
           kode_stock?: string
           nama?: string
           pembelian_id?: string
+          qty?: number
           satuan_utama?: string | null
           updated_at?: string
+          variasi?: Json | null
         }
         Relationships: [
           {

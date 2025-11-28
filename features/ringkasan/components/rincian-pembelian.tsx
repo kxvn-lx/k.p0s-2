@@ -79,15 +79,22 @@ export function PembelianDetailContent({
                       </Text>
                     </View>
                     <Text className="text-blue-400 font-mono-bold text-sm">
-                      {(item.harga_beli * item.jumlah).toLocaleString("id-ID")}
+                      {item.jumlah_total.toLocaleString("id-ID")}
                     </Text>
                   </View>
                   <View className="flex-row justify-between">
                     <Text className="text-muted-foreground font-mono text-xs uppercase">
-                      {item.jumlah} {item.satuan_utama || "PCS"} @{" "}
+                      {item.qty} {item.satuan_utama || "PCS"} @{" "}
                       {item.harga_beli.toLocaleString("id-ID")}
                     </Text>
                   </View>
+                  {item.variasi && (
+                    <View className="bg-primary/5 p-2 border border-primary/20">
+                      <Text className="text-primary font-mono text-[10px] uppercase">
+                        VAR: {JSON.stringify(item.variasi)}
+                      </Text>
+                    </View>
+                  )}
                 </View>
               </View>
             ))}

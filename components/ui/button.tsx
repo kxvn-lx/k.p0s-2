@@ -26,7 +26,7 @@ const buttonVariants = cva(
         default: "bg-primary active:opacity-90",
         secondary: "bg-secondary active:opacity-90",
         destructive: "bg-destructive active:opacity-90",
-        outline: "border border-primary/25 bg-background active:bg-accent",
+        outline: "border border-border bg-background active:bg-accent",
         ghost: "active:bg-accent",
         bare: "bg-none",
       },
