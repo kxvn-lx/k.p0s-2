@@ -1,5 +1,7 @@
-import { View } from "react-native"
-import { Button } from "@/components/ui/button"
+import { View, Pressable, StyleSheet } from "react-native"
+import { Text } from "@/components/ui/text"
+import { cn } from "@/lib/utils"
+import * as Haptics from "expo-haptics"
 
 type PeriodFilter = "daily" | "weekly" | "yearly"
 
@@ -16,17 +18,61 @@ const options: { label: string; value: PeriodFilter }[] = [
 
 export function FilterSegment({ filter, onFilterChange }: FilterSegmentProps) {
   return (
-    <View className="h-12 flex-row items-center justify-between bg-background p-2 gap-2 border-b border-border">
-      {options.map((option) => (
-        <Button
-          variant={filter === option.value ? "default" : "outline"}
-          key={option.value}
-          onPress={() => onFilterChange(option.value)}
-          className={`flex-1`}
-          size="icon"
-          title={option.label}
-        />
-      ))}
+    <View
+      className="px-4 py-2 bg-background border-b"
+      style={styles.outerBorder}
+    >
+      <View
+        className="flex-row p-1 bg-muted rounded-lg border"
+        style={styles.segmentGroup}
+      >
+        {options.map((option) => {
+          const isActive = filter === option.value
+          return (
+            <Pressable
+              key={option.value}
+              onPress={() => {
+                if (!isActive) {
+                  Haptics.selectionAsync()
+                  onFilterChange(option.value)
+                }
+              }}
+              className={cn(
+                "flex-1 py-1.5 items-center justify-center rounded-md",
+                isActive ? "bg-background border border-border" : ""
+              )}
+              style={isActive ? styles.activeSegment : undefined}
+            >
+              <Text
+                className={cn(
+                  "text-[10px] font-mono-medium uppercase tracking-wider",
+                  isActive ? "text-foreground" : "text-muted-foreground"
+                )}
+              >
+                {option.label}
+              </Text>
+            </Pressable>
+          )
+        })}
+      </View>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  outerBorder: {
+    borderColor: "rgba(15,23,42,0.15)",
+  },
+  segmentGroup: {
+    backgroundColor: "rgba(148,163,184,0.15)",
+    borderColor: "rgba(15,23,42,0.15)",
+  },
+  activeSegment: {
+    borderColor: "rgba(15,23,42,0.2)",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+})

@@ -24,7 +24,7 @@ export function PengeluaranDetailContent({
         <View className="border border-border bg-background">
           <View className="bg-primary/10 p-2 border-b border-border">
             <Text className="text-primary font-mono-bold uppercase text-xs tracking-wider">
-              INFO PENGELUARAN
+              {/* INFO PENGELUARAN */}
             </Text>
           </View>
           <View className="p-2 gap-2">

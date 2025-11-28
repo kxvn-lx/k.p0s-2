@@ -1,6 +1,7 @@
 import { View } from "react-native"
 import { Text } from "@/components/ui/text"
 import type { RingkasanSummary } from "../hooks/ringkasan.queries"
+import { cn } from "@/lib/utils"
 
 interface SummaryCardProps {
   summary: RingkasanSummary
@@ -8,50 +9,58 @@ interface SummaryCardProps {
 
 export function SummaryCard({ summary }: SummaryCardProps) {
   return (
-    <View className="bg-background border-b border-border">
-      <View className="p-4 border-b border-border border-dashed">
-        <View className="flex-row justify-between items-end">
-          <Text className="text-primary text-xs font-mono uppercase tracking-widest mb-2">
-            POSISI BERSIH
-          </Text>
-          <Text className="text-muted-foreground text-[10px] font-mono uppercase">
-            IDR
-          </Text>
-        </View>
-        <Text
-          className={`text-3xl font-mono-bold tracking-tighter ${summary.netPenjualan >= 0 ? "text-primary" : "text-destructive"
-            }`}
-        >
-          {summary.netPenjualan.toLocaleString("id-ID")}
-        </Text>
-      </View>
-
-      <View className="flex-row">
-        <View className="flex-1 p-2 border-r border-border">
-          <Text className="text-muted-foreground text-[10px] font-mono uppercase mb-2">
-            KOTOR
-          </Text>
-          <Text className="text-primary font-mono-bold text-xs">
-            {summary.grossPenjualan.toLocaleString("id-ID")}
+    <View className="px-4 py-4 bg-muted/30">
+      <View className="bg-background rounded-2xl border border-border shadow-sm overflow-hidden">
+        {/* Main Header / Net Position */}
+        <View className="p-5 border-b border-border/40">
+          <View className="flex-row justify-between items-start mb-2">
+            <Text className="text-muted-foreground font-mono-medium text-[10px] uppercase tracking-wider">
+              POSISI BERSIH (NET)
+            </Text>
+            <View className="bg-muted/50 px-2 py-1 rounded-md">
+              <Text className="text-muted-foreground font-mono text-[10px]">
+                IDR
+              </Text>
+            </View>
+          </View>
+          <Text
+            className={cn(
+              "text-4xl font-mono-bold tracking-tighter",
+              summary.netPenjualan >= 0 ? "text-green-500" : "text-red-500"
+            )}
+          >
+            {summary.netPenjualan.toLocaleString("id-ID")}
           </Text>
         </View>
 
-        <View className="flex-1 p-2 border-r border-border">
-          <Text className="text-muted-foreground text-[10px] font-mono uppercase mb-2">
-            PENGELUARAN
-          </Text>
-          <Text className="text-destructive font-mono-bold text-xs">
-            {summary.pengeluaran.toLocaleString("id-ID")}
-          </Text>
-        </View>
+        {/* Stats Grid */}
+        <View className="flex-row divide-x divide-border/40">
+          <View className="flex-1 p-4 gap-2 bg-muted/5">
+            <Text className="text-muted-foreground font-mono-medium text-[10px] uppercase tracking-wider">
+              KOTOR (GROSS)
+            </Text>
+            <Text className="text-foreground font-mono-bold text-sm">
+              {summary.grossPenjualan.toLocaleString("id-ID")}
+            </Text>
+          </View>
 
-        <View className="flex-1 p-2">
-          <Text className="text-muted-foreground text-[10px] font-mono uppercase mb-2">
-            PEMBELIAN
-          </Text>
-          <Text className="text-blue-400 font-mono-bold text-xs">
-            {summary.pembelian.toLocaleString("id-ID")}
-          </Text>
+          <View className="flex-1 p-4 gap-2 bg-muted/5">
+            <Text className="text-muted-foreground font-mono-medium text-[10px] uppercase tracking-wider">
+              PENGELUARAN
+            </Text>
+            <Text className="text-red-500 font-mono-bold text-sm">
+              {summary.pengeluaran.toLocaleString("id-ID")}
+            </Text>
+          </View>
+
+          <View className="flex-1 p-4 gap-2 bg-muted/5">
+            <Text className="text-muted-foreground font-mono-medium text-[10px] uppercase tracking-wider">
+              PEMBELIAN
+            </Text>
+            <Text className="text-cyan-500 font-mono-bold text-sm">
+              {summary.pembelian.toLocaleString("id-ID")}
+            </Text>
+          </View>
         </View>
       </View>
     </View>

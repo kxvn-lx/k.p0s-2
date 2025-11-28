@@ -1,4 +1,4 @@
-import { View } from "react-native"
+import { View, TouchableOpacity } from "react-native"
 import { Text } from "@/components/ui/text"
 import {
   format,
@@ -13,9 +13,9 @@ import {
   isSameYear,
 } from "date-fns"
 import { id } from "date-fns/locale"
-import { Button } from "@/components/ui/button"
 import { Icon } from "@/components/ui/icon"
 import { ChevronLeft, ChevronRight } from "lucide-react-native"
+import { cn } from "@/lib/utils"
 
 type PeriodFilter = "daily" | "weekly" | "yearly"
 
@@ -25,7 +25,11 @@ interface DateNavigatorProps {
   filter: PeriodFilter
 }
 
-export function DateNavigator({ date, onDateChange, filter }: DateNavigatorProps) {
+export function DateNavigator({
+  date,
+  onDateChange,
+  filter,
+}: DateNavigatorProps) {
   const today = new Date()
 
   const isNextDisabled = () => {
@@ -56,51 +60,43 @@ export function DateNavigator({ date, onDateChange, filter }: DateNavigatorProps
   }
 
   const nextDisabled = isNextDisabled()
-  const getPeriodLabel = () => {
-    if (filter === "daily") return "Harian"
-    if (filter === "weekly") return "Mingguan"
-    return "Tahunan"
-  }
-
   const goToToday = () => onDateChange(new Date())
-  const getTodayLabel = () => {
-    if (filter === "daily") return "KE HARI INI"
-    if (filter === "weekly") return "KE MINGGU INI"
-    return "KE TAHUN INI"
-  }
 
   return (
-    <View className="bg-background p-2 border-b border-border gap-2">
+    <View className="bg-background px-4 py-2 border-b border-border/40">
       <View className="flex-row items-center justify-between">
-        <Button onPress={handlePrev} variant="outline">
-          <Icon as={ChevronLeft} size={20} />
-        </Button>
+        <TouchableOpacity
+          onPress={handlePrev}
+          className="w-8 h-8 items-center justify-center rounded-full active:bg-muted/20"
+        >
+          <Icon as={ChevronLeft} size={24} className="text-primary" />
+        </TouchableOpacity>
 
-        <View className="items-center">
-          <Text variant="muted" className="text-xs uppercase">
-            {getPeriodLabel().toUpperCase()}
-          </Text>
-          <Text className="font-mono-bold uppercase tracking-wider">
+        <TouchableOpacity
+          onPress={goToToday}
+          className="items-center"
+          activeOpacity={0.7}
+        >
+          <Text className="text-foreground font-semibold text-base">
             {formatDate()}
           </Text>
-          <Button
-            onPress={goToToday}
-            variant="ghost"
-            size="icon"
-            className="w-full"
-            title={getTodayLabel()}
-            textClassName="text-muted-foreground"
-          />
-        </View>
+          {!isNextDisabled() && (
+            <Text className="text-primary text-xs font-medium mt-0.5">
+              Kembali ke Hari Ini
+            </Text>
+          )}
+        </TouchableOpacity>
 
-        <Button
+        <TouchableOpacity
           onPress={handleNext}
-          variant="outline"
-          textClassName="text-muted-foreground"
           disabled={nextDisabled}
+          className={cn(
+            "w-8 h-8 items-center justify-center rounded-full active:bg-muted/20",
+            nextDisabled && "opacity-30"
+          )}
         >
-          <Icon as={ChevronRight} size={20} />
-        </Button>
+          <Icon as={ChevronRight} size={24} className="text-primary" />
+        </TouchableOpacity>
       </View>
     </View>
   )
