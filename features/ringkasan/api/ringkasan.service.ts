@@ -17,12 +17,15 @@ export const RingkasanService = {
     startDate: string,
     endDate: string
   ): Promise<{
-    data: PenjualanRow[] | null
+    data: (PenjualanRow & { penjualan_detail: PenjualanDetailRow[] })[] | null
     error: PostgrestError | null
   }> {
     const { data, error } = await supabase
       .from("penjualan")
-      .select("*")
+      .select(`
+        *,
+        penjualan_detail (*)
+      `)
       .gte("tanggal", startDate)
       .lte("tanggal", endDate)
       .order("tanggal", { ascending: false })
@@ -34,12 +37,15 @@ export const RingkasanService = {
     startDate: string,
     endDate: string
   ): Promise<{
-    data: PembelianRow[] | null
+    data: (PembelianRow & { pembelian_detail: PembelianDetailRow[] })[] | null
     error: PostgrestError | null
   }> {
     const { data, error } = await supabase
       .from("pembelian")
-      .select("*")
+      .select(`
+        *,
+        pembelian_detail (*)
+      `)
       .gte("tanggal", startDate)
       .lte("tanggal", endDate)
       .order("tanggal", { ascending: false })
@@ -51,12 +57,15 @@ export const RingkasanService = {
     startDate: string,
     endDate: string
   ): Promise<{
-    data: PengeluaranRow[] | null
+    data: (PengeluaranRow & { pengeluaran_detail: PengeluaranDetailRow[] })[] | null
     error: PostgrestError | null
   }> {
     const { data, error } = await supabase
       .from("pengeluaran")
-      .select("*")
+      .select(`
+        *,
+        pengeluaran_detail (*)
+      `)
       .gte("tanggal", startDate)
       .lte("tanggal", endDate)
       .order("tanggal", { ascending: false })

@@ -36,7 +36,7 @@ export function TransactionList({
     const router = useRouter()
 
     const handlePress = (item: TransactionItem) => {
-        router.push(`/ringkasan/rincian?id=${item.id}&type=${item.type}`)
+        router.push(`/ringkasan/rincian?transaction=${encodeURIComponent(JSON.stringify(item))}`)
     }
 
     const flattenedData = useMemo(() => {

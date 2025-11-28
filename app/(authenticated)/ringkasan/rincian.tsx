@@ -1,112 +1,70 @@
 import { View } from "react-native"
 import { Stack, useLocalSearchParams } from "expo-router"
 import { StatusMessage } from "@/components/shared/status-message"
-import {
-  usePenjualanDetail,
-  usePembelianDetail,
-  usePengeluaranDetail,
-} from "@/features/ringkasan/hooks/ringkasan.queries"
 import { PenjualanRingkasanDetail } from "@/features/ringkasan/components/penjualan-ringkasan-detail"
 import { PembelianRingkasanDetail } from "@/features/ringkasan/components/pembelian-ringkasan-detail"
 import { PengeluaranRingkasanDetail } from "@/features/ringkasan/components/pengeluaran-ringkasan-detail"
 import { formatDateTime } from "@/lib/utils"
-
-type TransactionType = "penjualan" | "pembelian" | "pengeluaran"
+import type { TransactionItem } from "@/features/ringkasan/hooks/ringkasan.queries"
+import type { PenjualanDetailRow, PembelianDetailRow, PengeluaranDetailRow } from "@/features/ringkasan/api/ringkasan.service"
 
 export default function RincianPage() {
-  const { id, type } = useLocalSearchParams<{
-    id: string
-    type: TransactionType
+  const { transaction } = useLocalSearchParams<{
+    transaction: string
   }>()
 
-  const penjualanQuery = usePenjualanDetail(type === "penjualan" ? id : "")
-  const pembelianQuery = usePembelianDetail(type === "pembelian" ? id : "")
-  const pengeluaranQuery = usePengeluaranDetail(
-    type === "pengeluaran" ? id : ""
-  )
+  // ----- Parse transaction data from route params -----
+  let parsedTransaction: TransactionItem | null = null
+  if (transaction) {
+    try {
+      parsedTransaction = JSON.parse(decodeURIComponent(transaction)) as TransactionItem
+    } catch (_) {
+      parsedTransaction = null
+    }
+  }
 
-  const query =
-    type === "penjualan"
-      ? penjualanQuery
-      : type === "pembelian"
-        ? pembelianQuery
-        : pengeluaranQuery
-
-  if (query.isLoading) {
+  // ----- Handle missing or invalid transaction data -----
+  if (!parsedTransaction) {
     return (
       <View className="flex-1 bg-background">
-        <StatusMessage isLoading />
+        <StatusMessage type="error" message="Data transaksi tidak valid" />
       </View>
-    )
-  }
-
-  if (query.isError || !query.data) {
-    return (
-      <View className="flex-1 bg-background">
-        <StatusMessage type="error" message="Gagal memuat rincian" />
-      </View>
-    )
-  }
-
-  if (type === "penjualan" && penjualanQuery.data) {
-    return (
-      <>
-        <Stack.Screen
-          options={{
-            title: formatDateTime(penjualanQuery.data.header.tanggal, true),
-          }}
-        />
-        <PenjualanRingkasanDetail
-          staffName={penjualanQuery.data.header.staff_name}
-          tanggal={penjualanQuery.data.header.tanggal}
-          jumlahTotal={penjualanQuery.data.header.jumlah_total}
-          keterangan={penjualanQuery.data.header.keterangan}
-          details={penjualanQuery.data.details}
-        />
-      </>
-    )
-  }
-
-  if (type === "pembelian" && pembelianQuery.data) {
-    return (
-      <>
-        <Stack.Screen
-          options={{
-            title: formatDateTime(pembelianQuery.data.header.tanggal, true),
-          }}
-        />
-        <PembelianRingkasanDetail
-          staffName={pembelianQuery.data.header.staff_name}
-          tanggal={pembelianQuery.data.header.tanggal}
-          jumlahTotal={pembelianQuery.data.header.jumlah_total}
-          details={pembelianQuery.data.details}
-        />
-      </>
-    )
-  }
-
-  if (type === "pengeluaran" && pengeluaranQuery.data) {
-    return (
-      <>
-        <Stack.Screen
-          options={{
-            title: formatDateTime(pengeluaranQuery.data.header.tanggal, true),
-          }}
-        />
-        <PengeluaranRingkasanDetail
-          staffName={pengeluaranQuery.data.header.staff_name}
-          tanggal={pengeluaranQuery.data.header.tanggal}
-          jumlahTotal={pengeluaranQuery.data.header.jumlah_total}
-          keterangan={pengeluaranQuery.data.header.keterangan}
-          details={pengeluaranQuery.data.details}
-        />
-      </>
     )
   }
 
   return (
-    <View className="flex-1 bg-background">
-      <StatusMessage type="error" message="Tipe transaksi tidak valid" />
-    </View>
+    <>
+      <Stack.Screen
+        options={{
+          title: formatDateTime(parsedTransaction.tanggal, true),
+        }}
+      />
+      {parsedTransaction.type === "penjualan" && (
+        <PenjualanRingkasanDetail
+          staffName={parsedTransaction.staff_name}
+          tanggal={parsedTransaction.tanggal}
+          jumlahTotal={parsedTransaction.jumlah_total}
+          keterangan={parsedTransaction.keterangan}
+          details={parsedTransaction.details as PenjualanDetailRow[]}
+        />
+      )}
+      {parsedTransaction.type === "pembelian" && (
+        <PembelianRingkasanDetail
+          staffName={parsedTransaction.staff_name}
+          tanggal={parsedTransaction.tanggal}
+          jumlahTotal={parsedTransaction.jumlah_total}
+          details={parsedTransaction.details as PembelianDetailRow[]}
+        />
+      )}
+      {parsedTransaction.type === "pengeluaran" && (
+        <PengeluaranRingkasanDetail
+          staffName={parsedTransaction.staff_name}
+          tanggal={parsedTransaction.tanggal}
+          jumlahTotal={parsedTransaction.jumlah_total}
+          keterangan={parsedTransaction.keterangan}
+          details={parsedTransaction.details as PengeluaranDetailRow[]}
+        />
+      )}
+    </>
   )
 }

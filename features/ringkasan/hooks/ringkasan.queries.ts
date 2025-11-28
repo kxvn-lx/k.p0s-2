@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import {
   RingkasanService,
-  type PenjualanRow,
-  type PembelianRow,
-  type PengeluaranRow,
+  type PenjualanDetailRow,
+  type PembelianDetailRow,
+  type PengeluaranDetailRow,
 } from "../api/ringkasan.service"
 import { ringkasanKeys } from "../api/ringkasan.keys"
 import { StockService } from "@/features/stok/api/stock.service"
@@ -34,6 +34,7 @@ export type TransactionItem = {
   jumlah_total: number
   keterangan: string | null
   staff_name: string
+  details: PenjualanDetailRow[] | PembelianDetailRow[] | PengeluaranDetailRow[]
 }
 
 export type RingkasanSummary = {
@@ -113,29 +114,32 @@ export function useRingkasanData(startDate: string, endDate: string) {
 
   const transactions = useMemo<TransactionItem[]>(() => {
     const allTransactions: TransactionItem[] = [
-      ...(penjualanQuery.data?.map((item: PenjualanRow) => ({
+      ...(penjualanQuery.data?.map((item) => ({
         id: item.id,
         type: "penjualan" as const,
         tanggal: item.tanggal,
         jumlah_total: item.jumlah_total,
         keterangan: item.keterangan,
         staff_name: item.staff_name,
+        details: item.penjualan_detail || [],
       })) || []),
-      ...(pembelianQuery.data?.map((item: PembelianRow) => ({
+      ...(pembelianQuery.data?.map((item) => ({
         id: item.id,
         type: "pembelian" as const,
         tanggal: item.tanggal,
         jumlah_total: item.jumlah_total,
         keterangan: item.keterangan,
         staff_name: item.staff_name,
+        details: item.pembelian_detail || [],
       })) || []),
-      ...(pengeluaranQuery.data?.map((item: PengeluaranRow) => ({
+      ...(pengeluaranQuery.data?.map((item) => ({
         id: item.id,
         type: "pengeluaran" as const,
         tanggal: item.tanggal,
         jumlah_total: item.jumlah_total,
         keterangan: item.keterangan,
         staff_name: item.staff_name,
+        details: item.pengeluaran_detail || [],
       })) || []),
     ]
 
