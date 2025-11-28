@@ -182,13 +182,13 @@ export default function PembayaranScreen() {
         {/* Bottom Actions */}
         <View className="flex-row items-center justify-between h-14 p-2 gap-2">
           <Button
-            title="Uang Pas"
+            title="DOI PAS"
             variant="outline"
             onPress={handleExactAmount}
             className="flex-1"
           />
           <Button
-            title="Lanjut"
+            title="LANJUT"
             onPress={handleProceed}
             disabled={!isValid}
             className="flex-1"

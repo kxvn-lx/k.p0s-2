@@ -6,9 +6,9 @@ import {
   usePembelianDetail,
   usePengeluaranDetail,
 } from "@/features/ringkasan/hooks/ringkasan.queries"
-import { PenjualanDetailContent } from "@/features/ringkasan/components/rincian-penjualan"
-import { PembelianDetailContent } from "@/features/ringkasan/components/rincian-pembelian"
-import { PengeluaranDetailContent } from "@/features/ringkasan/components/rincian-pengeluaran"
+import { PenjualanDetailContent } from "@/features/ringkasan/components/penjualan-detail-content"
+import { PembelianDetailContent } from "@/features/ringkasan/components/pembelian-detail-content"
+import { PengeluaranDetailContent } from "@/features/ringkasan/components/pengeluaran-detail-content"
 import { formatDateTime } from "@/lib/utils"
 
 type TransactionType = "penjualan" | "pembelian" | "pengeluaran"

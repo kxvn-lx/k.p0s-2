@@ -69,7 +69,7 @@ export function StockDetailHeader({ stock }: { stock: StockRow }) {
         </View>
 
         <View>
-          <Text variant="muted" className="text-sm uppercase mx-2">
+          <Text variant="muted" className="text-xs uppercase mx-2">
             Keterangan
           </Text>
           <Text className="text-sm">{stock.keterangan ?? "-"}</Text>

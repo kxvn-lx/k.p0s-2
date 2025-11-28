@@ -98,7 +98,7 @@ const METAL_LIGHT: ThemeColors = {
   border: "hsl(210 10% 75%)",
   input: "hsl(210 10% 85%)",
   ring: "hsl(220 10% 40%)",
-  radius: "0.5rem", // Slight curve
+  radius: "1rem", 
 }
 
 const METAL_DARK: ThemeColors = {
@@ -121,7 +121,7 @@ const METAL_DARK: ThemeColors = {
   border: "hsl(220 10% 24%)",
   input: "hsl(220 10% 20%)",
   ring: "hsl(210 10% 60%)",
-  radius: "0.5rem",
+  radius: "1rem",
 }
 
 // ----- Teduh Colors (Eye-Friendly, Scientific Precision) -----
@@ -147,7 +147,7 @@ const TEDUH_LIGHT: ThemeColors = {
   border: "hsl(36 15% 75%)",
   input: "hsl(36 20% 85%)",
   ring: "hsl(24 40% 50%)",
-  radius: "0.375rem", // Gentle curve
+  radius: "0.5rem", 
 }
 
 const TEDUH_DARK: ThemeColors = {
@@ -170,7 +170,7 @@ const TEDUH_DARK: ThemeColors = {
   border: "hsl(220 15% 30%)",
   input: "hsl(220 15% 26%)",
   ring: "hsl(36 40% 60%)",
-  radius: "0.375rem",
+  radius: "0.5rem",
 }
 
 export const getThemeColors = (

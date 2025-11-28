@@ -102,7 +102,7 @@ export function useRingkasanData(startDate: string, endDate: string) {
         type: "pembelian" as const,
         tanggal: item.tanggal,
         jumlah_total: item.jumlah_total,
-        keterangan: "Pembelian Stok",
+        keterangan: item.keterangan,
         staff_name: item.staff_name,
       })) || []),
       ...(pengeluaranQuery.data?.map((item: PengeluaranRow) => ({

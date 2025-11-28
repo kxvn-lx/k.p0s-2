@@ -152,7 +152,7 @@ export default function VariasiHargaSelector({
                 if (item.type === 'header') {
                     return (
                         <View className="px-2 mt-4">
-                            <Text variant="muted" className="text-sm uppercase">{item.title}</Text>
+                            <Text variant="muted" className="text-xs uppercase">{item.title}</Text>
                         </View>
                     )
                 } else {

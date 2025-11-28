@@ -9,10 +9,10 @@ import {
   endOfYear,
 } from "date-fns"
 import { useRingkasanData } from "./hooks/ringkasan.queries"
-import { DateNavigator } from "./components/navigasi-tanggal"
+import { DateNavigator } from "./components/date-navigator"
 import { FilterSegment } from "./components/filter-segment"
-import { SummaryCard } from "./components/kartu-ringkasan"
-import { TransactionList } from "./components/daftar-transaksi"
+import { SummaryCard } from "./components/summary-card"
+import { TransactionList } from "./components/transaction-list"
 
 type PeriodFilter = "daily" | "weekly" | "yearly"
 

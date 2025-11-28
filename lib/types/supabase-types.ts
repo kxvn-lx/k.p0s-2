@@ -44,6 +44,7 @@ export type Database = {
           created_at: string
           id: string
           jumlah_total: number
+          keterangan: string | null
           staff_id: string
           staff_name: string
           tanggal: string
@@ -53,6 +54,7 @@ export type Database = {
           created_at?: string
           id?: string
           jumlah_total?: number
+          keterangan?: string | null
           staff_id: string
           staff_name: string
           tanggal?: string
@@ -62,6 +64,7 @@ export type Database = {
           created_at?: string
           id?: string
           jumlah_total?: number
+          keterangan?: string | null
           staff_id?: string
           staff_name?: string
           tanggal?: string

@@ -1,6 +1,6 @@
 import { Text } from "@/components/ui/text"
 import { FlatList, View, Keyboard } from "react-native"
-import type { StockLogRow, StockRow } from "./api/stock.service"
+import type { StockRow } from "./api/stock.service"
 import { useStockLogsQuery } from "./hooks/stock.queries"
 import StockDetailHeader from "./components/detail/stock-detail-header"
 import StockLogItem from "./components/detail/stock-log-item"

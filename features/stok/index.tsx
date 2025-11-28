@@ -78,9 +78,7 @@ export default function StockIndex() {
 
   return (
     <View className="flex-1 bg-background">
-      <View>
-        <SearchInput placeholder="Cari nama atau kode stok..." onSearch={setQuery} />
-      </View>
+      <SearchInput placeholder="Cari nama atau kode stok..." onSearch={setQuery} />
       {renderContent()}
     </View>
   )
