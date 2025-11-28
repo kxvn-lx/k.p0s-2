@@ -16,52 +16,54 @@ export function StockDetailHeader({ stock }: { stock: StockRow }) {
         </Text>
 
         {/* ----- Additional Info ----- */}
-        <View className=" rounded-[--radius] border border-border bg-card p-2 gap-2">
-          <View className="flex-row gap-x-2">
-            <View className="flex-1 rounded-[--radius] border border-border bg-background p-2">
-              <Text variant="muted" className="text-sm uppercase">
+        <View className="gap-2">
+          <View className="flex-row gap-x-1">
+            <View className="flex-1 rounded-[--radius] border border-border p-2 bg-card">
+              <Text variant="muted" className="text-xs uppercase">
                 QTY
               </Text>
-              <Text
-                variant="h4"
-                className={cn(isLowStock && "text-destructive")}
-              >
-                {stock.jumlah_stok}
-              </Text>
-              <Text variant="muted">{stock.satuan_utama}</Text>
+              <View className="flex-row items-center gap-1">
+                <Text
+                  variant="large"
+                  className={cn(isLowStock && "text-destructive")}
+                >
+                  {stock.jumlah_stok}
+                </Text>
+                <Text variant="muted">{stock.satuan_utama}</Text>
+              </View>
             </View>
-            <View className="flex-1 rounded-[--radius] border border-border bg-background p-2">
-              <Text variant="muted" className="text-sm uppercase">
+            <View className="flex-1 rounded-[--radius] border border-border p-2 bg-card">
+              <Text variant="muted" className="text-xs uppercase">
                 Kategori
               </Text>
-              <Text variant="h4" className="uppercase">
+              <Text variant="large" className="uppercase">
                 {stock.kategori ?? "-"}
               </Text>
             </View>
-            <View className="flex-1 rounded-[--radius] border border-border bg-background p-2">
-              <Text variant="muted" className="text-sm uppercase">
+            <View className="flex-1 rounded-[--radius] border border-border p-2 bg-card">
+              <Text variant="muted" className="text-xs uppercase">
                 Lokasi
               </Text>
-              <Text variant="h4" className={cn(getLokasiColor(stock.lokasi))}>
+              <Text variant="large" className={cn(getLokasiColor(stock.lokasi))}>
                 {stock.lokasi ?? "-"}
               </Text>
             </View>
           </View>
 
-          <View className="flex-row gap-x-2">
-            <View className="flex-1 rounded-[--radius] border border-border bg-background p-2">
-              <Text variant="muted" className="text-sm uppercase">
+          <View className="flex-row gap-x-1">
+            <View className="flex-1 rounded-[--radius] border border-border p-2 bg-card">
+              <Text variant="muted" className="text-xs uppercase">
                 Harga Jual
               </Text>
-              <Text variant="h3">
+              <Text variant="large">
                 {stock.harga_jual?.toLocaleString("id-ID") ?? "0"}
               </Text>
             </View>
-            <View className="flex-1 rounded-[--radius] border border-border bg-background p-2">
-              <Text variant="muted" className="text-sm uppercase">
+            <View className="flex-1 rounded-[--radius] border border-border p-2 bg-card">
+              <Text variant="muted" className="text-xs uppercase">
                 Harga Beli
               </Text>
-              <Text variant="h3">
+              <Text variant="large">
                 {stock.harga_beli?.toLocaleString("id-ID") ?? "-"}
               </Text>
             </View>

@@ -4,6 +4,8 @@ import { View } from "react-native"
 import PressableRow from '@/components/shared/pressable-row'
 import type { StockRow } from "../api/stock.service"
 import { cn, getLokasiColor } from "@/lib/utils"
+import { Icon } from '@/components/ui/icon'
+import { ChevronRight } from 'lucide-react-native'
 
 export default function StockRow({
   stock,
@@ -19,7 +21,7 @@ export default function StockRow({
     <PressableRow
       onPress={onPress}
       testID={`stock-row-${stock.id}`}
-      className="flex-row items-start justify-between p-2 bg-background"
+      className="flex-row items-center justify-between p-2 bg-background"
     >
 
       <View className="flex-1 flex-col pr-2">
@@ -39,13 +41,18 @@ export default function StockRow({
       </View>
 
 
-      <View className="items-end">
-        <Text>
-          {stock.harga_jual ? `${stock.harga_jual.toLocaleString()}` : "-"}
-        </Text>
-        <View>
-          <Text className={cn("text-sm uppercase", getLokasiColor(stock.lokasi))}>[{stock.lokasi}]</Text>
+      <View className="flex-row items-center gap-x-2">
+        <View className="items-end">
+          <Text>
+            {stock.harga_jual ? `${stock.harga_jual.toLocaleString()}` : "-"}
+          </Text>
+
+          <View>
+            <Text className={cn("text-sm uppercase", getLokasiColor(stock.lokasi))}>[{stock.lokasi}]</Text>
+          </View>
         </View>
+
+        <Icon as={ChevronRight} size={20} className="text-muted-foreground/50" />
       </View>
     </PressableRow>
   )

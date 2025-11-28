@@ -1,1 +1,0 @@
-- rework the transaksi list UI. too small texts

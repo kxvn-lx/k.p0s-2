@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text"
+import { cn } from '@/lib/utils'
 import { FlatList, View, Keyboard } from "react-native"
 import type { StockRow } from "./api/stock.service"
 import { useStockLogsQuery } from "./hooks/stock.queries"
@@ -31,7 +32,21 @@ export default function StockDetail({ stock }: { stock: StockRow }) {
         onScrollBeginDrag={() => Keyboard.dismiss()}
         data={logs}
         keyExtractor={(r) => r.id}
-        ListHeaderComponent={<StockDetailHeader stock={stock} />}
+        ListHeaderComponent={() => (
+          <View>
+            <StockDetailHeader stock={stock} />
+
+            {/* Pergerakan stok header — non-sticky */}
+            <View className={cn('px-4 py-2 mt-2')}>
+              <Text
+                variant="muted"
+                className="font-mono-bold text-xs uppercase tracking-wider"
+              >
+                PERGERAKAN STOK
+              </Text>
+            </View>
+          </View>
+        )}
         renderItem={({ item }) => <StockLogItem item={item} />}
         ListEmptyComponent={() => (
           <View className="items-center mt-12">
