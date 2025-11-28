@@ -26,17 +26,11 @@ export default function Keranjang() {
     isLoading,
     isError,
     refetch,
-    isFetching,
+    isRefetching,
   } = useTruckStocksQuery(query)
 
-  const [refreshing, setRefreshing] = useState(false)
   const onRefresh = useCallback(async () => {
-    setRefreshing(true)
-    try {
-      await refetch()
-    } finally {
-      setRefreshing(false)
-    }
+    await refetch()
   }, [refetch])
 
   const {
@@ -102,7 +96,7 @@ export default function Keranjang() {
         onScrollBeginDrag={() => Keyboard.dismiss()}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing || isFetching}
+            refreshing={isRefetching}
             onRefresh={onRefresh}
           />
         }

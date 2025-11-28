@@ -18,18 +18,11 @@ export default function StockIndex() {
     isLoading,
     isError,
     refetch,
-    isFetching,
+    isRefetching,
   } = useStocksQuery(query)
 
-  const [refreshing, setRefreshing] = useState(false)
-
   const onRefresh = useCallback(async () => {
-    setRefreshing(true)
-    try {
-      await refetch()
-    } finally {
-      setRefreshing(false)
-    }
+    await refetch()
   }, [refetch])
 
   const renderContent = () => {
@@ -48,7 +41,7 @@ export default function StockIndex() {
         onScrollBeginDrag={() => Keyboard.dismiss()}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing || isFetching}
+            refreshing={isRefetching}
             onRefresh={onRefresh}
           />
         }

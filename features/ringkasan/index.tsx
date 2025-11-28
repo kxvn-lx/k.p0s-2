@@ -1,5 +1,6 @@
 import { View } from "react-native"
 import { useState, useMemo } from "react"
+import { RefreshControl } from "react-native"
 import {
   startOfDay,
   endOfDay,
@@ -47,7 +48,11 @@ export default function RingkasanScreen() {
     }
   }, [currentDate, filter])
 
-  const { summary, transactions, isLoading } = useRingkasanData(startDate, endDate)
+  const { summary, transactions, isLoading, isRefetching, refetch } = useRingkasanData(startDate, endDate)
+
+  const onRefresh = async () => {
+    await refetch()
+  }
 
   const handleDateChange = (newDate: Date) => {
     setDate(prev => ({
@@ -61,7 +66,18 @@ export default function RingkasanScreen() {
       <DateNavigator date={currentDate} onDateChange={handleDateChange} filter={filter} />
       <FilterSegment filter={filter} onFilterChange={setFilter} />
       <SummaryCard summary={summary} />
-      <TransactionList transactions={transactions} isLoading={isLoading} />
+      <TransactionList
+        transactions={transactions}
+        isLoading={isLoading}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={onRefresh}
+            colors={["#007AFF"]}
+            tintColor="#007AFF"
+          />
+        }
+      />
     </View>
   )
 }

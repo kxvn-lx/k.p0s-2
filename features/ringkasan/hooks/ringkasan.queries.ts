@@ -127,10 +127,21 @@ export function useRingkasanData(startDate: string, endDate: string) {
       penjualanQuery.isLoading ||
       pembelianQuery.isLoading ||
       pengeluaranQuery.isLoading,
+    isRefetching:
+      penjualanQuery.isRefetching ||
+      pembelianQuery.isRefetching ||
+      pengeluaranQuery.isRefetching,
     isError:
       penjualanQuery.isError ||
       pembelianQuery.isError ||
       pengeluaranQuery.isError,
+    refetch: async () => {
+      await Promise.all([
+        penjualanQuery.refetch(),
+        pembelianQuery.refetch(),
+        pengeluaranQuery.refetch(),
+      ])
+    },
   }
 }
 

@@ -1,4 +1,5 @@
 import { View } from "react-native"
+import { RefreshControl, RefreshControlProps } from "react-native"
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list"
 import { Text } from "@/components/ui/text"
 import type { TransactionItem } from "../hooks/ringkasan.queries"
@@ -14,10 +15,12 @@ import PressableRow from "@/components/shared/pressable-row"
 interface TransactionListProps {
     transactions: TransactionItem[]
     isLoading: boolean
+    refreshControl?: React.ReactElement<RefreshControlProps>
 }
 
 type ListItem =
     | { type: "header"; title: string; id: string }
+    | { type: "empty"; id: string }
     | {
         type: "item"
         data: TransactionItem
@@ -28,6 +31,7 @@ type ListItem =
 export function TransactionList({
     transactions,
     isLoading,
+    refreshControl,
 }: TransactionListProps) {
     const router = useRouter()
 
@@ -49,17 +53,23 @@ export function TransactionList({
         })
 
         const result: ListItem[] = []
-        Object.entries(groups).forEach(([title, items]) => {
-            result.push({ type: "header", title, id: `header-${title}` })
-            items.forEach((item, index) => {
-                result.push({
-                    type: "item",
-                    data: item,
-                    isFirst: index === 0,
-                    isLast: index === items.length - 1,
+
+        // Add empty state if no transactions
+        if (transactions.length === 0) {
+            result.push({ type: "empty", id: "empty-state" })
+        } else {
+            Object.entries(groups).forEach(([title, items]) => {
+                result.push({ type: "header", title, id: `header-${title}` })
+                items.forEach((item, index) => {
+                    result.push({
+                        type: "item",
+                        data: item,
+                        isFirst: index === 0,
+                        isLast: index === items.length - 1,
+                    })
                 })
             })
-        })
+        }
 
         return result
     }, [transactions])
@@ -93,6 +103,29 @@ export function TransactionList({
                     >
                         {item.title}
                     </Text>
+                </View>
+            )
+        }
+
+        if (item.type === "empty") {
+            return (
+                <View className="flex-1 pt-8">
+                    {/* placeholder row */}
+                    <View className="flex-row items-center p-2 bg-card gap-x-2 border-y border-border">
+                        <View className="flex-1 gap-2">
+                            <Text className="uppercase text-muted-foreground">Nd ada transaksi</Text>
+
+                            <View className="flex-row items-center gap-2">
+                                <Text variant="muted">-</Text>
+                                <Text className="text-muted-foreground/50 text-xs">•</Text>
+                                <Text variant="muted" className="uppercase">-</Text>
+                            </View>
+                        </View>
+
+                        <View className="flex-row items-center gap-2">
+                            <Text className="text-muted-foreground">0</Text>
+                        </View>
+                    </View>
                 </View>
             )
         }
@@ -165,30 +198,6 @@ export function TransactionList({
         )
     }
 
-    // Empty state
-    if (!isLoading && transactions.length === 0) {
-        return (
-            <View className="flex-1 pt-8">
-                {/* placeholder row */}
-                <PressableRow className="flex-row items-center p-2 bg-card gap-x-2 border-y border-border">
-                    <View className="flex-1 gap-2">
-                        <Text className="uppercase text-muted-foreground">Nd ada transaksi</Text>
-
-                        <View className="flex-row items-center gap-2">
-                            <Text variant="muted">-</Text>
-                            <Text className="text-muted-foreground/50 text-xs">•</Text>
-                            <Text variant="muted" className="uppercase">-</Text>
-                        </View>
-                    </View>
-
-                    <View className="flex-row items-center gap-2">
-                        <Text className="text-muted-foreground">0</Text>
-                    </View>
-                </PressableRow>
-            </View>
-        )
-    }
-
     return (
         <View className="flex-1">
             <FlashList
@@ -196,9 +205,10 @@ export function TransactionList({
                 renderItem={renderItem}
                 getItemType={(item) => item.type}
                 keyExtractor={(item) =>
-                    item.type === "header" ? item.id : item.data.id
+                    item.type === "header" ? item.id : item.type === "empty" ? item.id : item.data.id
                 }
                 stickyHeaderIndices={stickyHeaderIndices}
+                refreshControl={refreshControl}
             />
         </View>
     )
