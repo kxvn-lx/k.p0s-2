@@ -116,7 +116,7 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
                       {originalPrice.toLocaleString()}
                     </Text>
                   )}
-                  <Text className={isVariasiHarga ? "text-green-500 text-sm" : "text-sm"}>
+                  <Text className={isVariasiHarga ? "text-green-500 text-sm" : "text-sm text-muted-foreground"}>
                     {harga_satuan.toLocaleString()}
                   </Text>
                 </View>

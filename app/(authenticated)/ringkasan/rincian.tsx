@@ -6,9 +6,9 @@ import {
   usePembelianDetail,
   usePengeluaranDetail,
 } from "@/features/ringkasan/hooks/ringkasan.queries"
-import { PenjualanDetailContent } from "@/features/ringkasan/components/penjualan-detail-content"
-import { PembelianDetailContent } from "@/features/ringkasan/components/pembelian-detail-content"
-import { PengeluaranDetailContent } from "@/features/ringkasan/components/pengeluaran-detail-content"
+import { PenjualanRingkasanDetail } from "@/features/ringkasan/components/penjualan-ringkasan-detail"
+import { PembelianRingkasanDetail } from "@/features/ringkasan/components/pembelian-ringkasan-detail"
+import { PengeluaranRingkasanDetail } from "@/features/ringkasan/components/pengeluaran-ringkasan-detail"
 import { formatDateTime } from "@/lib/utils"
 
 type TransactionType = "penjualan" | "pembelian" | "pengeluaran"
@@ -56,7 +56,7 @@ export default function RincianPage() {
             title: formatDateTime(penjualanQuery.data.header.tanggal, true),
           }}
         />
-        <PenjualanDetailContent
+        <PenjualanRingkasanDetail
           staffName={penjualanQuery.data.header.staff_name}
           tanggal={penjualanQuery.data.header.tanggal}
           jumlahTotal={penjualanQuery.data.header.jumlah_total}
@@ -75,7 +75,7 @@ export default function RincianPage() {
             title: formatDateTime(pembelianQuery.data.header.tanggal, true),
           }}
         />
-        <PembelianDetailContent
+        <PembelianRingkasanDetail
           staffName={pembelianQuery.data.header.staff_name}
           tanggal={pembelianQuery.data.header.tanggal}
           jumlahTotal={pembelianQuery.data.header.jumlah_total}
@@ -93,7 +93,7 @@ export default function RincianPage() {
             title: formatDateTime(pengeluaranQuery.data.header.tanggal, true),
           }}
         />
-        <PengeluaranDetailContent
+        <PengeluaranRingkasanDetail
           staffName={pengeluaranQuery.data.header.staff_name}
           tanggal={pengeluaranQuery.data.header.tanggal}
           jumlahTotal={pengeluaranQuery.data.header.jumlah_total}

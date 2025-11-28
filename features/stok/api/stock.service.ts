@@ -85,4 +85,19 @@ export const StockService = {
 
     return { data, error }
   },
+
+  async getByIdWithVariations(id: string): Promise<{
+    data: StockRow | null
+    error: PostgrestError | null
+  }> {
+
+    const { data, error } = await supabase
+      .from("stock")
+      .select("*, variasi_harga_barang(*)")
+      .eq("id", id)
+      .maybeSingle()
+
+    if (error) return { data: null, error }
+    return { data, error }
+  },
 }

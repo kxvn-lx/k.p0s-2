@@ -78,11 +78,11 @@ export type Database = {
           harga_beli: number
           id: string
           jumlah_total: number
-          kode_stock: string
           nama: string
           pembelian_id: string
           qty: number
           satuan_utama: string | null
+          stock_id: string
           updated_at: string
           variasi: Json | null
         }
@@ -91,11 +91,11 @@ export type Database = {
           harga_beli: number
           id?: string
           jumlah_total: number
-          kode_stock: string
           nama: string
           pembelian_id: string
           qty: number
           satuan_utama?: string | null
+          stock_id: string
           updated_at?: string
           variasi?: Json | null
         }
@@ -104,11 +104,11 @@ export type Database = {
           harga_beli?: number
           id?: string
           jumlah_total?: number
-          kode_stock?: string
           nama?: string
           pembelian_id?: string
           qty?: number
           satuan_utama?: string | null
+          stock_id?: string
           updated_at?: string
           variasi?: Json | null
         }
@@ -232,11 +232,11 @@ export type Database = {
           harga_jual: number
           id: string
           jumlah_total: number
-          kode_stock: string
           nama: string
           penjualan_id: string
           qty: number
           satuan_utama: string | null
+          stock_id: string
           updated_at: string
           variasi: Json | null
         }
@@ -245,11 +245,11 @@ export type Database = {
           harga_jual: number
           id?: string
           jumlah_total: number
-          kode_stock: string
           nama: string
           penjualan_id: string
           qty: number
           satuan_utama?: string | null
+          stock_id: string
           updated_at?: string
           variasi?: Json | null
         }
@@ -258,11 +258,11 @@ export type Database = {
           harga_jual?: number
           id?: string
           jumlah_total?: number
-          kode_stock?: string
           nama?: string
           penjualan_id?: string
           qty?: number
           satuan_utama?: string | null
+          stock_id?: string
           updated_at?: string
           variasi?: Json | null
         }
