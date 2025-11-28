@@ -19,7 +19,7 @@ export function SummaryCard({ summary }: SummaryCardProps) {
                         </Text>
                     </View>
                     <Text
-                        variant="h1"
+                        variant="h3"
                         className={cn(
                             "font-mono-bold tracking-tighter",
                         )}
@@ -43,7 +43,7 @@ export function SummaryCard({ summary }: SummaryCardProps) {
                         <Text variant="muted" className="text-xs uppercase tracking-wider">
                             PENGELUARAN
                         </Text>
-                        <Text className="text-red-500 font-mono-bold text-sm">
+                        <Text className="font-mono-bold text-sm">
                             {summary.pengeluaran.toLocaleString("id-ID")}
                         </Text>
                     </View>
@@ -52,7 +52,7 @@ export function SummaryCard({ summary }: SummaryCardProps) {
                         <Text variant="muted" className="text-xs uppercase tracking-wider">
                             PEMBELIAN
                         </Text>
-                        <Text className="text-cyan-500 font-mono-bold text-sm">
+                        <Text className="font-mono-bold text-sm">
                             {summary.pembelian.toLocaleString("id-ID")}
                         </Text>
                     </View>

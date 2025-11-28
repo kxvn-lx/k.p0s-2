@@ -81,9 +81,9 @@ export function TransactionList({
     }, [flattenedData])
 
     const getItemColor = (type: string) => {
-        if (type === "penjualan") return "text-green-500"
-        if (type === "pengeluaran") return "text-red-500"
-        if (type === "pembelian") return "text-cyan-500"
+        if (type === "penjualan") return "text-green-400"
+        if (type === "pengeluaran") return "text-[#da2f8b]"
+        if (type === "pembelian") return "text-red-500"
         return "text-foreground"
     }
 

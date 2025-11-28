@@ -32,6 +32,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-10 px-2",
+        sm: "h-8 px-3 text-xs",
         icon: "h-7 px-2",
         bare: "h-fit",
       },
@@ -55,6 +56,7 @@ const buttonTextVariants = cva("font-medium text-center", {
     },
     size: {
       default: "text-base",
+      sm: "text-xs",
       icon: "text-sm",
       bare: "",
     },
