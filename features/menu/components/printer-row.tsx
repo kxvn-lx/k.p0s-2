@@ -1,7 +1,7 @@
 import { Printer } from "lucide-react-native"
 import { router } from "expo-router"
-import usePrinterStore from "@/features/menu/store/printer-store"
 import InfoRow from "@/components/shared/info-row"
+import usePrinterStore from "@/lib/store/printer-store"
 
 export default function PrinterRow() {
   const { selectedPrinter } = usePrinterStore()

@@ -1,5 +1,5 @@
 import { useCallback, useState, useRef, useEffect } from "react"
-import usePrinterStore from "@/features/menu/store/printer-store"
+import usePrinterStore from "@/lib/store/printer-store"
 import { toast } from "@/lib/store/toast-store"
 import {
   hasBluetoothPermissions,
@@ -9,16 +9,14 @@ import {
   clearSelectedPrinter,
   getSelectedPrinter,
   printTestPage,
-  printReceipt as printReceiptService,
   openAppSettings,
   openBluetoothSettings,
   isRPP02NDevice,
   isDeviceStillPaired,
   initializePrinterState,
-} from "@/features/menu/utils/printer-service"
-import { formatBasketToReceipt } from "@/features/menu/utils/receipt-formatter"
-import type { BluetoothDevice, ReceiptData } from "@/features/menu/types/printer.types"
-import type { BasketItem } from "@/features/keranjang/types/keranjang.types"
+  connectForPrinting,
+} from "@/lib/printer/printer.service"
+import type { BluetoothDevice } from "@/lib/printer/printer.types"
 
 // ----- Hook -----
 export function usePrinter() {
@@ -120,32 +118,13 @@ export function usePrinter() {
     return success
   }, [store.selectedPrinter])
 
-  const printReceipt = useCallback(async (data: ReceiptData): Promise<boolean> => {
+  // ----- Connect for Builder -----
+  const connectPrinter = useCallback(async (): Promise<boolean> => {
     if (!store.selectedPrinter) {
-      toast.warning("Tidak Ada Printer", "Pilih printer terlebih dahulu")
       return false
     }
-    toast.info("Mencetak...", "Mengirim struk")
-    const success = await printReceiptService(data)
-    success
-      ? toast.success("Berhasil", "Struk berhasil dicetak")
-      : toast.error("Gagal Cetak", "Pastikan printer menyala dan terhubung")
-    return success
+    return connectForPrinting()
   }, [store.selectedPrinter])
-
-  const printBasketReceipt = useCallback(
-    async (
-      items: Record<string, BasketItem>,
-      options?: { storeName?: string; paymentMethod?: string; cashReceived?: number }
-    ): Promise<boolean> => {
-      if (!store.selectedPrinter) {
-        toast.warning("Printer Belum Dipilih", "Pilih printer di menu Pengaturan")
-        return false
-      }
-      return printReceipt(formatBasketToReceipt(items, options))
-    },
-    [store.selectedPrinter, printReceipt]
-  )
 
   // ----- Computed -----
   const sortedDevices = [...store.availableDevices].sort((a, b) => {
@@ -172,8 +151,7 @@ export function usePrinter() {
     deselectDevice,
     refreshPrinterStatus,
     testPrint,
-    printReceipt,
-    printBasketReceipt,
+    connectPrinter,
     openAppSettings,
     openBluetoothSettings,
   }

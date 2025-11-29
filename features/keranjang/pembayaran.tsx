@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Icon } from "@/components/ui/icon"
 import InfoRow from "@/components/shared/info-row"
 import useKeranjangStore from "./store/keranjang-store"
+import { useAuth } from "@/lib/auth-context"
 import { formatDateTime, cn } from "@/lib/utils"
+import type { PenjualanResult, PenjualanRow, PenjualanDetailRow } from "./types/penjualan-result.types"
+import type { BasketItem } from "./types/keranjang.types"
 
 // ----- CONSTANTS -----
 const MAX_INPUT_LENGTH = 12
@@ -20,10 +23,68 @@ const KEYPAD_GRID = [
   ["00", "0", "000", null],
 ] as const
 
+// ----- HELPERS -----
+const generateId = (): string => {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+}
+
+const createPenjualanResult = (
+  items: Record<string, BasketItem>,
+  staffId: string,
+  staffName: string,
+  cashReceived: number
+): PenjualanResult => {
+  const now = new Date().toISOString()
+  const penjualanId = generateId()
+
+  // Calculate total
+  const jumlahTotal = Object.values(items).reduce(
+    (sum, item) => sum + item.qty * item.harga_satuan,
+    0
+  )
+
+  // Create penjualan row
+  const penjualan: PenjualanRow = {
+    id: penjualanId,
+    tanggal: now,
+    staff_id: staffId,
+    staff_name: staffName,
+    jumlah_total: jumlahTotal,
+    keterangan: null,
+    created_at: now,
+    updated_at: now,
+  }
+
+  // Create penjualan detail rows
+  const details: PenjualanDetailRow[] = Object.values(items).map((item) => ({
+    id: generateId(),
+    penjualan_id: penjualanId,
+    stock_id: item.stock.id,
+    nama: item.stock.nama,
+    qty: item.qty,
+    harga_jual: item.harga_satuan,
+    jumlah_total: item.qty * item.harga_satuan,
+    satuan_utama: item.stock.satuan_utama,
+    variasi: item.variasi_harga_id ? { variasi_harga_id: item.variasi_harga_id, min_qty: item.min_qty } : null,
+    created_at: now,
+    updated_at: now,
+  }))
+
+  return {
+    penjualan,
+    details,
+    payment: {
+      cashReceived,
+      change: cashReceived - jumlahTotal,
+    },
+  }
+}
+
 // ----- COMPONENT -----
 export default function PembayaranScreen() {
   // ----- STATE -----
   const router = useRouter()
+  const { user } = useAuth()
   const items = useKeranjangStore((s) => s.items)
   const reset = useKeranjangStore((s) => s.reset)
   const [inputAmount, setInputAmount] = useState("")
@@ -66,28 +127,29 @@ export default function PembayaranScreen() {
     if (!isValid) return
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      const itemCount = Object.keys(items).length
-      const totalQty = Object.values(items).reduce((sum, item) => sum + item.qty, 0)
+      // TODO: Replace with actual DB post when ready
+      // For now, create mock result object
+      const result = createPenjualanResult(
+        items,
+        user?.id ?? "unknown",
+        user?.email ?? "Staff",
+        paymentAmount
+      )
 
       // Clear the basket
       reset()
 
+      // Navigate with serialized result
       router.push({
         pathname: "/(authenticated)/keranjang/selesai",
         params: {
-          totalAmount: totalAmount.toString(),
-          itemCount: itemCount.toString(),
-          totalQty: totalQty.toString(),
-          cashReceived: paymentAmount.toString(),
+          result: JSON.stringify(result),
         },
       })
     } catch (error) {
-      // Handle error, perhaps show toast
       console.error("Payment failed:", error)
     }
-  }, [isValid, items, totalAmount, reset, router])
+  }, [isValid, items, user, paymentAmount, reset, router])
 
   // ----- RENDER -----
   return (

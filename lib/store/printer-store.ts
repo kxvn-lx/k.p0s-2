@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import type { BluetoothDevice } from "@/features/menu/types/printer.types"
+import type { BluetoothDevice } from "@/lib/printer/printer.types"
 
 // ----- Types -----
 type PrinterState = {

@@ -65,7 +65,7 @@ export default function InfoRow({
 
   const content = (
     <>
-      <View className="mr-2">{leadingElement}</View>
+      {leadingElement && <View className="mr-2">{leadingElement}</View>}
       {leadingIcon && (
         <Icon as={leadingIcon} size={16} className="mr-2 text-foreground" />
       )}

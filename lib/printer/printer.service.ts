@@ -1,7 +1,7 @@
 import { Platform, PermissionsAndroid, Linking } from "react-native"
 import { BluetoothEscposPrinter, BluetoothManager } from "react-native-bluetooth-escpos-printer"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import type { BluetoothDevice, ReceiptData } from "@/features/menu/types/printer.types"
+import type { BluetoothDevice } from "./printer.types"
 
 // ----- Constants -----
 const STORAGE_KEY = "printer_selected"
@@ -99,7 +99,7 @@ export const initializePrinterState = async (): Promise<BluetoothDevice | null> 
 }
 
 // ----- Printing -----
-const connectForPrinting = async (): Promise<boolean> => {
+export const connectForPrinting = async (): Promise<boolean> => {
   const printer = await getSelectedPrinter()
   if (!printer) return false
 
@@ -123,19 +123,6 @@ export const printTestPage = async (): Promise<boolean> => {
   try {
     await BluetoothEscposPrinter.printerInit()
     await BluetoothEscposPrinter.printText("TEST OK\n", {})
-    await BluetoothEscposPrinter.printAndFeed(1)
-    return true
-  } catch {
-    return false
-  }
-}
-
-export const printReceipt = async (data: ReceiptData): Promise<boolean> => {
-  if (!(await connectForPrinting())) return false
-
-  try {
-    await BluetoothEscposPrinter.printerInit()
-    await BluetoothEscposPrinter.printText(`${data.storeName} Rp${data.total.toLocaleString("id-ID")}\n`, {})
     await BluetoothEscposPrinter.printAndFeed(1)
     return true
   } catch {

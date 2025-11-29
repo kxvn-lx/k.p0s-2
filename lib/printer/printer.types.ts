@@ -24,3 +24,14 @@ export type ReceiptData = {
   cashReceived?: number
   change?: number
 }
+
+// ----- Print Command Types -----
+export type Alignment = "left" | "center" | "right"
+export type TextSize = "normal" | "wide" | "tall" | "large"
+
+export type PrintCommand =
+  | { type: "text"; content: string; align: Alignment; bold: boolean; size: TextSize }
+  | { type: "line"; char: string }
+  | { type: "row"; left: string; right: string }
+  | { type: "feed"; lines: number }
+  | { type: "blank" }
