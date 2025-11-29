@@ -90,6 +90,7 @@ function Button({
   onPress,
   onPressIn,
   onPressOut,
+  onLongPress,
   disabled,
   ...props
 }: ButtonProps) {
@@ -145,6 +146,15 @@ function Button({
     [disabled, safeOnPress]
   )
 
+  const handleLongPress = React.useCallback(
+    (e?: GestureResponderEvent) => {
+      if (disabled || !onLongPress) return
+      if (!disableHaptics) haptic("impact")
+      if (e) onLongPress(e)
+    },
+    [disabled, onLongPress, disableHaptics]
+  )
+
   const animatedStyle = useAnimatedStyle(() => {
     // detect simple flex hints coming from className and include them in the animated style
     const flexStyle: Record<string, number | string> = {}
@@ -175,6 +185,7 @@ function Button({
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
           onPress={handlePress}
+          onLongPress={onLongPress ? handleLongPress : undefined}
           className={cn(
             buttonVariants({ variant, size: size, className }),
             disabled && "web:pointer-events-none"

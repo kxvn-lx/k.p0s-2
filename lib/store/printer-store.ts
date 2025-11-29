@@ -13,12 +13,13 @@ type PrinterState = {
   setPermissionsChecked: (checked: boolean) => void
   setSelectedPrinter: (device: BluetoothDevice | null) => void
   setAvailableDevices: (devices: BluetoothDevice[]) => void
+  addDevice: (device: BluetoothDevice) => void
 }
 
 // ----- Store -----
 export const usePrinterStore = create<PrinterState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       hasPermissions: false,
       permissionsChecked: false,
       selectedPrinter: null,
@@ -27,6 +28,11 @@ export const usePrinterStore = create<PrinterState>()(
       setPermissionsChecked: (checked) => set({ permissionsChecked: checked }),
       setSelectedPrinter: (device) => set({ selectedPrinter: device }),
       setAvailableDevices: (devices) => set({ availableDevices: devices }),
+      addDevice: (device) => {
+        const current = get().availableDevices
+        if (current.some((d) => d.address === device.address)) return
+        set({ availableDevices: [...current, device] })
+      },
     }),
     {
       name: "printer-storage",
