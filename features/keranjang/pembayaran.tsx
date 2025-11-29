@@ -80,6 +80,7 @@ export default function PembayaranScreen() {
           totalAmount: totalAmount.toString(),
           itemCount: itemCount.toString(),
           totalQty: totalQty.toString(),
+          cashReceived: paymentAmount.toString(),
         },
       })
     } catch (error) {

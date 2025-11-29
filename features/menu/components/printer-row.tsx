@@ -1,17 +1,17 @@
+import { Printer } from "lucide-react-native"
+import { router } from "expo-router"
+import usePrinterStore from "@/features/menu/store/printer-store"
 import InfoRow from "@/components/shared/info-row"
-import { useRouter } from "expo-router"
-import { Bluetooth } from "lucide-react-native"
 
-// ----- Component -----
-export function PrinterRow() {
-  const router = useRouter()
+export default function PrinterRow() {
+  const { selectedPrinter } = usePrinterStore()
 
   return (
     <InfoRow
-      label="Printer Bluetooth"
-      leadingIcon={Bluetooth}
-      value="Tidak Terhubung"
-      onPress={() => router.push("/menu/printer")}
+      label="Printer"
+      value={selectedPrinter?.name ?? "Belum tapilih"}
+      leadingIcon={Printer}
+      onPress={() => router.push("/(authenticated)/menu/printer")}
     />
   )
 }

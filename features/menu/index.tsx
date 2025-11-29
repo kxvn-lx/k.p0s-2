@@ -2,7 +2,7 @@ import { Text } from "@/components/ui/text"
 import { useAuth } from "@/lib/auth-context"
 import { ScrollView, View } from "react-native"
 import { AuthSection } from "./components/auth-section"
-import { PrinterRow } from "./components/printer-row"
+import PrinterRow from "./components/printer-row"
 import { ThemeSection } from "./components/theme-section"
 import { UpdateRow } from "./components/update-row"
 

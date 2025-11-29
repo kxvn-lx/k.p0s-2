@@ -1,18 +1,23 @@
 // ----- IMPORTS -----
+import React from "react"
 import { View, Pressable } from "react-native"
 import { Text } from "@/components/ui/text"
 import { Icon } from "@/components/ui/icon"
 import { cn } from "@/lib/utils"
 import { ChevronRight, type LucideIcon } from "lucide-react-native"
+import PressableRow from "@/components/shared/pressable-row"
 
 // ----- TYPES -----
 interface InfoRowProps {
-  label: string
+  label?: string | React.ReactNode
   value?: string
   containerClassName?: string
   labelClassName?: string
   valueClassName?: string
   leadingIcon?: LucideIcon
+  leadingElement?: React.ReactNode
+  trailingElement?: React.ReactNode
+  trailingIcon?: LucideIcon
   onPress?: () => void
   showChevron?: boolean | LucideIcon
   isLast?: boolean
@@ -26,6 +31,9 @@ export default function InfoRow({
   labelClassName,
   valueClassName,
   leadingIcon,
+  leadingElement,
+  trailingElement,
+  trailingIcon,
   onPress,
   showChevron,
   isLast = false,
@@ -41,17 +49,31 @@ export default function InfoRow({
 
   const chevronIcon = getChevronIcon()
 
+  const renderLabel = () => {
+    if (typeof label === 'string') {
+      return (
+        <Text
+          variant="muted"
+          className={cn("flex-1 uppercase text-sm", labelClassName)}
+        >
+          {label}
+        </Text>
+      )
+    }
+    return label
+  }
+
   const content = (
     <>
+      <View className="mr-2">{leadingElement}</View>
       {leadingIcon && (
         <Icon as={leadingIcon} size={16} className="mr-2 text-foreground" />
       )}
-      <Text
-        variant="muted"
-        className={cn("flex-1 uppercase text-sm", labelClassName)}
-      >
-        {label}
-      </Text>
+      {renderLabel()}
+      <View className="ml-2">{trailingElement}</View>
+      {trailingIcon && (
+        <Icon as={trailingIcon} size={16} className="ml-2 text-muted-foreground" />
+      )}
       {value && (
         <Text className={cn("text-foreground", valueClassName)}>{value}</Text>
       )}
@@ -67,7 +89,6 @@ export default function InfoRow({
 
   const className = cn(
     "flex-row items-center border-b border-border p-2",
-    onPress && "active:bg-muted/50",
     isLast && "border-b-0",
     containerClassName
   )
@@ -77,8 +98,8 @@ export default function InfoRow({
   }
 
   return (
-    <Pressable onPress={onPress} className={className}>
+    <PressableRow onPress={onPress} className={className}>
       {content}
-    </Pressable>
+    </PressableRow>
   )
 }
