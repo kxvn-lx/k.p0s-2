@@ -1,1 +1,4 @@
-- Implement printer 
+- test printer on ios
+- change so tapilih text size on printer row
+- rework printer receipt UI
+- implement disabling back gesture/going back on selesai - upon pembayrab sucessful every basket item cleared.
