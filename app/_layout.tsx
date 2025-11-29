@@ -18,6 +18,7 @@ import { queryClient } from "../lib/query-client"
 import { useThemeStore } from "../lib/store/theme-store"
 import { getNavTheme } from "../lib/theme"
 import { ToastProvider } from "@/components/ui/toast"
+import { useAppUpdates } from "@/features/menu/hooks/use-app-updates"
 
 import {
   configureReanimatedLogger,
@@ -66,6 +67,9 @@ function InnerLayout() {
     UbuntuMono_400Regular,
     UbuntuMono_700Bold,
   })
+
+  // Auto-check for updates on app launch
+  useAppUpdates(true)
 
   useEffect(() => {
     if (loaded && !isLoading) {
