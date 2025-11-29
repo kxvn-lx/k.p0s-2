@@ -93,7 +93,7 @@ export function useAppUpdates(autoCheckOnMount = false) {
         }
       }
     } catch (checkError) {
-      console.error("Failed to check for updates:", checkError)
+      console.warn("Failed to check for updates:", checkError)
       const errorMessage =
         checkError instanceof Error
           ? checkError.message
