@@ -139,8 +139,8 @@ export default function PembayaranScreen() {
       // Clear the basket
       reset()
 
-      // Navigate with serialized result
-      router.push({
+      // Navigate with serialized result (replace to prevent going back)
+      router.replace({
         pathname: "/(authenticated)/keranjang/selesai",
         params: {
           result: JSON.stringify(result),

@@ -1,197 +1,186 @@
+import { useState, useCallback } from "react"
+import { ScrollView, View, RefreshControl, ActivityIndicator } from "react-native"
 import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
-import { ScrollView, View, RefreshControl, ActivityIndicator } from "react-native"
-import { cn } from "@/lib/utils"
-import { Bluetooth, Check, Settings, RefreshCw, Trash2 } from "lucide-react-native"
-import type { BluetoothDevice } from "@/lib/printer/printer.types"
 import { Icon } from "@/components/ui/icon"
-import InfoRow from "@/components/shared/info-row"
-
+import { RefreshCw, Bluetooth } from "lucide-react-native"
+import { bluetooth, usePrinterPermissions, usePrinterScanner, usePrinterConnection, useTestPrint } from "@/lib/printer"
+import { SelectedPrinterCard } from "./components/selected-printer-card"
+import { DeviceListSection } from "./components/device-list-section"
+import { PermissionRequiredView } from "./components/permission-required-view"
+import type { BluetoothDevice } from "@/lib/printer"
 
 // ----- Screen -----
 export default function PrinterScreen() {
+  const [connectingAddress, setConnectingAddress] = useState<string | null>(null)
+
+  // ----- Hooks -----
+  const {
+    hasPermissions,
+    permissionsChecked,
+    isChecking: isCheckingPermissions,
+    checkPermissions,
+    ensurePermissions,
+    openSettings,
+  } = usePrinterPermissions()
+
+  const { pairedDevices, foundDevices, isScanning, scan } = usePrinterScanner()
+
+  const {
+    connectionState,
+    selectedPrinter,
+    isConnecting,
+    connect,
+    deselectPrinter,
+  } = usePrinterConnection()
+
+  const { printTest, isPrinting } = useTestPrint()
 
   // ----- Handlers -----
+  const handleScan = useCallback(async () => {
+    const granted = await ensurePermissions()
+    if (!granted) return
+    bluetooth.init()
+    await scan()
+  }, [ensurePermissions, scan])
+
+  const handleRequestPermission = useCallback(async () => {
+    await ensurePermissions()
+  }, [ensurePermissions])
+
+  const handleSelectDevice = useCallback(async (device: BluetoothDevice) => {
+    setConnectingAddress(device.address)
+    await connect(device)
+    setConnectingAddress(null)
+  }, [connect])
+
+  const handleTestPrint = useCallback(async () => {
+    await printTest(selectedPrinter)
+  }, [selectedPrinter, printTest])
+
+  // ----- Check permissions on first render  -----
+  if (!permissionsChecked && !isCheckingPermissions) {
+    checkPermissions()
+  }
+
+  // ----- Loading State -----
+  if (!permissionsChecked || isCheckingPermissions) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" />
+        <Text variant="muted" className="mt-4">Memeriksa izin...</Text>
+      </View>
+    )
+  }
+
+  // ----- Permission Required -----
+  if (!hasPermissions) {
+    return (
+      <PermissionRequiredView
+        isRequesting={isCheckingPermissions}
+        onRequestPermission={handleRequestPermission}
+        onOpenSettings={openSettings}
+      />
+    )
+  }
 
   // ----- Main Content -----
   return (
     <ScrollView
       className="flex-1 bg-background p-2"
-      contentContainerClassName="gap-2"
-      refreshControl={<RefreshControl refreshing={false} onRefresh={() => { }} />}
+      contentContainerClassName="gap-4"
+      refreshControl={<RefreshControl refreshing={isScanning} onRefresh={handleScan} />}
     >
       {/* Actions */}
       <View className="flex-row gap-2">
-        <Button variant="outline" onPress={() => { }} disabled={false} className="flex-1 flex-row items-center gap-2">
-          <Icon as={RefreshCw} size={16} />
-          <Text>MUAT ULG</Text>
-        </Button>
-        <Button variant="outline" onPress={() => { }} className="flex-1 flex-row items-center gap-2">
-          <Icon as={Settings} size={16} />
-          <Text>BUKA PENGATURAN</Text>
+        <Button
+          variant="outline"
+          onPress={handleScan}
+          disabled={isScanning || isConnecting}
+          className="flex-1 flex-row items-center gap-2"
+        >
+          {isScanning ? (
+            <ActivityIndicator size="small" />
+          ) : (
+            <Icon as={RefreshCw} size={16} />
+          )}
+          <Text>{isScanning ? "MEMINDAI..." : "PINDAI ULANG"}</Text>
         </Button>
       </View>
 
       {/* Selected Printer */}
       <View className="gap-2">
         <View className="px-2">
-          <Text variant="muted" className="text-xs uppercase">Printer yg Tapilih</Text>
+          <Text variant="muted" className="text-xs uppercase">
+            Printer yang Dipilih
+          </Text>
         </View>
-        <View className="rounded-lg border border-dashed border-border bg-muted/20 p-2">
-          <Text variant="muted" className="text-center text-xs">Belum ada printer yang tapilih.</Text>
-          <Text variant="muted" className="mt-1 text-center text-xs">Pilih printer dari daftar di bawah</Text>
-        </View>
-      </View>
-
-      {/* Supported Devices */}
-      <View >
-        {[].length > 0 && (
-          <DeviceSection
-            title="Printer Tahubung siap pilih"
-            count={[].length}
-            devices={[]}
-            selectedAddress={undefined}
-            onSelect={() => { }}
+        {selectedPrinter ? (
+          <SelectedPrinterCard
+            printer={selectedPrinter}
+            connectionState={connectionState}
+            isPrinting={isPrinting}
+            onTestPrint={handleTestPrint}
+            onDeselect={deselectPrinter}
           />
+        ) : (
+          <View className="rounded-[--radius] border border-dashed border-border bg-muted/20 p-4">
+            <Text variant="muted" className="text-center text-sm">
+              Belum ada printer yang dipilih.
+            </Text>
+            <Text variant="muted" className="mt-1 text-center text-xs">
+              Pilih printer dari daftar di bawah
+            </Text>
+          </View>
         )}
       </View>
+
+      {/* Paired Devices */}
+      <DeviceListSection
+        title="Perangkat Terhubung"
+        devices={pairedDevices}
+        selectedAddress={selectedPrinter?.address}
+        connectingAddress={connectingAddress ?? undefined}
+        onSelect={handleSelectDevice}
+        emptyMessage="Tidak ada perangkat terhubung. Pasangkan printer di pengaturan Bluetooth."
+      />
+
+      {/* Found Devices */}
+      {foundDevices.length > 0 && (
+        <DeviceListSection
+          title="Perangkat Ditemukan"
+          devices={foundDevices}
+          selectedAddress={selectedPrinter?.address}
+          connectingAddress={connectingAddress ?? undefined}
+          onSelect={handleSelectDevice}
+        />
+      )}
+
+      {/* Empty State */}
+      {pairedDevices.length === 0 && foundDevices.length === 0 && !isScanning && (
+        <View className="items-center gap-4 p-8">
+          <View className="rounded-full bg-muted/50 p-4">
+            <Icon as={Bluetooth} size={32} className="text-muted-foreground" />
+          </View>
+          <View className="gap-1">
+            <Text className="text-center font-medium">Tidak Ada Perangkat</Text>
+            <Text variant="muted" className="text-center text-sm">
+              Tarik ke bawah atau tekan tombol pindai untuk mencari perangkat Bluetooth
+            </Text>
+          </View>
+        </View>
+      )}
 
       {/* Info */}
       <View className="border-t border-dashed border-border p-2">
         <View className="px-2">
-          <Text variant="muted" className="text-xs uppercase">catatan</Text>
+          <Text variant="muted" className="text-xs uppercase">Catatan</Text>
         </View>
         <Text className="text-xs leading-5 text-muted-foreground">
-          Halaman ini cuman mo kase lia printer apa yang so tahubung lewat bluetooth. Kalo mo menghubung ka printer, musti ke halaman pengaturan HP masing2.
+          Pastikan printer RPP02N dalam keadaan menyala dan sudah dipasangkan via Bluetooth di
+          pengaturan HP. Printer yang sudah terhubung akan otomatis terkoneksi saat aplikasi dibuka.
         </Text>
       </View>
     </ScrollView>
-  )
-}
-
-// ----- Selected Printer Card -----
-type SelectedPrinterCardProps = {
-  printer: BluetoothDevice
-  onTestPrint: () => void
-  onDeselect: () => void
-  isPrinting: boolean
-}
-
-function SelectedPrinterCard({ printer, onTestPrint, onDeselect, isPrinting }: SelectedPrinterCardProps) {
-  const printerInfo = (
-    <View className="flex-1">
-      <Text>{printer.name}</Text>
-      <Text variant="muted" className="text-xs">{printer.address}</Text>
-    </View>
-  )
-
-  const trailingElement = (
-    <View className="flex-row items-center gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        title={isPrinting ? "Mencetak..." : "Tes Cetak"}
-        onPress={onTestPrint}
-        disabled={isPrinting}
-      />
-      <Button
-        size="icon"
-        onPress={onDeselect}
-        className="bg-destructive/25"
-      >
-        <Icon as={Trash2} size={16} className="text-destructive" />
-      </Button>
-    </View>
-  )
-
-  return (
-    <View className="rounded-[--radius] border border-border bg-card p-2">
-      <InfoRow
-        label={printerInfo}
-        leadingElement={<Icon as={Check} size={20} />}
-        trailingElement={trailingElement}
-        containerClassName="p-0 border-0"
-      />
-    </View>
-  )
-}
-
-// ----- Device Section -----
-type DeviceSectionProps = {
-  title: string
-  count: number
-  devices: BluetoothDevice[]
-  selectedAddress?: string
-  onSelect: (device: BluetoothDevice) => void
-  emptyMessage?: { title: string; subtitle?: string }
-}
-
-function DeviceSection({ title, count, devices, selectedAddress, onSelect, emptyMessage }: DeviceSectionProps) {
-  return (
-    <View className="gap-2">
-      <View className="px-2 flex-row items-center justify-between">
-        <Text variant="muted" className="text-xs uppercase">{title}</Text>
-        <Text variant="muted" className={cn("text-xs uppercase")}>
-          {count} tersedia
-        </Text>
-      </View>
-      <View className={cn("overflow-hidden rounded-[--radius] border bg-card border-border")}>
-        {devices.length === 0 && emptyMessage ? (
-          <View className="p-2">
-            <Text className="text-center text-sm text-muted-foreground">{emptyMessage.title}</Text>
-            {emptyMessage.subtitle && <Text className="mt-1 text-center text-xs text-muted-foreground">{emptyMessage.subtitle}</Text>}
-          </View>
-        ) : (
-          devices.map((device, i) => (
-            <DeviceRow
-              key={device.id}
-              device={device}
-              isSelected={selectedAddress === device.address}
-              onSelect={onSelect}
-              isLast={i === devices.length - 1}
-            />
-          ))
-        )}
-      </View>
-    </View>
-  )
-}
-
-// ----- Device Row -----
-type DeviceRowProps = {
-  device: BluetoothDevice
-  isSelected: boolean
-  onSelect: (device: BluetoothDevice) => void
-  isLast?: boolean
-}
-
-function DeviceRow({ device, isSelected, onSelect, isLast }: DeviceRowProps) {
-
-  const deviceInfo = (
-    <View className="flex-1 gap-1">
-      <View className="flex-row items-center gap-2">
-        <Text>
-          {device.name}
-        </Text>
-      </View>
-      <Text variant="muted" className="text-xs">{device.address}</Text>
-    </View>
-  )
-
-  return (
-    <InfoRow
-      label={deviceInfo}
-      leadingElement={
-        <Icon
-          as={Bluetooth}
-          size={16}
-        />
-      }
-      isLast={isLast}
-      value={isSelected ? "SO TAPILIH" : undefined}
-      showChevron={false}
-      onPress={isSelected ? undefined : () => onSelect(device)}
-      containerClassName={isSelected ? "opacity-50" : undefined}
-    />
   )
 }

@@ -1,12 +1,13 @@
-import { View, ScrollView } from "react-native"
+import { View } from "react-native"
 import { Text } from "@/components/ui/text"
 import { LINE_WIDTH, formatRow } from "@/lib/printer/receipt-builder"
 import type { PrintCommand, TextSize } from "@/lib/printer/printer.types"
 
 // ----- Constants -----
-// Monospace font sizing to match 58mm thermal paper
-const CHAR_WIDTH = 7.5 // Approximate width per character in pixels
-const PREVIEW_WIDTH = LINE_WIDTH * CHAR_WIDTH // ~240px for 32 chars
+const CHAR_WIDTH = 7.5
+const PREVIEW_WIDTH = LINE_WIDTH * CHAR_WIDTH
+const TOOTH_SIZE = 8
+const TOOTH_COUNT = Math.floor(PREVIEW_WIDTH / TOOTH_SIZE)
 
 // ----- Size Multipliers -----
 const SIZE_SCALE: Record<TextSize, number> = {
@@ -19,49 +20,64 @@ const SIZE_SCALE: Record<TextSize, number> = {
 // ----- Props -----
 type ReceiptPreviewProps = {
     commands: PrintCommand[]
-    className?: string
 }
 
-// ----- Component -----
-export function ReceiptPreview({ commands, className }: ReceiptPreviewProps) {
+// ----- Sawblade Edge -----
+function SawbladeEdge({ position }: { position: "top" | "bottom" }) {
+    const isTop = position === "top"
     return (
-        <View
-            className="bg-white p-2"
-            style={{ width: PREVIEW_WIDTH }}
-        >
-            {commands.map((cmd, index) => (
-                <PreviewLine key={index} command={cmd} />
+        <View className="flex-row" style={{ width: PREVIEW_WIDTH }}>
+            {Array.from({ length: TOOTH_COUNT }).map((_, i) => (
+                <View
+                    key={i}
+                    style={{
+                        width: 0,
+                        height: 0,
+                        borderLeftWidth: TOOTH_SIZE / 2,
+                        borderRightWidth: TOOTH_SIZE / 2,
+                        borderLeftColor: "transparent",
+                        borderRightColor: "transparent",
+                        ...(isTop
+                            ? { borderBottomWidth: TOOTH_SIZE, borderBottomColor: "white" }
+                            : { borderTopWidth: TOOTH_SIZE, borderTopColor: "white" }),
+                    }}
+                />
             ))}
         </View>
     )
 }
 
-// ----- Preview Line -----
-type PreviewLineProps = {
-    command: PrintCommand
+// ----- Component -----
+export function ReceiptPreview({ commands }: ReceiptPreviewProps) {
+    return (
+        <View className="items-center">
+            <SawbladeEdge position="top" />
+            <View className="bg-white px-2 py-4" style={{ width: PREVIEW_WIDTH }}>
+                {commands.map((cmd, index) => (
+                    <PreviewLine key={index} command={cmd} />
+                ))}
+            </View>
+            <SawbladeEdge position="bottom" />
+        </View>
+    )
 }
 
-function PreviewLine({ command }: PreviewLineProps) {
+// ----- Preview Line -----
+function PreviewLine({ command }: { command: PrintCommand }) {
     switch (command.type) {
         case "text":
             return <TextLine {...command} />
 
         case "line":
             return (
-                <Text
-                    className="font-mono text-black text-center"
-                    style={{ fontSize: 12, lineHeight: 16 }}
-                >
+                <Text className="font-mono text-black text-center" style={{ fontSize: 12, lineHeight: 16 }}>
                     {command.char.repeat(LINE_WIDTH)}
                 </Text>
             )
 
         case "row":
             return (
-                <Text
-                    className="font-mono text-black"
-                    style={{ fontSize: 12, lineHeight: 16 }}
-                >
+                <Text className="font-mono text-black" style={{ fontSize: 12, lineHeight: 16 }}>
                     {formatRow(command.left, command.right)}
                 </Text>
             )
@@ -78,27 +94,16 @@ function PreviewLine({ command }: PreviewLineProps) {
 }
 
 // ----- Text Line -----
-type TextLineProps = {
-    content: string
-    align: "left" | "center" | "right"
-    bold: boolean
-    size: TextSize
-}
-
-function TextLine({ content, align, bold, size }: TextLineProps) {
+function TextLine({ content, align, bold, size }: { content: string; align: "left" | "center" | "right"; bold: boolean; size: TextSize }) {
     const scale = SIZE_SCALE[size]
-    const fontSize = 12 * scale
-    const lineHeight = 16 * scale
-
-    const textAlign = align === "center" ? "center" : align === "right" ? "right" : "left"
 
     return (
         <Text
-            className={`font-mono text-black ${bold ? "font-mono-bold" : ""}`}
+            className={`font-mono text-black ${bold ? "font-bold" : ""}`}
             style={{
-                fontSize,
-                lineHeight,
-                textAlign,
+                fontSize: 12 * scale,
+                lineHeight: 16 * scale,
+                textAlign: align,
             }}
         >
             {content}

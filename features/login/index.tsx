@@ -69,6 +69,28 @@ export default function Login() {
               }}
               disabled={isLoading}
             />
+            {__DEV__ ? (
+              <Button
+                variant="outline"
+                className="mt-2"
+                title="Masuk (dev)"
+                onPress={async () => {
+                  // quick dev login
+                  setIsLoading(true)
+                  try {
+                    await signIn("kevin@bjb.com", "adminadmin")
+                  } catch (error) {
+                    toast.error(
+                      "Gagal Masuk (dev)",
+                      error instanceof Error ? error.message : "Gagal masuk"
+                    )
+                  } finally {
+                    setIsLoading(false)
+                  }
+                }}
+                disabled={isLoading}
+              />
+            ) : null}
           </CardContent>
         </Card>
       </View>

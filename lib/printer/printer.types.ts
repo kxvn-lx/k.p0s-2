@@ -1,8 +1,30 @@
 // ----- Device -----
 export type BluetoothDevice = {
-  id: string
   name: string
   address: string
+}
+
+// ----- Connection State -----
+export type ConnectionState =
+  | "disconnected"
+  | "connecting"
+  | "connected"
+  | "reconnecting"
+
+export type PrinterError =
+  | "BLUETOOTH_DISABLED"
+  | "PERMISSION_DENIED"
+  | "DEVICE_NOT_FOUND"
+  | "CONNECTION_FAILED"
+  | "CONNECTION_LOST"
+  | "PRINT_FAILED"
+  | "SCAN_FAILED"
+  | "UNKNOWN"
+
+export type PrinterErrorInfo = {
+  code: PrinterError
+  message: string
+  originalError?: unknown
 }
 
 // ----- Receipt -----
@@ -35,3 +57,16 @@ export type PrintCommand =
   | { type: "row"; left: string; right: string }
   | { type: "feed"; lines: number }
   | { type: "blank" }
+
+// ----- Printer Config -----
+export type PrinterConfig = {
+  deviceWidth: 384 | 576 // 58mm = 384, 80mm = 576
+  encoding: "UTF-8" | "GBK"
+  characterPerLine: 32 | 48 // 58mm = 32, 80mm = 48
+}
+
+export const DEFAULT_PRINTER_CONFIG: PrinterConfig = {
+  deviceWidth: 384,
+  encoding: "UTF-8",
+  characterPerLine: 32,
+}
