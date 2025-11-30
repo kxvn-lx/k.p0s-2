@@ -4,8 +4,7 @@ import { bluetooth } from "@/lib/printer/services/bluetooth.service"
 import type { BluetoothDevice, PrinterErrorInfo } from "@/lib/printer/printer.types"
 import { toast } from "@/lib/store/toast-store"
 
-// ----- Hook: Printer Connection Management -----
-// Purpose: Handle device connection lifecycle (connect/disconnect/reconnect/autoConnect)
+// Manage printer connection lifecycle
 export function usePrinterConnection() {
   const unsubscribesRef = useRef<(() => void)[]>([])
   const {
@@ -92,9 +91,24 @@ export function usePrinterConnection() {
   }, [selectedPrinter, reconnect])
 
   const deselectPrinter = useCallback(async (): Promise<void> => {
-    await disconnect()
+    if (selectedPrinter) {
+      try {
+        await bluetooth.unpair(selectedPrinter.address)
+        toast.success(
+          "Perangkat Dihapus",
+          `${selectedPrinter.name} telah dihapus dari daftar`
+        )
+      } catch (error) {
+        // If unpair fails, at least disconnect
+        await disconnect()
+        toast.warning(
+          "Terputus",
+          "Perangkat diputuskan tetapi mungkin masih terpasang"
+        )
+      }
+    }
     setSelectedPrinter(null)
-  }, [disconnect, setSelectedPrinter])
+  }, [selectedPrinter, disconnect, setSelectedPrinter])
 
   const cleanup = useCallback(() => {
     unsubscribesRef.current.forEach((unsub) => unsub())

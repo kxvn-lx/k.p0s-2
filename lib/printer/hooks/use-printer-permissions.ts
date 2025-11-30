@@ -2,16 +2,9 @@ import { useState, useCallback } from "react"
 import { Platform, PermissionsAndroid, Linking, Alert } from "react-native"
 import { usePrinterStore } from "@/lib/printer/store/printer.store"
 
-// ----- Types -----
 type PermissionStatus = "granted" | "denied" | "blocked" | "undetermined"
+type PermissionResult = { status: PermissionStatus; canAskAgain: boolean }
 
-type PermissionResult = {
-  status: PermissionStatus
-  canAskAgain: boolean
-}
-
-// ----- Hook: Bluetooth Permissions Management -----
-// Purpose: Check and request runtime permissions (Android) / Info.plist (iOS)
 export function usePrinterPermissions() {
   const [isChecking, setIsChecking] = useState(false)
   const { hasPermissions, permissionsChecked, setHasPermissions, setPermissionsChecked } = usePrinterStore()

@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react"
-import { printerService, bluetooth } from "@/lib/printer"
+import { printerService } from "@/lib/printer/services/printer.service"
+import { bluetooth } from "@/lib/printer/services/bluetooth.service"
 import { toast } from "@/lib/store/toast-store"
-import type { BluetoothDevice } from "@/lib/printer"
+import type { BluetoothDevice } from "@/lib/printer/printer.types"
 
-// ----- Hook -----
 export function useTestPrint() {
   const [isPrinting, setIsPrinting] = useState(false)
 

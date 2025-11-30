@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react"
-import { printerService, bluetooth } from "@/lib/printer"
+import { printerService } from "@/lib/printer/services/printer.service"
+import { bluetooth } from "@/lib/printer/services/bluetooth.service"
 import { toast } from "@/lib/store/toast-store"
 import type { BluetoothDevice, PrinterErrorInfo } from "@/lib/printer/printer.types"
 import type { PenjualanResult } from "../types/penjualan-result.types"

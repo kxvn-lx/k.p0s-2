@@ -1,18 +1,8 @@
 import { DeviceEventEmitter } from "react-native"
-import {
-  BluetoothManager,
-  BluetoothEscposPrinter,
-} from "react-native-bluetooth-escpos-printer"
-import type {
-  BluetoothDevice,
-  ConnectionState,
-  PrinterError,
-  PrinterErrorInfo,
-  PrinterConfig,
-} from "@/lib/printer/printer.types"
+import { BluetoothManager, BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer"
+import type { BluetoothDevice, ConnectionState, PrinterError, PrinterErrorInfo, PrinterConfig } from "@/lib/printer/printer.types"
 
-// ----- Constants -----
-const SCAN_DURATION_MS = 2500
+// Constants
 const CONNECTION_TIMEOUT_MS = 10000
 const RECONNECT_ATTEMPTS = 3
 const RECONNECT_DELAY_MS = 1000
@@ -48,6 +38,8 @@ class BluetoothService {
   private connectedDevice: BluetoothDevice | null = null
   private eventSubscriptions: ReturnType<typeof DeviceEventEmitter.addListener>[] = []
   private isInitialized = false
+  // Suppress next CONNECTION_LOST event for intentional disconnects
+  private suppressNextConnectionLost = false
   private config: PrinterConfig = {
     deviceWidth: 384,
     encoding: "UTF-8",
@@ -72,15 +64,15 @@ class BluetoothService {
     const events = [
       {
         event: BluetoothManager.EVENT_DEVICE_FOUND,
-        handler: (data: string) => {
-          const device = this.parseDevice(data)
+        handler: (data: { device: string }) => {
+          const device = this.parseDevice(data.device)
           if (device) this.emit("DEVICE_FOUND", device)
         },
       },
       {
         event: BluetoothManager.EVENT_DEVICE_ALREADY_PAIRED,
-        handler: (data: string) => {
-          const devices = this.parseDevices(data)
+        handler: (data: { devices: string }) => {
+          const devices = this.parseDevices(data.devices)
           this.emit("DEVICE_PAIRED", devices)
         },
       },
@@ -100,6 +92,10 @@ class BluetoothService {
       {
         event: BluetoothManager.EVENT_CONNECTION_LOST,
         handler: () => {
+          if (this.suppressNextConnectionLost) {
+            this.suppressNextConnectionLost = false
+            return
+          }
           this.setConnectionState("disconnected")
           this.connectedDevice = null
           this.emit("CONNECTION_LOST", undefined)
@@ -137,47 +133,71 @@ class BluetoothService {
   // ----- Event Emitter -----
   on<T extends BluetoothEventType>(type: T, listener: Listener<T>): () => void {
     const id = Math.random().toString(36).slice(2)
-    this.listeners.set(id, { type, listener: listener as Listener<BluetoothEventType> })
+    this.listeners.set(id, {
+      type,
+      listener: listener as Listener<BluetoothEventType>,
+    })
     return () => this.listeners.delete(id)
   }
 
-  private emit<T extends BluetoothEventType>(type: T, payload: BluetoothEventPayload[T]): void {
+  private emit<T extends BluetoothEventType>(
+    type: T,
+    payload: BluetoothEventPayload[T]
+  ): void {
     this.listeners.forEach(({ type: listenerType, listener }) => {
       if (listenerType === type) listener(payload)
     })
   }
 
   // ----- Bluetooth Control -----
-  async enable(): Promise<{ success: boolean; pairedDevices: BluetoothDevice[] }> {
+  async enable(): Promise<{
+    success: boolean
+    pairedDevices: BluetoothDevice[]
+  }> {
     try {
       const result = await BluetoothManager.enableBluetooth()
       if (!result) return { success: true, pairedDevices: [] }
       return { success: true, pairedDevices: this.parseDevices(result) }
     } catch (error) {
-      throw this.createError("BLUETOOTH_DISABLED", "Gagal mengaktifkan Bluetooth", error)
+      throw this.createError(
+        "BLUETOOTH_DISABLED",
+        "Gagal mengaktifkan Bluetooth",
+        error
+      )
     }
   }
 
-  // ----- Device Discovery -----
-  async scanDevices(): Promise<{ paired: BluetoothDevice[]; found: BluetoothDevice[] }> {
+  // Device discovery - wrapper around native scan and events
+  async scanDevices(): Promise<{
+    paired: BluetoothDevice[]
+    found: BluetoothDevice[]
+  }> {
     try {
-      const scanPromise = BluetoothManager.scanDevices()
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error("Scan timeout")), SCAN_DURATION_MS + 500)
-      })
+      if (!this.isInitialized) {
+        this.init()
+      }
 
-      const result = await Promise.race([scanPromise, timeoutPromise])
+      // Call native scanDevices - returns promise when scan finishes
+      const result = await BluetoothManager.scanDevices()
+
+      // Parse the resulting JSON string
       const parsed = typeof result === "string" ? JSON.parse(result) : result
 
       return {
-        paired: this.parseDevices(parsed.paired),
-        found: this.parseDevices(parsed.found),
+        paired: this.parseDevices(parsed.paired || []),
+        found: this.parseDevices(parsed.found || []),
       }
     } catch (error) {
       if ((error as PrinterErrorInfo).code) throw error
       const errorMessage = String(error)
-      if (errorMessage.includes("not enabled") || errorMessage.includes("Bluetooth")) {
-        throw this.createError("BLUETOOTH_DISABLED", "Bluetooth tidak aktif. Pastikan Bluetooth diaktifkan.")
+      if (
+        errorMessage.includes("not enabled") ||
+        errorMessage.includes("Bluetooth")
+      ) {
+        throw this.createError(
+          "BLUETOOTH_DISABLED",
+          "Bluetooth tidak aktif. Pastikan Bluetooth diaktifkan."
+        )
       }
       throw this.createError("SCAN_FAILED", "Gagal mencari perangkat", error)
     }
@@ -185,7 +205,10 @@ class BluetoothService {
 
   // ----- Connection Management -----
   async connect(device: BluetoothDevice): Promise<void> {
-    if (this.connectionState === "connected" && this.connectedDevice?.address === device.address) {
+    if (
+      this.connectionState === "connected" &&
+      this.connectedDevice?.address === device.address
+    ) {
       return
     }
 
@@ -195,7 +218,10 @@ class BluetoothService {
     try {
       const connectionPromise = BluetoothManager.connect(device.address)
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error("Connection timeout")), CONNECTION_TIMEOUT_MS)
+        setTimeout(
+          () => reject(new Error("Connection timeout")),
+          CONNECTION_TIMEOUT_MS
+        )
       })
 
       await Promise.race([connectionPromise, timeoutPromise])
@@ -203,13 +229,19 @@ class BluetoothService {
     } catch (error) {
       this.setConnectionState("disconnected")
       this.connectedDevice = null
-      throw this.createError("CONNECTION_FAILED", "Gagal terhubung ke printer", error)
+      throw this.createError(
+        "CONNECTION_FAILED",
+        "Gagal terhubung ke printer",
+        error
+      )
     }
   }
 
   async disconnect(): Promise<void> {
     if (!this.connectedDevice) return
 
+    // Intentional disconnect: suppress next CONNECTION_LOST to avoid noisy UI toasts
+    this.suppressNextConnectionLost = true
     try {
       await BluetoothManager.disconnect(this.connectedDevice.address)
     } catch {
@@ -218,10 +250,39 @@ class BluetoothService {
       this.setConnectionState("disconnected")
       this.connectedDevice = null
       this.emit("DISCONNECTED", undefined)
+      // Ensure suppression is cleared even if native doesn't emit CONNECTION_LOST
+      this.suppressNextConnectionLost = false
     }
   }
 
-  async reconnect(device: BluetoothDevice, attempts = RECONNECT_ATTEMPTS): Promise<boolean> {
+  async unpair(address: string): Promise<void> {
+    try {
+      // Disconnect if currently connected to the target device
+      if (this.connectedDevice?.address === address) {
+        this.suppressNextConnectionLost = true
+        await this.disconnect()
+      }
+
+      // Attempt to unpair (Android only)
+      const manager = BluetoothManager as typeof BluetoothManager & {
+        unpaire?: (address: string) => Promise<void>
+      }
+      if (manager.unpaire) {
+        await manager.unpaire(address)
+      }
+    } catch (error) {
+      throw this.createError(
+        "UNPAIR_FAILED",
+        "Gagal menghapus perangkat",
+        error
+      )
+    }
+  }
+
+  async reconnect(
+    device: BluetoothDevice,
+    attempts = RECONNECT_ATTEMPTS
+  ): Promise<boolean> {
     this.setConnectionState("reconnecting")
 
     for (let i = 0; i < attempts; i++) {
@@ -230,7 +291,9 @@ class BluetoothService {
         return true
       } catch {
         if (i < attempts - 1) {
-          await new Promise((resolve) => setTimeout(resolve, RECONNECT_DELAY_MS))
+          await new Promise((resolve) =>
+            setTimeout(resolve, RECONNECT_DELAY_MS)
+          )
         }
       }
     }
@@ -246,7 +309,8 @@ class BluetoothService {
 
   private async getConnectedAddress(): Promise<string | null> {
     try {
-      const address: unknown = await BluetoothManager.getConnectedDeviceAddress()
+      const address: unknown =
+        await BluetoothManager.getConnectedDeviceAddress()
       if (typeof address === "string" && address.length > 0) return address
       return null
     } catch {
@@ -254,7 +318,7 @@ class BluetoothService {
     }
   }
 
-  // ----- Print Commands (Low-Level) -----
+  // Print commands (low-level wrapper)
   async initPrinter(): Promise<void> {
     await BluetoothEscposPrinter.printerInit()
     await BluetoothEscposPrinter.setWidth(this.config.deviceWidth)
@@ -274,9 +338,7 @@ class BluetoothService {
     if (options?.align) {
       await BluetoothEscposPrinter.printerAlign(alignMap[options.align])
     }
-    if (options?.bold) {
-      await BluetoothEscposPrinter.setBlob(1)
-    }
+    if (options?.bold) await BluetoothEscposPrinter.setBlob(1)
 
     await BluetoothEscposPrinter.printText(text + "\n", {
       encoding: this.config.encoding,
@@ -284,12 +346,8 @@ class BluetoothService {
       heigthtimes: options?.heightMultiplier ?? 0,
     })
 
-    if (options?.bold) {
-      await BluetoothEscposPrinter.setBlob(0)
-    }
-    if (options?.align) {
-      await BluetoothEscposPrinter.printerAlign(0)
-    }
+    if (options?.bold) await BluetoothEscposPrinter.setBlob(0)
+    if (options?.align) await BluetoothEscposPrinter.printerAlign(0)
   }
 
   async printColumn(
@@ -324,13 +382,15 @@ class BluetoothService {
     await BluetoothEscposPrinter.cutOnePoint()
   }
 
-  // ----- Parsing Helpers -----
-  private parseDevice(data: string | Record<string, string>): BluetoothDevice | null {
+  // Parsing helpers
+  private parseDevice(
+    data: string | Record<string, string>
+  ): BluetoothDevice | null {
     try {
       const parsed = typeof data === "string" ? JSON.parse(data) : data
       if (!parsed.address) return null
       return {
-        name: parsed.name || "Perangkat Tidak Dikenal",
+        name: parsed.name || "-",
         address: parsed.address,
       }
     } catch {
@@ -338,7 +398,9 @@ class BluetoothService {
     }
   }
 
-  private parseDevices(data: string | string[] | Record<string, string>[]): BluetoothDevice[] {
+  private parseDevices(
+    data: string | string[] | Record<string, string>[]
+  ): BluetoothDevice[] {
     try {
       let items: Record<string, string>[]
       if (typeof data === "string") {
@@ -357,11 +419,15 @@ class BluetoothService {
     }
   }
 
-  private createError(code: PrinterError, message: string, originalError?: unknown): PrinterErrorInfo {
+  private createError(
+    code: PrinterError,
+    message: string,
+    originalError?: unknown
+  ): PrinterErrorInfo {
     return { code, message, originalError }
   }
 
-  // ----- Configuration -----
+  // Configuration
   setConfig(config: Partial<PrinterConfig>): void {
     this.config = { ...this.config, ...config }
   }

@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import type { BluetoothDevice, ConnectionState, PrinterErrorInfo } from "@/lib/printer/printer.types"
 
-// ----- Types -----
+// Store types
 type PrinterState = {
   // Permission state
   hasPermissions: boolean
@@ -30,7 +30,7 @@ type PrinterState = {
   reset: () => void
 }
 
-// ----- Initial State -----
+// Initial state
 const initialState = {
   hasPermissions: false,
   permissionsChecked: false,
@@ -42,7 +42,7 @@ const initialState = {
   isScanning: false,
 }
 
-// ----- Store -----
+// Store
 export const usePrinterStore = create<PrinterState>()(
   persist(
     (set, get) => ({

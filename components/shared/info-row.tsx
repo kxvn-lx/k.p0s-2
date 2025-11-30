@@ -70,7 +70,7 @@ export default function InfoRow({
         <Icon as={leadingIcon} size={16} className="mr-2 text-foreground" />
       )}
       {renderLabel()}
-      <View className="ml-2">{trailingElement}</View>
+      {trailingElement && <View className="mr-2">{trailingElement}</View>}
       {trailingIcon && (
         <Icon as={trailingIcon} size={16} className="ml-2 text-muted-foreground" />
       )}

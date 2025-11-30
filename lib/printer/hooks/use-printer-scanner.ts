@@ -4,8 +4,7 @@ import { bluetooth } from "@/lib/printer/services/bluetooth.service"
 import type { BluetoothDevice, PrinterErrorInfo } from "@/lib/printer/printer.types"
 import { toast } from "@/lib/store/toast-store"
 
-// ----- Hook: Printer Discovery & Scanning -----
-// Purpose: Scan for devices, manage paired/found device lists, filter printers
+// Scan and manage device lists
 export function usePrinterScanner() {
   const unsubscribesRef = useRef<(() => void)[]>([])
   const {
@@ -36,6 +35,7 @@ export function usePrinterScanner() {
       setIsScanning(false)
     })
 
+
     unsubscribesRef.current = [unsubPaired, unsubFound, unsubDone]
   }, [setPairedDevices, addFoundDevice, setIsScanning])
 
@@ -49,9 +49,6 @@ export function usePrinterScanner() {
     setupListeners()
 
     try {
-      // Small delay to ensure permissions are fully propagated
-      await new Promise((resolve) => setTimeout(resolve, 300))
-
       const result = await bluetooth.scanDevices()
       setPairedDevices(result.paired)
       setFoundDevices(result.found)
@@ -71,7 +68,7 @@ export function usePrinterScanner() {
     unsubscribesRef.current = []
   }, [])
 
-  // Filter devices by printer keywords
+  // Filter devices by keywords
   const filterPrinters = useCallback((devices: BluetoothDevice[]): BluetoothDevice[] => {
     const printerKeywords = ["printer", "rpp", "thermal", "pos", "58mm", "80mm", "escpos"]
     return devices.filter((device) => {

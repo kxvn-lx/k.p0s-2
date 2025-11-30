@@ -4,14 +4,8 @@ import { printerService } from "@/lib/printer/services/printer.service"
 import type { ReceiptData, PrinterErrorInfo } from "@/lib/printer/printer.types"
 import { toast } from "@/lib/store/toast-store"
 
-// ----- Types -----
-type PrintReceiptResult = {
-  success: boolean
-  error?: PrinterErrorInfo
-}
+type PrintReceiptResult = { success: boolean; error?: PrinterErrorInfo }
 
-// ----- Hook: Receipt Printing -----
-// Purpose: Execute receipt printing with error handling and UI feedback
 export function usePrintReceipt() {
   const [isPrinting, setIsPrinting] = useState(false)
   const { selectedPrinter } = usePrinterStore()

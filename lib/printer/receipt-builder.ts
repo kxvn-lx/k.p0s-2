@@ -1,10 +1,8 @@
 import type { Alignment, TextSize, PrintCommand } from "./printer.types"
 
-// ----- Constants -----
 export const LINE_WIDTH = 32
 const SEPARATOR_CHAR = "-"
 
-// ----- Helper Functions -----
 const padRight = (str: string, len: number): string => str.padEnd(len).slice(0, len)
 const padLeft = (str: string, len: number): string => str.padStart(len).slice(-len)
 
@@ -22,7 +20,7 @@ export class ReceiptBuilder {
     return [...this.commands]
   }
 
-  // ----- Text Methods -----
+  // Text methods
   text(content: string, options?: { align?: Alignment; bold?: boolean; size?: TextSize }): this {
     this.commands.push({
       type: "text",
@@ -50,7 +48,7 @@ export class ReceiptBuilder {
     return this.text(content, { ...options, bold: true })
   }
 
-  // ----- Layout Methods -----
+  // Layout methods
   line(char: string = SEPARATOR_CHAR): this {
     this.commands.push({ type: "line", char })
     return this

@@ -2,10 +2,8 @@ import { bluetooth } from "./bluetooth.service"
 import type { ReceiptData, PrinterErrorInfo, BluetoothDevice } from "@/lib/printer/printer.types"
 import { formatCurrency } from "@/lib/printer/receipt-builder"
 
-// ----- Printer Service -----
-// High-level printing operations: receipt formatting, reconnection handling, error management
+// Printer service: high-level printing and error handling
 class PrinterService {
-  // ----- Receipt Printing -----
   async printReceipt(data: ReceiptData): Promise<void> {
     try {
       await bluetooth.initPrinter()
@@ -89,8 +87,7 @@ class PrinterService {
     }
   }
 
-  // ----- Smart Print with Auto-Reconnect -----
-  // Handles: offline printer, printer turned off/on, silent connection loss
+  // Print with reconnect helper
   async printWithReconnect(
     savedDevice: BluetoothDevice | null,
     printFn: () => Promise<void>
@@ -102,7 +99,7 @@ class PrinterService {
       }
     }
 
-    // Always reconnect before printing to handle edge cases
+    // Reconnect before printing
     const reconnected = await bluetooth.reconnect(savedDevice)
     if (!reconnected) {
       return {
@@ -115,17 +112,13 @@ class PrinterService {
       await printFn()
       return { success: true }
     } catch (error) {
-      return {
-        success: false,
-        error: error as PrinterErrorInfo,
-      }
+      return { success: false, error: error as PrinterErrorInfo }
     } finally {
-      // Cleanup: disconnect after printing
       await bluetooth.disconnect()
     }
   }
 
-  // ----- Helpers -----
+  // Helpers
   private createError(
     code: PrinterErrorInfo["code"],
     message: string,

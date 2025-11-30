@@ -1,10 +1,10 @@
-// ----- Device -----
+// Device
 export type BluetoothDevice = {
   name: string
   address: string
 }
 
-// ----- Connection State -----
+// Connection State
 export type ConnectionState =
   | "disconnected"
   | "connecting"
@@ -19,6 +19,7 @@ export type PrinterError =
   | "CONNECTION_LOST"
   | "PRINT_FAILED"
   | "SCAN_FAILED"
+  | "UNPAIR_FAILED"
   | "UNKNOWN"
 
 export type PrinterErrorInfo = {
@@ -27,7 +28,7 @@ export type PrinterErrorInfo = {
   originalError?: unknown
 }
 
-// ----- Receipt -----
+// Receipt
 export type ReceiptItem = {
   name: string
   qty: number
@@ -47,18 +48,24 @@ export type ReceiptData = {
   change?: number
 }
 
-// ----- Print Command Types -----
+// Print command types
 export type Alignment = "left" | "center" | "right"
 export type TextSize = "normal" | "wide" | "tall" | "large"
 
 export type PrintCommand =
-  | { type: "text"; content: string; align: Alignment; bold: boolean; size: TextSize }
+  | {
+    type: "text"
+    content: string
+    align: Alignment
+    bold: boolean
+    size: TextSize
+  }
   | { type: "line"; char: string }
   | { type: "row"; left: string; right: string }
   | { type: "feed"; lines: number }
   | { type: "blank" }
 
-// ----- Printer Config -----
+// Printer config
 export type PrinterConfig = {
   deviceWidth: 384 | 576 // 58mm = 384, 80mm = 576
   encoding: "UTF-8" | "GBK"
