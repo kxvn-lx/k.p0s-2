@@ -18,7 +18,7 @@ export function useTestPrint() {
     try {
       const result = await printerService.printWithReconnect(device, async () => {
         await bluetooth.initPrinter()
-        await bluetooth.printText("Tes OK", { align: "center" })
+        await bluetooth.printText("Tes OK")
         await bluetooth.feed(2)
       })
 

@@ -8,10 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint",
-    "draft": "npx eas-cli@latest workflow:run create-draft.yml",
-    "development-builds": "npx eas-cli@latest workflow:run create-development-builds.yml",
-    "deploy": "npx eas-cli@latest workflow:run deploy-to-production.yml"
+    "lint": "expo lint"
   },
   "dependencies": {
     "@expo-google-fonts/ubuntu-mono": "^0.4.1",
@@ -55,11 +52,11 @@
     "expo-updates": "~29.0.13",
     "expo-web-browser": "~15.0.7",
     "lucide-react-native": "^0.554.0",
+    "lx-react-native-bluetooth-printer": "github:kxvn-lx/lx-react-native-bluetooth-printer",
     "nativewind": "^4.2.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
-    "react-native-bluetooth-escpos-printer": "github:detanx/react-native-bluetooth-escpos-printer",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.0",

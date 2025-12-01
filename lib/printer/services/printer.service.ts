@@ -10,13 +10,12 @@ class PrinterService {
 
       // Header
       await bluetooth.printText(data.storeName, {
-        align: "center",
         bold: true,
         widthMultiplier: 1,
         heightMultiplier: 1,
       })
       await bluetooth.printBlank()
-      await bluetooth.printText(`${data.date} ${data.time}`, { align: "center" })
+      await bluetooth.printText(`${data.date} ${data.time}`)
       await bluetooth.printLine("-")
 
       // Items header
@@ -80,7 +79,7 @@ class PrinterService {
 
       await bluetooth.printLine("-")
       await bluetooth.printBlank()
-      await bluetooth.printText("Terima kasih!", { align: "center" })
+      await bluetooth.printText("Terima kasih!")
       await bluetooth.feed(3)
     } catch (error) {
       throw this.createError("PRINT_FAILED", "Gagal mencetak struk", error)

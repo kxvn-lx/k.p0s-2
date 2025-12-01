@@ -62,6 +62,7 @@
     },
     "extra": {
       "router": {},
+      "suppressSafeAreaViewWarning": true,
       "eas": {
         "projectId": "0ecb3092-c13a-480d-ade3-6e5440d154fa"
       }

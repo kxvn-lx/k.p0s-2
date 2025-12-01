@@ -29,13 +29,13 @@ export function usePrint() {
       try {
         return await printerService.printWithReconnect(device, async () => {
           await bluetooth.initPrinter()
-          await bluetooth.printText("K.POS", { align: "center", bold: true, widthMultiplier: 1, heightMultiplier: 1 })
+          await bluetooth.printText("K.POS", { bold: true, widthMultiplier: 1, heightMultiplier: 1 })
           await bluetooth.printBlank()
 
           const date = new Date(result.penjualan.tanggal)
           const dateStr = `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()}`
           const timeStr = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`
-          await bluetooth.printText(`${dateStr} ${timeStr}`, { align: "center" })
+          await bluetooth.printText(`${dateStr} ${timeStr}`)
           await bluetooth.printLine("-")
 
           for (const item of result.details) {
@@ -52,7 +52,7 @@ export function usePrint() {
           await bluetooth.printColumn([20, 12], [0, 2], ["Kembali", result.payment.change.toLocaleString("id-ID")])
           await bluetooth.printLine("-")
           await bluetooth.printBlank()
-          await bluetooth.printText("Terima kasih!", { align: "center" })
+          await bluetooth.printText("Terima kasih!")
           await bluetooth.feed(3)
         })
       } finally {
@@ -76,7 +76,7 @@ export function usePrint() {
 
       return await printerService.printWithReconnect(device, async () => {
         await bluetooth.initPrinter()
-        await bluetooth.printText(`${itemCount} item | Rp${total}`, { align: "center" })
+        await bluetooth.printText(`${itemCount} item | Rp${total}`)
         await bluetooth.feed(2)
       })
     } finally {
