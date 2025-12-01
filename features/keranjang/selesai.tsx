@@ -1,14 +1,13 @@
 import { View, ScrollView } from "react-native"
 import { useCallback, useMemo } from "react"
 import { useRouter, useLocalSearchParams } from "expo-router"
-import { Printer, Bug } from "lucide-react-native"
 import { Button } from "@/components/ui/button"
-import { Icon } from "@/components/ui/icon"
 import { Text } from "@/components/ui/text"
 import { ReceiptPreview } from "@/components/shared/receipt-preview"
 import { usePrinterStore } from "@/lib/printer/store/printer.store"
 import { toast } from "@/lib/store/toast-store"
 import { usePrint, generateReceiptCommands } from "./hooks/use-print"
+import { isDev } from "@/lib/utils"
 import type { PenjualanResult } from "./types/penjualan-result.types"
 
 // ----- Helpers -----
@@ -29,10 +28,8 @@ export default function SelesaiScreen() {
   const selectedPrinter = usePrinterStore((s) => s.selectedPrinter)
   const { printReceipt, printDebug, isPrinting } = usePrint()
 
-  // Generate commands for preview (same as what gets printed)
   const receiptCommands = useMemo(() => {
     if (!result) return []
-    // Use the same function used by printReceipt to avoid DRY
     return generateReceiptCommands(result)
   }, [result])
 
@@ -79,19 +76,17 @@ export default function SelesaiScreen() {
       </ScrollView>
 
       {/* Action Buttons */}
-      <View className="flex-row gap-2 p-2">
-        <Button variant="ghost" onPress={handleDebugPrint} disabled={isPrinting || !selectedPrinter} className="px-4">
-          <Icon as={Bug} size={18} className="text-muted-foreground" />
-        </Button>
+      <View className="flex-row gap-2 p-2 h-14">
+        {isDev() ? (
+          <Button variant="outline" className="flex-1" title="DEBUG PRINT" onPress={handleDebugPrint} disabled={isPrinting || !selectedPrinter} />
+        ) : null}
         <Button
           variant="outline"
           onPress={handlePrint}
           disabled={isPrinting || !selectedPrinter}
-          className="flex-1 flex-row gap-2"
-        >
-          <Icon as={Printer} size={18} className="text-foreground" />
-          <Text>{isPrinting ? "Mencetak..." : "CETAK"}</Text>
-        </Button>
+          className="flex-1"
+          title={isPrinting ? "Mencetak..." : "CETAK"}
+        />
         <Button variant="default" onPress={handleFinish} className="flex-1">
           <Text className="text-primary-foreground font-medium">SELESAI</Text>
         </Button>

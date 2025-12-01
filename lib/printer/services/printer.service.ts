@@ -1,6 +1,8 @@
+import { formatCurrency } from "@/lib/utils"
 import { bluetooth } from "./bluetooth.service"
 import type { ReceiptData, PrinterErrorInfo, BluetoothDevice } from "@/lib/printer/printer.types"
-import { formatCurrency } from "@/lib/printer/receipt-builder"
+
+export const LINE_WIDTH = 32
 
 // Printer service: high-level printing and error handling
 class PrinterService {

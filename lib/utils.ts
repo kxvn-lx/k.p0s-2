@@ -94,3 +94,22 @@ export function getLokasiColor(lokasi: StockLokasi): string {
       return "text-orange-500"
   }
 }
+
+// ----- Environment helpers -----
+/**
+ * Simple dev-mode helper. Use this instead of scattering __DEV__ checks.
+ * Keeps checks consistent and easy to reuse across the app.
+ */
+export const isDev = (): boolean => {
+  // In React Native / Expo __DEV__ is injected globally.
+  // Fallback to NODE_ENV for other runtimes.
+  // Keep this tiny and KISS so it's easy to reuse.
+  // eslint-disable-next-line no-undef
+  if (typeof __DEV__ !== "undefined") return !!__DEV__
+  return process.env.NODE_ENV === "development"
+}
+
+
+export const formatCurrency = (amount: number): string => {
+  return amount.toLocaleString("id-ID")
+}

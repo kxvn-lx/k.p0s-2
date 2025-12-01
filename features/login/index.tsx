@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/lib/auth-context"
+import { isDev } from "@/lib/utils"
 import { useState } from "react"
 import { KeyboardAvoidingView, Platform, View } from "react-native"
 
@@ -69,7 +70,7 @@ export default function Login() {
               }}
               disabled={isLoading}
             />
-            {__DEV__ ? (
+            {isDev() ? (
               <Button
                 variant="outline"
                 className="mt-2"

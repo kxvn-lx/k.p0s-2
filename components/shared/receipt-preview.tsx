@@ -1,7 +1,7 @@
 import { View } from "react-native"
 import { Text } from "@/components/ui/text"
-import { LINE_WIDTH } from "@/lib/printer/receipt-builder"
 import type { PrintCommand, TextSize } from "@/lib/printer/printer.types"
+import { LINE_WIDTH } from "@/lib/printer/services/printer.service"
 
 // ----- Props -----
 type ReceiptPreviewProps = {
