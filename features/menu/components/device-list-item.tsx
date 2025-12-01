@@ -10,7 +10,7 @@ import type { BluetoothDevice } from "@/lib/printer/printer.types"
 type DeviceListItemProps = {
   device: BluetoothDevice
   isSelected: boolean
-  isConnecting: boolean
+
   onSelect: (device: BluetoothDevice) => void
   isLast?: boolean
 }
@@ -19,20 +19,20 @@ type DeviceListItemProps = {
 export function DeviceListItem({
   device,
   isSelected,
-  isConnecting,
+
   onSelect,
   isLast,
 }: DeviceListItemProps) {
   const deviceInfo = (
     <View className="flex-1 gap-1">
       <Text className={cn(isSelected && "font-medium")}>{device.name}</Text>
-      <Text variant="muted" className="text-xs">{device.address}</Text>
+      <Text variant="muted" className="text-xs">
+        {device.address}
+      </Text>
     </View>
   )
 
-  const trailingContent = isConnecting ? (
-    <ActivityIndicator size="small" />
-  ) : isSelected ? (
+  const trailingContent = isSelected ? (
     <View className="flex-row items-center gap-2">
       <Icon as={Check} size={16} className="text-green-500" />
       <Text className="text-xs text-green-500">TERPILIH</Text>
@@ -42,12 +42,17 @@ export function DeviceListItem({
   return (
     <InfoRow
       label={deviceInfo}
-      leadingElement={<Icon as={Bluetooth} size={16} className={cn(isSelected && "text-primary")} />}
+      leadingElement={
+        <Icon
+          as={Bluetooth}
+          size={16}
+          className={cn(isSelected && "text-primary")}
+        />
+      }
       trailingElement={trailingContent}
       isLast={isLast}
-      showChevron={!isSelected && !isConnecting}
-      onPress={isSelected || isConnecting ? undefined : () => onSelect(device)}
-      containerClassName={cn(isConnecting && "opacity-50")}
+      showChevron={!isSelected}
+      onPress={isSelected ? undefined : () => onSelect(device)}
     />
   )
 }

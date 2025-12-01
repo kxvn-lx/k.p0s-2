@@ -1,7 +1,10 @@
 import { useCallback, useRef } from "react"
 import { usePrinterStore } from "@/lib/printer/store/printer.store"
 import { bluetooth } from "@/lib/printer/services/bluetooth.service"
-import type { BluetoothDevice, PrinterErrorInfo } from "@/lib/printer/printer.types"
+import type {
+  BluetoothDevice,
+  PrinterErrorInfo,
+} from "@/lib/printer/printer.types"
 import { toast } from "@/lib/store/toast-store"
 
 // Manage printer connection lifecycle
@@ -33,8 +36,23 @@ export function usePrinterConnection() {
   }, [setConnectionState])
 
   const connect = useCallback(
-    async (device: BluetoothDevice): Promise<boolean> => {
+    async (
+      device: BluetoothDevice,
+      shouldConnect = false
+    ): Promise<boolean> => {
       setLastError(null)
+
+      // If we just need to select the printer without connecting
+      if (!shouldConnect) {
+        setSelectedPrinter(device)
+        toast.success(
+          "Printer Dipilih",
+          `${device.name} dipilih sebagai printer default`
+        )
+        return true
+      }
+
+      // Actually connect to the printer
       setupConnectionListeners()
 
       try {

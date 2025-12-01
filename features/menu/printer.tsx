@@ -18,28 +18,19 @@ import type { BluetoothDevice } from "@/lib/printer/printer.types"
 
 // ----- Screen -----
 export default function PrinterScreen() {
-  const [connectingAddress, setConnectingAddress] = useState<string | null>(
-    null
-  )
-
   // ----- Hooks -----
   const {
     hasPermissions,
     permissionsChecked,
     isChecking: isCheckingPermissions,
-    checkPermissions,
     ensurePermissions,
     openSettings,
   } = usePrinterPermissions()
 
   const { printerDevices, isScanning, scan } = usePrinterScanner()
 
-  const {
-    connectionState,
-    selectedPrinter,
-    connect,
-    deselectPrinter,
-  } = usePrinterConnection()
+  const { connectionState, selectedPrinter, connect, deselectPrinter } =
+    usePrinterConnection()
 
   const { printTest, isPrinting } = useTestPrint()
 
@@ -57,9 +48,7 @@ export default function PrinterScreen() {
 
   const handleSelectDevice = useCallback(
     async (device: BluetoothDevice) => {
-      setConnectingAddress(device.address)
-      await connect(device)
-      setConnectingAddress(null)
+      await connect(device, false)
     },
     [connect]
   )
@@ -67,12 +56,6 @@ export default function PrinterScreen() {
   const handleTestPrint = useCallback(async () => {
     await printTest(selectedPrinter)
   }, [selectedPrinter, printTest])
-
-
-  // ----- Check permissions on first render  -----
-  if (!permissionsChecked && !isCheckingPermissions) {
-    checkPermissions()
-  }
 
   // ----- Loading State -----
   if (!permissionsChecked || isCheckingPermissions) {
@@ -138,7 +121,6 @@ export default function PrinterScreen() {
         title="Printer Tersedia"
         devices={printerDevices}
         selectedAddress={selectedPrinter?.address}
-        connectingAddress={connectingAddress ?? undefined}
         onSelect={handleSelectDevice}
         emptyMessage="Tarik ke bawah untuk memuat ulang daftar printer Bluetooth yang tersedia"
       />

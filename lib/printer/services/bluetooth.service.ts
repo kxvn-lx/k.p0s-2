@@ -1,11 +1,18 @@
-import { DeviceEventEmitter } from "react-native"
-import { BluetoothManager, BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer"
-import type { BluetoothDevice, ConnectionState, PrinterError, PrinterErrorInfo, PrinterConfig } from "@/lib/printer/printer.types"
+import { DeviceEventEmitter, Platform } from "react-native"
+import {
+  BluetoothManager,
+  BluetoothEscposPrinter,
+} from "react-native-bluetooth-escpos-printer"
+import type {
+  BluetoothDevice,
+  ConnectionState,
+  PrinterError,
+  PrinterErrorInfo,
+  PrinterConfig,
+} from "@/lib/printer/printer.types"
 
 // Constants
-const CONNECTION_TIMEOUT_MS = 10000
-const RECONNECT_ATTEMPTS = 3
-const RECONNECT_DELAY_MS = 1000
+const CONNECTION_TIMEOUT_MS = 2500
 
 // ----- Event Types -----
 export type BluetoothEventType =
@@ -27,8 +34,13 @@ export type BluetoothEventPayload = {
   STATE_CHANGED: ConnectionState
 }
 
-type Listener<T extends BluetoothEventType> = (payload: BluetoothEventPayload[T]) => void
-type ListenerMap = Map<string, { type: BluetoothEventType; listener: Listener<BluetoothEventType> }>
+type Listener<T extends BluetoothEventType> = (
+  payload: BluetoothEventPayload[T]
+) => void
+type ListenerMap = Map<
+  string,
+  { type: BluetoothEventType; listener: Listener<BluetoothEventType> }
+>
 
 // ----- Bluetooth Service -----
 // Low-level Bluetooth operations: device discovery, connection, basic printing commands
@@ -36,7 +48,9 @@ class BluetoothService {
   private listeners: ListenerMap = new Map()
   private connectionState: ConnectionState = "disconnected"
   private connectedDevice: BluetoothDevice | null = null
-  private eventSubscriptions: ReturnType<typeof DeviceEventEmitter.addListener>[] = []
+  private eventSubscriptions: ReturnType<
+    typeof DeviceEventEmitter.addListener
+  >[] = []
   private isInitialized = false
   // Suppress next CONNECTION_LOST event for intentional disconnects
   private suppressNextConnectionLost = false
@@ -215,6 +229,10 @@ class BluetoothService {
     this.setConnectionState("connecting")
     this.connectedDevice = device
 
+    if (!this.isInitialized) {
+      this.init()
+    }
+
     try {
       const connectionPromise = BluetoothManager.connect(device.address)
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -225,6 +243,7 @@ class BluetoothService {
       })
 
       await Promise.race([connectionPromise, timeoutPromise])
+
       this.setConnectionState("connected")
     } catch (error) {
       this.setConnectionState("disconnected")
@@ -279,27 +298,16 @@ class BluetoothService {
     }
   }
 
-  async reconnect(
-    device: BluetoothDevice,
-    attempts = RECONNECT_ATTEMPTS
-  ): Promise<boolean> {
+  async reconnect(device: BluetoothDevice): Promise<boolean> {
     this.setConnectionState("reconnecting")
 
-    for (let i = 0; i < attempts; i++) {
-      try {
-        await this.connect(device)
-        return true
-      } catch {
-        if (i < attempts - 1) {
-          await new Promise((resolve) =>
-            setTimeout(resolve, RECONNECT_DELAY_MS)
-          )
-        }
-      }
+    try {
+      await this.connect(device)
+      return true
+    } catch {
+      this.setConnectionState("disconnected")
+      return false
     }
-
-    this.setConnectionState("disconnected")
-    return false
   }
 
   async isConnected(): Promise<boolean> {
@@ -335,8 +343,13 @@ class BluetoothService {
   ): Promise<void> {
     const alignMap = { left: 0, center: 1, right: 2 }
 
-    if (options?.align) {
-      await BluetoothEscposPrinter.printerAlign(alignMap[options.align])
+    // Skip alignment on iOS as it can be flaky and cause hangs
+    if (options?.align && Platform.OS !== "ios") {
+      try {
+        await BluetoothEscposPrinter.printerAlign(alignMap[options.align])
+      } catch (error) {
+        console.warn("printerAlign failed:", error)
+      }
     }
     if (options?.bold) await BluetoothEscposPrinter.setBlob(1)
 
@@ -347,7 +360,15 @@ class BluetoothService {
     })
 
     if (options?.bold) await BluetoothEscposPrinter.setBlob(0)
-    if (options?.align) await BluetoothEscposPrinter.printerAlign(0)
+
+    // Reset alignment only on non-iOS
+    if (options?.align && Platform.OS !== "ios") {
+      try {
+        await BluetoothEscposPrinter.printerAlign(0)
+      } catch (error) {
+        console.warn("printerAlign reset failed:", error)
+      }
+    }
   }
 
   async printColumn(

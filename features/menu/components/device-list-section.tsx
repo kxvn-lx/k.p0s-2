@@ -8,7 +8,7 @@ type DeviceListSectionProps = {
   title: string
   devices: BluetoothDevice[]
   selectedAddress?: string
-  connectingAddress?: string
+
   onSelect: (device: BluetoothDevice) => void
   emptyMessage?: string
 }
@@ -18,7 +18,7 @@ export function DeviceListSection({
   title,
   devices,
   selectedAddress,
-  connectingAddress,
+
   onSelect,
   emptyMessage,
 }: DeviceListSectionProps) {
@@ -27,14 +27,20 @@ export function DeviceListSection({
   return (
     <View className="gap-2">
       <View className="flex-row items-center justify-between px-2">
-        <Text variant="muted" className="text-xs uppercase">{title}</Text>
-        <Text variant="muted" className="text-xs">{devices.length} ditemukan</Text>
+        <Text variant="muted" className="text-xs uppercase">
+          {title}
+        </Text>
+        <Text variant="muted" className="text-xs">
+          {devices.length} ditemukan
+        </Text>
       </View>
 
       <View className="overflow-hidden rounded-[--radius] border border-border bg-card">
         {devices.length === 0 ? (
           <View className="p-4">
-            <Text variant="muted" className="text-center text-sm">{emptyMessage}</Text>
+            <Text variant="muted" className="text-center text-sm">
+              {emptyMessage}
+            </Text>
           </View>
         ) : (
           devices.map((device, i) => (
@@ -42,7 +48,6 @@ export function DeviceListSection({
               key={device.address}
               device={device}
               isSelected={selectedAddress === device.address}
-              isConnecting={connectingAddress === device.address}
               onSelect={onSelect}
               isLast={i === devices.length - 1}
             />
