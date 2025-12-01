@@ -9,85 +9,120 @@ import {
 
 // ----- Constants -----
 const STORE_NAME = "K.POS"
+const SEPARATOR_LINE = "-" // Basic ASCII for ESC/POS compatibility
 
 // ----- Helpers -----
-const padRight = (str: string, len: number): string => str.slice(0, len).padEnd(len)
-const padLeft = (str: string, len: number): string => str.slice(-len).padStart(len)
+const padEnd = (str: string, len: number): string => {
+  if (str.length >= len) return str.substring(0, len)
+  return str + " ".repeat(len - str.length)
+}
+
+const padStart = (str: string, len: number): string => {
+  if (str.length >= len) return str.substring(0, len)
+  return " ".repeat(len - str.length) + str
+}
 
 const formatRow = (left: string, right: string): string => {
-  const rightLen = right.length
-  const leftLen = LINE_WIDTH - rightLen - 1
-  return `${padRight(left, leftLen)} ${padLeft(right, rightLen)}`
+  const totalLen = LINE_WIDTH
+  const rightLen = Math.min(right.length, totalLen - 2)
+  const leftLen = totalLen - rightLen
+  return padEnd(left, leftLen) + padStart(right, rightLen)
+}
+
+const truncateWithEllipsis = (str: string, maxLen: number): string => {
+  if (str.length <= maxLen) return str
+  return str.substring(0, maxLen - 3) + "..."
+}
+
+const formatTransactionNo = (uuid: string): string => {
+  return uuid.substring(0, 6).toUpperCase()
 }
 
 // ----- Builder -----
-export const buildReceiptCommands = (result: PenjualanResult): PrintCommand[] => {
+export const buildReceiptCommands = (
+  result: PenjualanResult
+): PrintCommand[] => {
   const commands: PrintCommand[] = []
   const date = new Date(result.penjualan.tanggal)
 
-  // Header
-  commands.push({ type: "text", content: STORE_NAME, align: "center", bold: true, size: "large" })
-  commands.push({ type: "blank" })
+  // Line 1: Store name (left) and date/time (right) on SAME line
+  const dateTimeStr = `${formatReceiptDate(date)} ${formatReceiptTime(date)}`
+  const line1 = formatRow(STORE_NAME, dateTimeStr)
   commands.push({
     type: "text",
-    content: `${formatReceiptDate(date)} ${formatReceiptTime(date)}`,
-    align: "center",
+    content: line1,
+    align: "left",
     bold: false,
     size: "normal",
   })
-  commands.push({ type: "line", char: "-" })
+
+  // Separator line
+  commands.push({ type: "line", char: SEPARATOR_LINE })
+
+  // Transaction no
+  const transactionNo = formatTransactionNo(result.penjualan.id)
+  commands.push({
+    type: "text",
+    content: `no: ${transactionNo}`,
+    align: "left",
+    bold: false,
+    size: "normal",
+  })
+
+  // Separator line
+  commands.push({ type: "line", char: SEPARATOR_LINE })
+
+  // Items header (qty, stock_nama, harga_satuan, harga_total)
+  // Table layout: <qty:2> <stock_nama:14> <harga_satuan:6> <harga_total:7>
+  // Total width: 32 chars
+  // Spaces between columns: 3 spaces total
+  // qty(2) + space(1) + nama(14) + space(1) + satuan(6) + space(1) + total(7) = 32
+
+  const QTY_WIDTH = 2
+  const NAMA_WIDTH = 14
+  const SATUAN_WIDTH = 6
+  const TOTAL_WIDTH = 7
 
   // Items
   for (const item of result.details) {
-    const itemName = item.nama.length > 16 ? item.nama.slice(0, 15) + "." : item.nama
-    const qtyStr = `x${item.qty}`
-    const priceStr = formatCurrency(item.jumlah_total)
+    const qtyStr = item.qty.toString()
+    const namaStr = truncateWithEllipsis(item.nama, NAMA_WIDTH)
+    const satuanStr = formatCurrency(item.harga_jual)
+    const totalStr = formatCurrency(item.jumlah_total)
 
-    // Format: ItemName    x2   10.000
-    const qtyWidth = 4
-    const priceWidth = priceStr.length
-    const nameWidth = LINE_WIDTH - qtyWidth - priceWidth - 2
+    // Build the line with proper spacing
+    const qtyPart = padStart(qtyStr, QTY_WIDTH)
+    const namaPart = padEnd(namaStr, NAMA_WIDTH)
+    const satuanPart = padStart(satuanStr, SATUAN_WIDTH)
+    const totalPart = padStart(totalStr, TOTAL_WIDTH)
 
-    const line =
-      padRight(itemName, nameWidth) +
-      " " +
-      padLeft(qtyStr, qtyWidth) +
-      " " +
-      padLeft(priceStr, priceWidth)
+    const line = `${qtyPart} ${namaPart} ${satuanPart} ${totalPart}`
 
-    commands.push({ type: "text", content: line, align: "left", bold: false, size: "normal" })
+    commands.push({
+      type: "text",
+      content: line,
+      align: "left",
+      bold: false,
+      size: "normal",
+    })
   }
 
-  commands.push({ type: "line", char: "-" })
+  // Separator line before total
+  commands.push({ type: "line", char: SEPARATOR_LINE })
 
-  // Total
+  // TOTAL
   commands.push({
     type: "text",
     content: formatRow("TOTAL", formatCurrency(result.penjualan.jumlah_total)),
     align: "left",
-    bold: true,
-    size: "normal",
-  })
-
-  // Payment info
-  commands.push({
-    type: "text",
-    content: formatRow("Tunai", formatCurrency(result.payment.cashReceived)),
-    align: "left",
-    bold: false,
-    size: "normal",
-  })
-  commands.push({
-    type: "text",
-    content: formatRow("Kembali", formatCurrency(result.payment.change)),
-    align: "left",
     bold: false,
     size: "normal",
   })
 
-  commands.push({ type: "line", char: "-" })
-  commands.push({ type: "blank" })
-  commands.push({ type: "text", content: "Terima kasih!", align: "center", bold: false, size: "normal" })
+  // Separator line after total
+  commands.push({ type: "line", char: SEPARATOR_LINE })
+
+  // Feed lines
   commands.push({ type: "feed", lines: 3 })
 
   return commands

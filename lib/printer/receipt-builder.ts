@@ -32,6 +32,11 @@ export class ReceiptBuilder {
     return this
   }
 
+  // Center text with larger size and bold formatting
+  centerTitle(content: string): this {
+    return this.text(content, { align: "center", bold: true, size: "large" })
+  }
+
   left(content: string, options?: { bold?: boolean; size?: TextSize }): this {
     return this.text(content, { ...options, align: "left" })
   }
@@ -90,4 +95,32 @@ export const formatReceiptTime = (date: Date): string => {
   const hh = date.getHours().toString().padStart(2, "0")
   const mm = date.getMinutes().toString().padStart(2, "0")
   return `${hh}:${mm}`
+}
+
+// Indonesian month names
+const INDONESIAN_MONTHS = [
+  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+]
+
+// Format date in Indonesian: DD, month name, year HH:mm
+export const formatReceiptDateTime = (date: Date): string => {
+  const dd = date.getDate().toString().padStart(2, "0")
+  const monthName = INDONESIAN_MONTHS[date.getMonth()]
+  const yyyy = date.getFullYear()
+  const hh = date.getHours().toString().padStart(2, "0")
+  const mm = date.getMinutes().toString().padStart(2, "0")
+  return `${dd}, ${monthName} ${yyyy} ${hh}:${mm}`
+}
+
+// Center text within specified width
+export const centerText = (text: string, width: number = LINE_WIDTH): string => {
+  const textLength = text.length
+  if (textLength >= width) return text.slice(0, width)
+
+  const spacesNeeded = width - textLength
+  const leftSpaces = Math.floor(spacesNeeded / 2)
+  const rightSpaces = spacesNeeded - leftSpaces
+
+  return " ".repeat(leftSpaces) + text + " ".repeat(rightSpaces)
 }

@@ -1,86 +1,36 @@
 import { View } from "react-native"
 import { Text } from "@/components/ui/text"
-import { LINE_WIDTH, formatRow } from "@/lib/printer/receipt-builder"
+import { LINE_WIDTH } from "@/lib/printer/receipt-builder"
 import type { PrintCommand, TextSize } from "@/lib/printer/printer.types"
-
-// ----- Constants -----
-const CHAR_WIDTH = 7.5
-const PREVIEW_WIDTH = LINE_WIDTH * CHAR_WIDTH
-const TOOTH_SIZE = 8
-const TOOTH_COUNT = Math.floor(PREVIEW_WIDTH / TOOTH_SIZE)
-
-// ----- Size Multipliers -----
-const SIZE_SCALE: Record<TextSize, number> = {
-    normal: 1,
-    wide: 1.5,
-    tall: 1.5,
-    large: 2,
-}
 
 // ----- Props -----
 type ReceiptPreviewProps = {
     commands: PrintCommand[]
 }
 
-// ----- Sawblade Edge -----
-function SawbladeEdge({ position }: { position: "top" | "bottom" }) {
-    const isTop = position === "top"
+
+// ----- Main Component -----
+export function ReceiptPreview({ commands }: ReceiptPreviewProps) {
     return (
-        <View className="flex-row" style={{ width: PREVIEW_WIDTH }}>
-            {Array.from({ length: TOOTH_COUNT }).map((_, i) => (
-                <View
-                    key={i}
-                    style={{
-                        width: 0,
-                        height: 0,
-                        borderLeftWidth: TOOTH_SIZE / 2,
-                        borderRightWidth: TOOTH_SIZE / 2,
-                        borderLeftColor: "transparent",
-                        borderRightColor: "transparent",
-                        ...(isTop
-                            ? { borderBottomWidth: TOOTH_SIZE, borderBottomColor: "white" }
-                            : { borderTopWidth: TOOTH_SIZE, borderTopColor: "white" }),
-                    }}
-                />
+        <View className="bg-white p-2">
+            {commands.map((cmd, index) => (
+                <CommandRenderer key={index} command={cmd} />
             ))}
         </View>
     )
 }
 
-// ----- Component -----
-export function ReceiptPreview({ commands }: ReceiptPreviewProps) {
-    return (
-        <View className="items-center">
-            <SawbladeEdge position="top" />
-            <View className="bg-white px-2 py-4" style={{ width: PREVIEW_WIDTH }}>
-                {commands.map((cmd, index) => (
-                    <PreviewLine key={index} command={cmd} />
-                ))}
-            </View>
-            <SawbladeEdge position="bottom" />
-        </View>
-    )
-}
-
-// ----- Preview Line -----
-function PreviewLine({ command }: { command: PrintCommand }) {
+// ----- Command Renderer -----
+function CommandRenderer({ command }: { command: PrintCommand }) {
     switch (command.type) {
         case "text":
-            return <TextLine {...command} />
+            return <TextCommand {...command} />
 
         case "line":
-            return (
-                <Text className="font-mono text-black text-center" style={{ fontSize: 12, lineHeight: 16 }}>
-                    {command.char.repeat(LINE_WIDTH)}
-                </Text>
-            )
+            return <LineCommand char={command.char} />
 
         case "row":
-            return (
-                <Text className="font-mono text-black" style={{ fontSize: 12, lineHeight: 16 }}>
-                    {formatRow(command.left, command.right)}
-                </Text>
-            )
+            return <RowCommand left={command.left} right={command.right} />
 
         case "blank":
             return <View style={{ height: 16 }} />
@@ -93,8 +43,26 @@ function PreviewLine({ command }: { command: PrintCommand }) {
     }
 }
 
-// ----- Text Line -----
-function TextLine({ content, align, bold, size }: { content: string; align: "left" | "center" | "right"; bold: boolean; size: TextSize }) {
+// ----- Text Command -----
+function TextCommand({
+    content,
+    align,
+    bold,
+    size,
+}: {
+    content: string
+    align: "left" | "center" | "right"
+    bold: boolean
+    size: TextSize
+}) {
+    const SIZE_SCALE: Record<TextSize, number> = {
+        normal: 1,
+        wide: 1.5,
+        tall: 1.5,
+        large: 2,
+        xlarge: 2.5,
+    }
+
     const scale = SIZE_SCALE[size]
 
     return (
@@ -104,9 +72,57 @@ function TextLine({ content, align, bold, size }: { content: string; align: "lef
                 fontSize: 12 * scale,
                 lineHeight: 16 * scale,
                 textAlign: align,
+                paddingHorizontal: 8,
             }}
         >
             {content}
+        </Text>
+    )
+}
+
+// ----- Line Command (separator) -----
+function LineCommand({ char }: { char: string }) {
+    const line = char.repeat(LINE_WIDTH)
+
+    return (
+        <Text
+            className="font-mono text-black text-center"
+            style={{
+                fontSize: 12,
+                lineHeight: 16,
+                paddingHorizontal: 8,
+            }}
+        >
+            {line}
+        </Text>
+    )
+}
+
+// ----- Row Command (left + right aligned) -----
+function RowCommand({ left, right }: { left: string; right: string }) {
+    const rightLen = Math.min(right.length, LINE_WIDTH - 2)
+    const leftLen = LINE_WIDTH - rightLen
+
+    const leftPadded = left.length >= leftLen
+        ? left.substring(0, leftLen)
+        : left + " ".repeat(leftLen - left.length)
+
+    const rightPadded = right.length >= rightLen
+        ? right.substring(0, rightLen)
+        : " ".repeat(rightLen - right.length) + right
+
+    const formattedLine = leftPadded + rightPadded
+
+    return (
+        <Text
+            className="font-mono text-black"
+            style={{
+                fontSize: 12,
+                lineHeight: 16,
+                paddingHorizontal: 8,
+            }}
+        >
+            {formattedLine}
         </Text>
     )
 }

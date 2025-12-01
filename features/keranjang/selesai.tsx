@@ -1,6 +1,5 @@
 import { View, ScrollView } from "react-native"
-import { useCallback, useMemo, useEffect } from "react"
-import { BackHandler } from "react-native"
+import { useCallback, useMemo } from "react"
 import { useRouter, useLocalSearchParams } from "expo-router"
 import { Printer, Bug } from "lucide-react-native"
 import { Button } from "@/components/ui/button"
@@ -9,9 +8,8 @@ import { Text } from "@/components/ui/text"
 import { ReceiptPreview } from "@/components/shared/receipt-preview"
 import { usePrinterStore } from "@/lib/printer/store/printer.store"
 import { toast } from "@/lib/store/toast-store"
-import { usePrint } from "./hooks/use-print"
+import { usePrint, generateReceiptCommands } from "./hooks/use-print"
 import type { PenjualanResult } from "./types/penjualan-result.types"
-import { buildReceiptCommands } from "./utils/build-receipt-commands"
 
 // ----- Helpers -----
 const parseResult = (resultString: string | undefined): PenjualanResult | null => {
@@ -28,15 +26,15 @@ export default function SelesaiScreen() {
   const router = useRouter()
   const params = useLocalSearchParams()
   const result = useMemo(() => parseResult(params.result as string), [params.result])
-  const receiptCommands = useMemo(() => (result ? buildReceiptCommands(result) : []), [result])
   const selectedPrinter = usePrinterStore((s) => s.selectedPrinter)
   const { printReceipt, printDebug, isPrinting } = usePrint()
 
-  useEffect(() => {
-    const onBackPress = () => true
-    const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress)
-    return () => sub.remove()
-  }, [])
+  // Generate commands for preview (same as what gets printed)
+  const receiptCommands = useMemo(() => {
+    if (!result) return []
+    // Use the same function used by printReceipt to avoid DRY
+    return generateReceiptCommands(result)
+  }, [result])
 
   const handlePrint = useCallback(async () => {
     if (!result) return
@@ -76,7 +74,7 @@ export default function SelesaiScreen() {
   return (
     <View className="flex-1 bg-background">
       {/* Receipt Preview */}
-      <ScrollView contentContainerClassName="flex-grow items-center justify-center p-4">
+      <ScrollView contentContainerClassName="flex-grow items-center justify-center">
         <ReceiptPreview commands={receiptCommands} />
       </ScrollView>
 

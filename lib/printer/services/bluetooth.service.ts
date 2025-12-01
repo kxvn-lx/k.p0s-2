@@ -82,14 +82,18 @@ class BluetoothService {
         },
       },
       {
-        event: nativeManager.EVENT_DEVICE_ALREADY_PAIRED || "EVENT_DEVICE_ALREADY_PAIRED",
+        event:
+          nativeManager.EVENT_DEVICE_ALREADY_PAIRED ||
+          "EVENT_DEVICE_ALREADY_PAIRED",
         handler: (data: { devices: string }) => {
           const devices = this.parseDevices(data.devices)
           this.emit("DEVICE_PAIRED", devices)
         },
       },
       {
-        event: nativeManager.EVENT_DEVICE_DISCOVER_DONE || "EVENT_DEVICE_DISCOVER_DONE",
+        event:
+          nativeManager.EVENT_DEVICE_DISCOVER_DONE ||
+          "EVENT_DEVICE_DISCOVER_DONE",
         handler: () => this.emit("SCAN_DONE", undefined),
       },
       {
@@ -224,7 +228,7 @@ class BluetoothService {
         // Continue waiting if check fails
       }
 
-      await new Promise(resolve => setTimeout(resolve, checkInterval))
+      await new Promise((resolve) => setTimeout(resolve, checkInterval))
     }
 
     throw this.createError(
@@ -338,11 +342,38 @@ class BluetoothService {
     }
   }
 
-
-
   async initPrinter(): Promise<void> {
     await BluetoothEscposPrinter.printerInit()
     await BluetoothEscposPrinter.setWidth(this.config.deviceWidth)
+    // Don't automatically set alignment here - let individual print operations control it
+  }
+
+  /**
+   * Set alignment for subsequent print operations
+   */
+  async setAlignment(alignment: number): Promise<void> {
+    await BluetoothEscposPrinter.printerAlign(alignment)
+  }
+
+  /**
+   * Set left alignment (0)
+   */
+  async setLeftAlignment(): Promise<void> {
+    await BluetoothEscposPrinter.printerAlign(0)
+  }
+
+  /**
+   * Set center alignment (1)
+   */
+  async setCenterAlignment(): Promise<void> {
+    await BluetoothEscposPrinter.printerAlign(1)
+  }
+
+  /**
+   * Set right alignment (2)
+   */
+  async setRightAlignment(): Promise<void> {
+    await BluetoothEscposPrinter.printerAlign(2)
   }
 
   async printText(
@@ -408,7 +439,9 @@ class BluetoothService {
   }
 
   async cut(): Promise<void> {
-    console.warn("Cut functionality not available in lx-react-native-bluetooth-printer")
+    console.warn(
+      "Cut functionality not available in lx-react-native-bluetooth-printer"
+    )
   }
 
   private parseDevice(

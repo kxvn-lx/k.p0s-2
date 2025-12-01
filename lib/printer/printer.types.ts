@@ -50,7 +50,7 @@ export type ReceiptData = {
 
 // Print command types
 export type Alignment = "left" | "center" | "right"
-export type TextSize = "normal" | "wide" | "tall" | "large"
+export type TextSize = "normal" | "wide" | "tall" | "large" | "xlarge"
 
 export type PrintCommand =
   | {
