@@ -32,7 +32,7 @@ export function ProgressDialog({ visible, progress }: ProgressDialogProps) {
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
       <View className="flex-1 bg-black/50 items-center justify-center">
-        <View className="bg-background w-full max-w-sm rounded-[--radius] p-2 gap-2">
+        <View className="bg-background w-full max-w-sm rounded-[--radius] px-2 py-8 gap-2">
           {/* Header */}
           <View className="items-center gap-2">
             {isCompleted ? (

@@ -37,8 +37,9 @@ export default function StockIndex() {
     ({ item }: { item: StockRow }) => (
       <SwipeableStockRowWrapper
         stock={item}
-        onPress={() =>
+        onPress={() => {
           router.push(`/stok/${item.id}?stock=${encodeURIComponent(JSON.stringify(item))}`)
+        }
         }
         onSwipeOpen={handleSwipeOpen}
       />

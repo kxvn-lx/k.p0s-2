@@ -70,7 +70,7 @@ export default function SelesaiScreen() {
       </ScrollView>
 
       {/* Action Buttons */}
-      <View className="flex-row gap-2 p-2 h-14">
+      <View className="flex-row gap-2 p-2 h-14 mb-safe-offset-0">
         {isDev() ? (
           <Button variant="outline" className="flex-1" title="DEBUG PRINT" onPress={handleDebugPrint} disabled={isPrinting || !selectedPrinter} />
         ) : null}

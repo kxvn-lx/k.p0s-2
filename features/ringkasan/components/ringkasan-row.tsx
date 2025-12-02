@@ -13,203 +13,207 @@ import { ChevronRight } from "lucide-react-native"
 import PressableRow from "@/components/shared/pressable-row"
 
 interface RingkasanRowProps {
-    transactions: TransactionItem[]
-    isLoading: boolean
-    refreshControl?: React.ReactElement<RefreshControlProps>
+  transactions: TransactionItem[]
+  isLoading: boolean
+  refreshControl?: React.ReactElement<RefreshControlProps>
 }
 
 type ListItem =
-    | { type: "header"; title: string; id: string }
-    | { type: "empty"; id: string }
-    | {
-        type: "item"
-        data: TransactionItem
-        isFirst: boolean
-        isLast: boolean
+  | { type: "header"; title: string; id: string }
+  | { type: "empty"; id: string }
+  | {
+      type: "item"
+      data: TransactionItem
+      isFirst: boolean
+      isLast: boolean
     }
 
 export function RingkasanRow({
-    transactions,
-    isLoading,
-    refreshControl,
+  transactions,
+  isLoading,
+  refreshControl,
 }: RingkasanRowProps) {
-    const router = useRouter()
+  const router = useRouter()
 
-    const handlePress = (item: TransactionItem) => {
-        router.push(`/ringkasan/rincian?transaction=${encodeURIComponent(JSON.stringify(item))}`)
-    }
+  const handlePress = (item: TransactionItem) => {
+    router.push(
+      `/ringkasan/rincian?transaction=${encodeURIComponent(JSON.stringify(item))}`
+    )
+  }
 
-    const flattenedData = useMemo(() => {
-        const groups: Record<string, TransactionItem[]> = {}
+  const flattenedData = useMemo(() => {
+    const groups: Record<string, TransactionItem[]> = {}
 
-        transactions.forEach((item) => {
-            const date = new Date(item.tanggal)
-            let key = format(date, "d MMMM yyyy", { locale: id })
-            if (isToday(date)) key = "Hari Ini"
-            if (isYesterday(date)) key = "Kemarin"
+    transactions.forEach((item) => {
+      const date = new Date(item.tanggal)
+      let key = format(date, "d MMMM yyyy", { locale: id })
+      if (isToday(date)) key = "Hari Ini"
+      if (isYesterday(date)) key = "Kemarin"
 
-            if (!groups[key]) groups[key] = []
-            groups[key].push(item)
+      if (!groups[key]) groups[key] = []
+      groups[key].push(item)
+    })
+
+    const result: ListItem[] = []
+
+    // Add empty state if no transactions
+    if (transactions.length === 0) {
+      result.push({ type: "empty", id: "empty-state" })
+    } else {
+      Object.entries(groups).forEach(([title, items]) => {
+        result.push({ type: "header", title, id: `header-${title}` })
+        items.forEach((item, index) => {
+          result.push({
+            type: "item",
+            data: item,
+            isFirst: index === 0,
+            isLast: index === items.length - 1,
+          })
         })
-
-        const result: ListItem[] = []
-
-        // Add empty state if no transactions
-        if (transactions.length === 0) {
-            result.push({ type: "empty", id: "empty-state" })
-        } else {
-            Object.entries(groups).forEach(([title, items]) => {
-                result.push({ type: "header", title, id: `header-${title}` })
-                items.forEach((item, index) => {
-                    result.push({
-                        type: "item",
-                        data: item,
-                        isFirst: index === 0,
-                        isLast: index === items.length - 1,
-                    })
-                })
-            })
-        }
-
-        return result
-    }, [transactions])
-
-    const stickyHeaderIndices = useMemo(() => {
-        return flattenedData
-            .map((item, index) => (item.type === "header" ? index : -1))
-            .filter((index) => index !== -1)
-    }, [flattenedData])
-
-    const getItemColor = (type: string) => {
-        if (type === "penjualan") return "text-green-400"
-        if (type === "pengeluaran") return "text-[#da2f8b]"
-        if (type === "pembelian") return "text-red-500"
-        return "text-foreground"
+      })
     }
 
-    const renderItem = ({ item, target }: ListRenderItemInfo<ListItem>) => {
-        if (item.type === "header") {
-            const isSticky = target === "StickyHeader"
-            return (
-                <View
-                    className={cn(
-                        "px-4 py-2",
-                        isSticky && "bg-background border-b border-border"
-                    )}
-                >
-                    <Text
-                        variant="muted"
-                        className="font-mono-bold text-xs uppercase tracking-wider"
-                    >
-                        {item.title}
-                    </Text>
-                </View>
-            )
-        }
+    return result
+  }, [transactions])
 
-        if (item.type === "empty") {
-            return (
-                <View className="flex-1 pt-8">
-                    {/* placeholder row */}
-                    <View className="flex-row items-center p-2 bg-card gap-x-2 border-y border-border">
-                        <View className="flex-1 gap-2">
-                            <Text className="uppercase text-muted-foreground">Nd ada transaksi</Text>
+  const stickyHeaderIndices = useMemo(() => {
+    return flattenedData
+      .map((item, index) => (item.type === "header" ? index : -1))
+      .filter((index) => index !== -1)
+  }, [flattenedData])
 
-                            <View className="flex-row items-center gap-2">
-                                <Text variant="muted">-</Text>
-                                <Text className="text-muted-foreground/50 text-xs">•</Text>
-                                <Text variant="muted" className="uppercase">-</Text>
-                            </View>
-                        </View>
+  const getItemColor = (type: string) => {
+    if (type === "penjualan") return "text-green-400"
+    if (type === "pengeluaran") return "text-[#da2f8b]"
+    if (type === "pembelian") return "text-red-500"
+    return "text-foreground"
+  }
 
-                        <View className="flex-row items-center gap-2">
-                            <Text className="text-muted-foreground">0</Text>
-                        </View>
-                    </View>
-                </View>
-            )
-        }
-
-        const data = item.data
-        const color = getItemColor(data.type)
-
-        return (
-            <PressableRow
-                onPress={() => handlePress(data)}
-                className={cn(
-                    "flex-row items-center p-2 bg-card gap-x-2",
-                    item.isLast && "mb-4",
-                    !item.isLast && "border-b border-border"
-                )}
-            >
-                {/* Left Content: Description & Metadata */}
-                <View className="flex-1 gap-2">
-                    <Text
-                        className="uppercase"
-                    >
-                        {data.type}
-                    </Text>
-
-                    <View className="flex-row items-center gap-2">
-                        <Text variant="muted">
-                            {formatDateTime(data.tanggal)}
-                        </Text>
-                        <Text className="text-muted-foreground/50 text-xs">•</Text>
-                        <Text variant="muted" className="uppercase">
-                            {data.staff_name.split('@')[0].toUpperCase() || "-"}
-                        </Text>
-                        {data.keterangan && (
-                            <>
-                                <Text className="text-muted-foreground/50 text-xs">•</Text>
-                                <Text
-                                    numberOfLines={1}
-                                    ellipsizeMode="tail"
-                                    className="text-xs flex-1 text-muted-foreground/60"
-                                >
-                                    {data.keterangan}
-                                </Text>
-                            </>
-                        )}
-                    </View>
-                </View>
-
-                {/* Right Content: Amount & Chevron */}
-                <View className="flex-row items-center gap-2">
-                    <Text className={cn(color)}>
-                        {data.type === "penjualan" ? "+" : "-"}
-                        {data.jumlah_total.toLocaleString("id-ID")}
-                    </Text>
-
-                    <Icon
-                        as={ChevronRight}
-                        size={20}
-                        className="text-muted-foreground/50"
-                    />
-                </View>
-            </PressableRow>
-        )
+  const renderItem = ({ item, target }: ListRenderItemInfo<ListItem>) => {
+    if (item.type === "header") {
+      const isSticky = target === "StickyHeader"
+      return (
+        <View
+          className={cn(
+            "px-4 py-2",
+            isSticky && "bg-background border-b border-border"
+          )}
+        >
+          <Text
+            variant="muted"
+            className="font-mono-bold text-xs uppercase tracking-wider"
+          >
+            {item.title}
+          </Text>
+        </View>
+      )
     }
 
-    if (isLoading && transactions.length === 0) {
-        return (
-            <View className="flex-1 justify-center items-center">
-                <Text className="text-muted-foreground text-sm">Memuat data...</Text>
+    if (item.type === "empty") {
+      return (
+        <View className="flex-1 pt-8">
+          {/* placeholder row */}
+          <View className="flex-row items-center p-2 bg-card gap-x-2 border-y border-border">
+            <View className="flex-1 gap-2">
+              <Text className="uppercase text-muted-foreground">
+                Nd ada transaksi
+              </Text>
+
+              <View className="flex-row items-center gap-2">
+                <Text variant="muted">-</Text>
+                <Text className="text-muted-foreground/50 text-xs">•</Text>
+                <Text variant="muted" className="uppercase">
+                  -
+                </Text>
+              </View>
             </View>
-        )
+
+            <View className="flex-row items-center gap-2">
+              <Text className="text-muted-foreground">0</Text>
+            </View>
+          </View>
+        </View>
+      )
     }
+
+    const data = item.data
+    const color = getItemColor(data.type)
 
     return (
-        <View className="flex-1">
-            <FlashList
-                data={flattenedData}
-                renderItem={renderItem}
-                getItemType={(item) => item.type}
-                keyExtractor={(item) =>
-                    item.type === "header" ? item.id : item.type === "empty" ? item.id : item.data.id
-                }
-                stickyHeaderIndices={stickyHeaderIndices}
-                refreshControl={refreshControl}
-            />
+      <PressableRow
+        onPress={() => handlePress(data)}
+        className={cn(
+          "flex-row items-center p-2 bg-card gap-x-2",
+          item.isLast && "mb-4",
+          !item.isLast && "border-b border-border"
+        )}
+      >
+        {/* Left Content: Description & Metadata */}
+        <View className="flex-1 gap-2">
+          <Text className="uppercase">{data.type}</Text>
+
+          <View className="flex-row items-center gap-2">
+            <Text variant="muted">{formatDateTime(data.tanggal)}</Text>
+            <Text className="text-muted-foreground/50 text-xs">•</Text>
+            <Text variant="muted" className="uppercase">
+              {data.staff_name.split("@")[0].toUpperCase() || "-"}
+            </Text>
+            {data.keterangan && (
+              <>
+                <Text className="text-muted-foreground/50 text-xs">•</Text>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  className="text-xs flex-1 text-muted-foreground/60"
+                >
+                  {data.keterangan}
+                </Text>
+              </>
+            )}
+          </View>
         </View>
+
+        {/* Right Content: Amount & Chevron */}
+        <View className="flex-row items-center gap-2">
+          <Text className={cn(color)}>
+            {data.type === "penjualan" ? "+" : "-"}
+            {data.jumlah_total.toLocaleString("id-ID")}
+          </Text>
+
+          <Icon
+            as={ChevronRight}
+            size={20}
+            className="text-muted-foreground/50"
+          />
+        </View>
+      </PressableRow>
     )
+  }
+
+  if (isLoading && transactions.length === 0) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-muted-foreground text-sm">Memuat data...</Text>
+      </View>
+    )
+  }
+
+  return (
+    <View className="flex-1">
+      <FlashList
+        data={flattenedData}
+        renderItem={renderItem}
+        getItemType={(item) => item.type}
+        keyExtractor={(item) =>
+          item.type === "header"
+            ? item.id
+            : item.type === "empty"
+              ? item.id
+              : item.data.id
+        }
+        stickyHeaderIndices={stickyHeaderIndices}
+        refreshControl={refreshControl}
+      />
+    </View>
+  )
 }

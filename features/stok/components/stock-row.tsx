@@ -1,11 +1,11 @@
 // ----- Stock list row -----
 import { Text } from "@/components/ui/text"
 import { View } from "react-native"
-import { RectButton } from "react-native-gesture-handler"
 import type { StockRow } from "../api/stock.service"
 import { cn, getLokasiColor } from "@/lib/utils"
 import { Icon } from '@/components/ui/icon'
 import { ChevronRight } from 'lucide-react-native'
+import PressableRow from "@/components/shared/pressable-row"
 
 export default function StockRow({
   stock,
@@ -18,7 +18,10 @@ export default function StockRow({
   const low = qty <= 0
 
   return (
-    <RectButton onPress={onPress} testID={`stock-row-${stock.id}`}>
+    <PressableRow
+      onPress={onPress}
+      testID={`stock-row-${stock.id}`}
+    >
       <View className="flex-row items-center justify-between p-2 bg-background">
 
         <View className="flex-1 flex-col pr-2">
@@ -50,6 +53,6 @@ export default function StockRow({
           <Icon as={ChevronRight} size={20} className="text-muted-foreground/50" />
         </View>
       </View>
-    </RectButton>
+    </PressableRow>
   )
 }
