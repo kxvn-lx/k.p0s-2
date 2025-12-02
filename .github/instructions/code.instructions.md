@@ -18,6 +18,7 @@ Don't use emojis.
 Avoid massive JSX blocks and compose smaller components.
 Colocate code that changes together.
 Avoid `useEffect` unless absolutely needed.
+all queries and mutations must use tanstack query. they must be optimistic and atomic first.
 
 Response & Style Rules
 

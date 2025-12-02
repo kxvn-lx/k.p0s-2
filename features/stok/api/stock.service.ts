@@ -100,4 +100,18 @@ export const StockService = {
     if (error) return { data: null, error }
     return { data, error }
   },
+
+  async updateLokasi(
+    id: string,
+    lokasi: StockLokasi
+  ): Promise<{ data: StockRow | null; error: PostgrestError | null }> {
+    const { data, error } = await supabase
+      .from("stock")
+      .update({ lokasi })
+      .eq("id", id)
+      .select()
+      .single()
+
+    return { data, error }
+  },
 }

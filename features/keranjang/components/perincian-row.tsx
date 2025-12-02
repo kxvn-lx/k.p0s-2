@@ -7,7 +7,8 @@ import Animated, {
 } from "react-native-reanimated"
 import Swipeable, { type SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable"
 import { forwardRef, useImperativeHandle, useRef } from "react"
-import { Button } from "@/components/ui/button"
+import SwipeActionButton from "@/components/shared/swipe-action-button"
+import { Pencil, Trash2 } from "lucide-react-native"
 
 // ----- TYPES -----
 type PerincianRowProps = {
@@ -61,19 +62,23 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
     }
 
     // ----- RENDER FUNCTIONS -----
-    const renderRightActions = (progress: SharedValue<number>, translation: SharedValue<number>, swipeableMethods: SwipeableMethods) => (
-      <View className="flex-row items-center gap-x-2 px-2 bg-card">
-        <Button
-          variant="ghost"
+    const renderRightActions = (
+      _progress: SharedValue<number>,
+      _translation: SharedValue<number>,
+      _swipeableMethods: SwipeableMethods
+    ) => (
+      <View className="flex-row items-center bg-card">
+        <SwipeActionButton
+          label="RUBAH"
+          icon={Pencil}
+          variant="primary"
           onPress={handleEdit}
-          className="justify-center items-center bg-blue-500"
-          title="RUBAH"
         />
-        <Button
-          variant="ghost"
+        <SwipeActionButton
+          label="HAPUS"
+          icon={Trash2}
+          variant="destructive"
           onPress={handleDelete}
-          className="justify-center items-center bg-destructive"
-          title="HAPUS"
         />
       </View>
     )
