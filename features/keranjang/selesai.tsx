@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from "expo-router"
 import { Button } from "@/components/ui/button"
 import { Text } from "@/components/ui/text"
 import { ReceiptPreview } from "@/components/shared/receipt-preview"
-import { usePrinterStore } from "@/lib/printer/store/printer.store"
+import { usePrinter } from "@/lib/printer/hooks/use-printer"
 import { toast } from "@/lib/store/toast-store"
 import { usePrint } from "./hooks/use-print"
 import { isDev } from "@/lib/utils"
@@ -25,8 +25,7 @@ export default function SelesaiScreen() {
   const router = useRouter()
   const params = useLocalSearchParams()
   const result = useMemo(() => parseResult(params.result as string), [params.result])
-  const selectedPrinter = usePrinterStore((s) => s.selectedPrinter)
-  const { printReceipt, printDebug, isPrinting } = usePrint()
+  const { selectedPrinter, printReceipt, printDebug, isPrinting } = usePrint()
 
 
   const handlePrint = useCallback(async () => {

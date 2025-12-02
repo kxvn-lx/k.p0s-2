@@ -1,15 +1,15 @@
-import { bluetooth } from "./bluetooth.service"
-import type { PrinterErrorInfo, BluetoothDevice } from "@/lib/printer/printer.types"
+import { BluetoothErrorInfo } from "@/lib/printer/types/bluetooth.types";
+import { bluetoothCore } from "./bluetooth-core.service"
+import { BluetoothDevice } from "lx-react-native-bluetooth-printer";
 
-export const LINE_WIDTH = 32
-
-// Printer service: high-level printing and error handling
+// ----- Printer Service -----
+// High-level printing service with reconnect logic
 class PrinterService {
   // Print with reconnect helper
   async printWithReconnect(
     savedDevice: BluetoothDevice | null,
     printFn: () => Promise<void>
-  ): Promise<{ success: boolean; error?: PrinterErrorInfo }> {
+  ): Promise<{ success: boolean; error?: BluetoothErrorInfo }> {
     if (!savedDevice) {
       return {
         success: false,
@@ -18,7 +18,7 @@ class PrinterService {
     }
 
     // Reconnect before printing
-    const reconnected = await bluetooth.reconnect(savedDevice)
+    const reconnected = await bluetoothCore.reconnect(savedDevice)
     if (!reconnected) {
       return {
         success: false,
@@ -30,21 +30,21 @@ class PrinterService {
       await printFn()
       return { success: true }
     } catch (error) {
-      return { success: false, error: error as PrinterErrorInfo }
+      return { success: false, error: error as BluetoothErrorInfo }
     } finally {
-      await bluetooth.disconnect()
+      await bluetoothCore.disconnect()
     }
   }
 
   // Helpers
   private createError(
-    code: PrinterErrorInfo["code"],
+    code: BluetoothErrorInfo["code"],
     message: string,
     originalError?: unknown
-  ): PrinterErrorInfo {
+  ): BluetoothErrorInfo {
     return { code, message, originalError }
   }
 }
 
-// ----- Singleton Export -----
+// Singleton instance
 export const printerService = new PrinterService()

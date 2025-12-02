@@ -1,7 +1,7 @@
 import { View } from "react-native"
 import { Text } from "@/components/ui/text"
 import { DeviceListItem } from "./device-list-item"
-import type { BluetoothDevice } from "@/lib/printer/printer.types"
+import { BluetoothDevice } from "@/lib/printer/types/bluetooth.types"
 
 // ----- Types -----
 type DeviceListSectionProps = {

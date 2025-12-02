@@ -1,23 +1,22 @@
 import { useCallback, useState } from "react"
-import { printerService } from "@/lib/printer/services/printer.service"
-import { bluetooth } from "@/lib/printer/services/bluetooth.service"
+import { usePrinter } from "./use-printer"
 import { toast } from "@/lib/store/toast-store"
-import type { BluetoothDevice } from "@/lib/printer/printer.types"
 
 export function useTestPrint() {
   const [isPrinting, setIsPrinting] = useState(false)
+  const { printerService, selectedPrinter, printerCore } = usePrinter()
 
-  const printTest = useCallback(async (device: BluetoothDevice | null): Promise<boolean> => {
-    if (!device) {
+  const printTest = useCallback(async (): Promise<boolean> => {
+    if (!selectedPrinter) {
       toast.warning("Tidak Ada Printer", "Pilih printer terlebih dahulu")
       return false
     }
 
     setIsPrinting(true)
     try {
-      const result = await printerService.printWithReconnect(device, async () => {
-        await bluetooth.initPrinter()
-        await bluetooth.printText("Tes OK")
+      const result = await printerService.printWithReconnect(selectedPrinter, async () => {
+        await printerCore.initPrinter()
+        await printerCore.printText("Tes OK")
       })
 
       if (result.success) {
@@ -30,7 +29,7 @@ export function useTestPrint() {
     } finally {
       setIsPrinting(false)
     }
-  }, [])
+  }, [selectedPrinter, printerService, printerCore])
 
   return { printTest, isPrinting }
 }

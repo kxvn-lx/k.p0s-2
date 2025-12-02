@@ -1,6 +1,6 @@
 import { View } from "react-native"
 import { cn } from "@/lib/utils"
-import type { ConnectionState } from "@/lib/printer/printer.types"
+import { ConnectionState } from "@/lib/printer/types/bluetooth.types"
 
 // ----- Types -----
 type ConnectionStatusBadgeProps = {

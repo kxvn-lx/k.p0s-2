@@ -1,10 +1,10 @@
-import { View, ActivityIndicator } from "react-native"
+import { View } from "react-native"
 import { Text } from "@/components/ui/text"
 import { Icon } from "@/components/ui/icon"
 import { cn } from "@/lib/utils"
 import { Bluetooth, Check } from "lucide-react-native"
 import InfoRow from "@/components/shared/info-row"
-import type { BluetoothDevice } from "@/lib/printer/printer.types"
+import { BluetoothDevice } from "@/lib/printer/types/bluetooth.types"
 
 // ----- Types -----
 type DeviceListItemProps = {

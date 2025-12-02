@@ -1,17 +1,14 @@
 import { useCallback, useState } from "react"
 import { printerService } from "@/lib/printer/services/printer.service"
-import { bluetooth } from "@/lib/printer/services/bluetooth.service"
+import { usePrinter } from "@/lib/printer/hooks/use-printer"
 import { toast } from "@/lib/store/toast-store"
-import type {
-  BluetoothDevice,
-  PrinterErrorInfo,
-  PrintCommand,
-} from "@/lib/printer/printer.types"
 import type { PenjualanResult } from "../types/penjualan-result.types"
+import { BluetoothDevice, BluetoothErrorInfo } from "@/lib/printer/types/bluetooth.types"
+import { PrintCommand } from "@/lib/printer/types/printer.types"
 
 type PrintResult = {
   success: boolean
-  error?: PrinterErrorInfo
+  error?: BluetoothErrorInfo
   commands?: PrintCommand[] // Commands generated for preview
 }
 
@@ -189,6 +186,7 @@ const generateReceiptCommands = (result: PenjualanResult): PrintCommand[] => {
 // ----- Hook -----
 export function usePrint() {
   const [isPrinting, setIsPrinting] = useState(false)
+  const { printerCore, selectedPrinter } = usePrinter()
 
   const printReceipt = useCallback(
     async (
@@ -196,7 +194,7 @@ export function usePrint() {
       device: BluetoothDevice | null
     ): Promise<PrintResult> => {
       if (!device) {
-        const error: PrinterErrorInfo = {
+        const error: BluetoothErrorInfo = {
           code: "DEVICE_NOT_FOUND",
           message: "Pilih printer terlebih dahulu di menu pengaturan",
         }
@@ -217,45 +215,45 @@ export function usePrint() {
                 // Set alignment before printing
                 switch (cmd.align) {
                   case "center":
-                    await bluetooth.setCenterAlignment()
+                    await printerCore.setCenterAlignment()
                     break
                   case "right":
-                    await bluetooth.setRightAlignment()
+                    await printerCore.setRightAlignment()
                     break
                   case "left":
                   default:
-                    await bluetooth.setLeftAlignment()
+                    await printerCore.setLeftAlignment()
                     break
                 }
 
                 // Handle size multipliers (width multiplier 1 for "large" size)
                 const widthMultiplier = cmd.size === "large" ? 1 : 0
-                await bluetooth.printText(cmd.content, {
+                await printerCore.printText(cmd.content, {
                   widthMultiplier,
                   bold: cmd.bold
                 })
 
                 // Reset to left alignment after center/right
                 if (cmd.align !== "left") {
-                  await bluetooth.setLeftAlignment()
+                  await printerCore.setLeftAlignment()
                 }
                 break
 
               case "line":
-                await bluetooth.printText(cmd.char.repeat(LINE_WIDTH))
+                await printerCore.printText(cmd.char.repeat(LINE_WIDTH))
                 break
 
               case "row":
                 const rowText = formatRow(cmd.left, cmd.right)
-                await bluetooth.printText(rowText)
+                await printerCore.printText(rowText)
                 break
 
               case "feed":
-                await bluetooth.feed(cmd.lines)
+                await printerCore.feed(cmd.lines)
                 break
 
               case "blank":
-                await bluetooth.printBlank()
+                await printerCore.printBlank()
                 break
             }
           }
@@ -266,7 +264,7 @@ export function usePrint() {
         setIsPrinting(false)
       }
     },
-    []
+    [printerCore]
   )
 
   const printDebug = useCallback(
@@ -275,7 +273,7 @@ export function usePrint() {
       device: BluetoothDevice | null
     ): Promise<PrintResult> => {
       if (!device) {
-        const error: PrinterErrorInfo = {
+        const error: BluetoothErrorInfo = {
           code: "DEVICE_NOT_FOUND",
           message: "Pilih printer terlebih dahulu",
         }
@@ -289,17 +287,17 @@ export function usePrint() {
         const total = formatCurrency(result.penjualan.jumlah_total)
 
         return await printerService.printWithReconnect(device, async () => {
-          await bluetooth.initPrinter()
-          await bluetooth.printText(`${itemCount} item | ${total}`)
+          await printerCore.initPrinter()
+          await printerCore.printText(`${itemCount} item | ${total}`)
         })
       } finally {
         setIsPrinting(false)
       }
     },
-    []
+    [printerCore]
   )
 
-  return { printReceipt, printDebug, isPrinting }
+  return { printReceipt, printDebug, isPrinting, selectedPrinter }
 }
 
 // Export generateReceiptCommands for reuse

@@ -1,12 +1,13 @@
 import { useCallback, useState } from "react"
 import { printerService } from "@/lib/printer/services/printer.service"
-import { bluetooth } from "@/lib/printer/services/bluetooth.service"
+import { usePrinter } from "@/lib/printer/hooks/use-printer"
 import { toast } from "@/lib/store/toast-store"
-import type { BluetoothDevice } from "@/lib/printer/printer.types"
+import { BluetoothDevice } from "@/lib/printer/types/bluetooth.types"
 
 // ----- Hook -----
 export function useTestPrint() {
   const [isPrinting, setIsPrinting] = useState(false)
+  const { printerCore } = usePrinter()
 
   const printTest = useCallback(async (device: BluetoothDevice | null): Promise<boolean> => {
     if (!device) {
@@ -17,9 +18,9 @@ export function useTestPrint() {
     setIsPrinting(true)
     try {
       const result = await printerService.printWithReconnect(device, async () => {
-        await bluetooth.initPrinter()
-        await bluetooth.printText("Tes OK")
-        await bluetooth.feed(2)
+        await printerCore.initPrinter()
+        await printerCore.printText("Tes OK")
+        await printerCore.feed(2)
       })
 
       if (result.success) {

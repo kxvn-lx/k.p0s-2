@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useCallback } from "react"
 import {
   ScrollView,
   View,
@@ -6,15 +6,12 @@ import {
   ActivityIndicator,
 } from "react-native"
 import { Text } from "@/components/ui/text"
-import { bluetooth } from "@/lib/printer/services/bluetooth.service"
-import { usePrinterPermissions } from "@/lib/printer/hooks/use-printer-permissions"
-import { usePrinterScanner } from "@/lib/printer/hooks/use-printer-scanner"
-import { usePrinterConnection } from "@/lib/printer/hooks/use-printer-connection"
+import { usePrinter } from "@/lib/printer/hooks/use-printer"
 import { useTestPrint } from "@/lib/printer/hooks/use-test-print"
 import { SelectedPrinterCard } from "./components/selected-printer-card"
 import { DeviceListSection } from "./components/device-list-section"
 import { PermissionRequiredView } from "./components/permission-required-view"
-import type { BluetoothDevice } from "@/lib/printer/printer.types"
+import { BluetoothDevice } from "@/lib/printer/types/bluetooth.types"
 
 // ----- Screen -----
 export default function PrinterScreen() {
@@ -25,18 +22,21 @@ export default function PrinterScreen() {
     isChecking: isCheckingPermissions,
     ensurePermissions,
     openSettings,
-  } = usePrinterPermissions()
-
-  const { printerDevices, isScanning, scan } = usePrinterScanner()
-
-  const { connectionState, selectedPrinter, connect, deselectPrinter } =
-    usePrinterConnection()
+    connectionState,
+    selectedPrinter,
+    printerDevices,
+    isScanning,
+    scan,
+    connect,
+    deselectPrinter,
+    bluetoothCore,
+  } = usePrinter()
 
   const { printTest, isPrinting } = useTestPrint()
 
   // ----- Handlers -----
   const handleScan = useCallback(async () => {
-    bluetooth.init()
+    bluetoothCore.init()
     const granted = await ensurePermissions()
     if (!granted) return
     await scan()
@@ -54,8 +54,8 @@ export default function PrinterScreen() {
   )
 
   const handleTestPrint = useCallback(async () => {
-    await printTest(selectedPrinter)
-  }, [selectedPrinter, printTest])
+    await printTest()
+  }, [printTest])
 
   // ----- Loading State -----
   if (!permissionsChecked || isCheckingPermissions) {

@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
 import { Icon } from "@/components/ui/icon"
 import { Printer, Trash2 } from "lucide-react-native"
-import type { BluetoothDevice, ConnectionState } from "@/lib/printer/printer.types"
+import { BluetoothDevice, ConnectionState } from "@/lib/printer/types/bluetooth.types"
 
 // ----- Types -----
 type SelectedPrinterCardProps = {
