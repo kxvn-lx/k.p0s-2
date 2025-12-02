@@ -2,11 +2,10 @@ import { Text } from "@/components/ui/text"
 import { View } from "react-native"
 import type { BasketItem } from "@/features/keranjang/types/keranjang.types"
 import Animated, {
-  FadeInLeft,
-  FadeOutLeft,
-  Layout,
+  LinearTransition,
+  SharedValue,
 } from "react-native-reanimated"
-import { Swipeable } from "react-native-gesture-handler"
+import Swipeable, { type SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable"
 import { forwardRef, useImperativeHandle, useRef } from "react"
 import { Button } from "@/components/ui/button"
 
@@ -26,7 +25,7 @@ export type PerincianRowRef = {
 const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
   ({ item, onDelete, onEdit, onSwipeOpen }, ref) => {
     const { stock, qty, harga_satuan, variasi_harga_id, harga_satuan_asal } = item
-    const swipeableRef = useRef<Swipeable>(null)
+    const swipeableRef = useRef<SwipeableMethods>(null)
 
     const isVariasiHarga = !!variasi_harga_id
     const hasEditedPrice = harga_satuan_asal !== undefined && harga_satuan_asal !== harga_satuan
@@ -62,32 +61,26 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
     }
 
     // ----- RENDER FUNCTIONS -----
-    const renderRightActions = () => (
+    const renderRightActions = (progress: SharedValue<number>, translation: SharedValue<number>, swipeableMethods: SwipeableMethods) => (
       <View className="flex-row items-center gap-x-2 px-2 bg-card">
         <Button
           variant="ghost"
-          size={"icon"}
           onPress={handleEdit}
           className="justify-center items-center bg-blue-500"
-        >
-          <Text className="text-white font-medium">RUBAH</Text>
-        </Button>
+          title="RUBAH"
+        />
         <Button
           variant="ghost"
-          size={"icon"}
           onPress={handleDelete}
           className="justify-center items-center bg-destructive"
-        >
-          <Text className="text-destructive-foreground font-medium">HAPUS</Text>
-        </Button>
+          title="HAPUS"
+        />
       </View>
     )
 
     return (
       <Animated.View
-        entering={FadeInLeft.duration(200)}
-        exiting={FadeOutLeft.duration(200)}
-        layout={Layout.springify()}
+        layout={LinearTransition.springify()}
       >
         <Swipeable
           ref={swipeableRef}
@@ -117,7 +110,7 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
                     </Text>
                   )}
                   <Text className={isVariasiHarga ? "text-green-500 text-sm" : "text-sm text-muted-foreground"}>
-                    {harga_satuan.toLocaleString()}
+                    {harga_satuan}
                   </Text>
                 </View>
               </View>
