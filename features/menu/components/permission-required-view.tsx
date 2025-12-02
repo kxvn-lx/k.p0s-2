@@ -20,19 +20,19 @@ export function PermissionRequiredView({
   return (
     <View className="flex-1 items-center justify-center gap-4 p-8">
       <View className="rounded-full bg-warning/10 p-4">
-        <Icon as={ShieldAlert} size={48} className="text-warning" />
+        <Icon as={ShieldAlert} size={48} className="text-foreground" />
       </View>
 
       <View className="gap-2">
-        <Text className="text-center text-lg font-medium">Izin Diperlukan</Text>
+        <Text className="text-center text-lg font-medium">Perlu izin</Text>
         <Text variant="muted" className="text-center text-sm">
-          Aplikasi memerlukan akses Bluetooth dan Lokasi untuk mencari dan menghubungkan ke printer thermal.
+          Apk perlu akses Bluetooth dan Lokasi for mo cari dg konek ka printer.
         </Text>
       </View>
 
       <View className="w-full gap-2">
         <Button
-          title={isRequesting ? "Meminta Izin..." : "Izinkan Akses"}
+          title={isRequesting ? "MENGATUR IZIN..." : "KASE IZIN AKSES"}
           onPress={onRequestPermission}
           disabled={isRequesting}
         />

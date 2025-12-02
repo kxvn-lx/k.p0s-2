@@ -4,7 +4,6 @@ import { useRouter, useLocalSearchParams } from "expo-router"
 import { Button } from "@/components/ui/button"
 import { Text } from "@/components/ui/text"
 import { ReceiptPreview } from "@/components/shared/receipt-preview"
-import { usePrinter } from "@/lib/printer/hooks/use-printer"
 import { toast } from "@/lib/store/toast-store"
 import { usePrint } from "./hooks/use-print"
 import { isDev } from "@/lib/utils"
@@ -67,7 +66,7 @@ export default function SelesaiScreen() {
     <View className="flex-1 bg-background">
       {/* Receipt Preview */}
       <ScrollView contentContainerClassName="flex-grow items-center justify-center">
-        <ReceiptPreview result={result} isPrinting={isPrinting} />
+        <ReceiptPreview result={result} />
       </ScrollView>
 
       {/* Action Buttons */}
