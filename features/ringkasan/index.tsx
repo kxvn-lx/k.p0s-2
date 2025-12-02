@@ -13,7 +13,7 @@ import { useRingkasanData } from "./hooks/ringkasan.queries"
 import { DateNavigator } from "./components/date-navigator"
 import { FilterSegment } from "./components/filter-segment"
 import { SummaryCard } from "./components/summary-card"
-import { TransactionList } from "./components/transaction-list"
+import { RingkasanRow } from "@/features/ringkasan/components/ringkasan-row"
 
 type PeriodFilter = "daily" | "weekly" | "yearly"
 
@@ -66,7 +66,7 @@ export default function RingkasanScreen() {
       <DateNavigator date={currentDate} onDateChange={handleDateChange} filter={filter} />
       <FilterSegment filter={filter} onFilterChange={setFilter} />
       <SummaryCard summary={summary} />
-      <TransactionList
+      <RingkasanRow
         transactions={transactions}
         isLoading={isLoading}
         refreshControl={

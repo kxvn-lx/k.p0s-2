@@ -1,5 +1,5 @@
 import { View } from "react-native"
-import { RefreshControl, RefreshControlProps } from "react-native"
+import { RefreshControlProps } from "react-native"
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list"
 import { Text } from "@/components/ui/text"
 import type { TransactionItem } from "../hooks/ringkasan.queries"
@@ -12,7 +12,7 @@ import { Icon } from "@/components/ui/icon"
 import { ChevronRight } from "lucide-react-native"
 import PressableRow from "@/components/shared/pressable-row"
 
-interface TransactionListProps {
+interface RingkasanRowProps {
     transactions: TransactionItem[]
     isLoading: boolean
     refreshControl?: React.ReactElement<RefreshControlProps>
@@ -28,11 +28,11 @@ type ListItem =
         isLast: boolean
     }
 
-export function TransactionList({
+export function RingkasanRow({
     transactions,
     isLoading,
     refreshControl,
-}: TransactionListProps) {
+}: RingkasanRowProps) {
     const router = useRouter()
 
     const handlePress = (item: TransactionItem) => {
@@ -156,7 +156,7 @@ export function TransactionList({
                         </Text>
                         <Text className="text-muted-foreground/50 text-xs">•</Text>
                         <Text variant="muted" className="uppercase">
-                            {data.staff_name || "-"}
+                            {data.staff_name.split('@')[0].toUpperCase() || "-"}
                         </Text>
                         {data.keterangan && (
                             <>
