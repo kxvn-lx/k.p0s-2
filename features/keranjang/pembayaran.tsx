@@ -1,6 +1,6 @@
 // ----- IMPORTS -----
 import { View } from "react-native"
-import { useState, useMemo, useCallback } from "react"
+import { useState, useMemo, useCallback, useRef } from "react"
 import { useRouter } from "expo-router"
 import { Delete } from "lucide-react-native"
 import { Text } from "@/components/ui/text"
@@ -10,8 +10,8 @@ import InfoRow from "@/components/shared/info-row"
 import useKeranjangStore from "./store/keranjang-store"
 import { useAuth } from "@/lib/auth-context"
 import { formatDateTime, cn } from "@/lib/utils"
-import type { PenjualanResult, PenjualanRow, PenjualanDetailRow } from "./types/penjualan-result.types"
-import type { BasketItem } from "./types/keranjang.types"
+import { usePenjualanMutation } from "@/features/penjualan/hooks/use-penjualan-mutation"
+import { ProgressDialog } from "@/features/penjualan/components/progress-dialog"
 
 // ----- CONSTANTS -----
 const MAX_INPUT_LENGTH = 12
@@ -23,63 +23,6 @@ const KEYPAD_GRID = [
   ["00", "0", "000", null],
 ] as const
 
-// ----- HELPERS -----
-const generateId = (): string => {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
-}
-
-const createPenjualanResult = (
-  items: Record<string, BasketItem>,
-  staffId: string,
-  staffName: string,
-  cashReceived: number
-): PenjualanResult => {
-  const now = new Date().toISOString()
-  const penjualanId = generateId()
-
-  // Calculate total
-  const jumlahTotal = Object.values(items).reduce(
-    (sum, item) => sum + item.qty * item.harga_satuan,
-    0
-  )
-
-  // Create penjualan row
-  const penjualan: PenjualanRow = {
-    id: penjualanId,
-    tanggal: now,
-    staff_id: staffId,
-    staff_name: staffName,
-    jumlah_total: jumlahTotal,
-    keterangan: null,
-    created_at: now,
-    updated_at: now,
-  }
-
-  // Create penjualan detail rows
-  const details: PenjualanDetailRow[] = Object.values(items).map((item) => ({
-    id: generateId(),
-    penjualan_id: penjualanId,
-    stock_id: item.stock.id,
-    nama: item.stock.nama,
-    qty: item.qty,
-    harga_jual: item.harga_satuan,
-    jumlah_total: item.qty * item.harga_satuan,
-    satuan_utama: item.stock.satuan_utama,
-    variasi: item.variasi_harga_id ? { variasi_harga_id: item.variasi_harga_id, min_qty: item.min_qty } : null,
-    created_at: now,
-    updated_at: now,
-  }))
-
-  return {
-    penjualan,
-    details,
-    payment: {
-      cashReceived,
-      change: cashReceived - jumlahTotal,
-    },
-  }
-}
-
 // ----- COMPONENT -----
 export default function PembayaranScreen() {
   // ----- STATE -----
@@ -88,6 +31,14 @@ export default function PembayaranScreen() {
   const items = useKeranjangStore((s) => s.items)
   const reset = useKeranjangStore((s) => s.reset)
   const [inputAmount, setInputAmount] = useState("")
+  const pendingResult = useRef<Parameters<typeof router.replace>[0] | null>(null)
+  const {
+    mutateAsync: createPenjualan,
+    isProcessing,
+    dialogVisible,
+    progress,
+    closeDialogAndNavigate,
+  } = usePenjualanMutation()
 
   // ----- COMPUTED VALUES -----
   const totalAmount = useMemo(() => {
@@ -124,36 +75,38 @@ export default function PembayaranScreen() {
   }, [totalAmount])
 
   const handleProceed = useCallback(async () => {
-    if (!isValid) return
+    if (!isValid || isProcessing) return
 
     try {
-      // TODO: Replace with actual DB post when ready
-      // For now, create mock result object
-      const result = createPenjualanResult(
+      const result = await createPenjualan({
+        staffId: user?.id ?? "unknown",
+        staffName: user?.email ?? "Staff",
         items,
-        user?.id ?? "unknown",
-        user?.email ?? "Staff",
-        paymentAmount
-      )
+        cashReceived: paymentAmount,
+        tanggal: new Date().toISOString(),
+      })
 
-      // Clear the basket
       reset()
 
-      // Navigate with serialized result (replace to prevent going back)
-      router.replace({
+      pendingResult.current = {
         pathname: "/(authenticated)/keranjang/selesai",
-        params: {
-          result: JSON.stringify(result),
-        },
+        params: { result: JSON.stringify(result) },
+      }
+
+      closeDialogAndNavigate(() => {
+        if (pendingResult.current) router.replace(pendingResult.current)
       })
-    } catch (error) {
-      console.error("Payment failed:", error)
+    } catch {
+      //
     }
-  }, [isValid, items, user, paymentAmount, reset, router])
+  }, [isValid, isProcessing, items, user, paymentAmount, reset, router, createPenjualan, closeDialogAndNavigate])
 
   // ----- RENDER -----
   return (
     <View className="flex-1 bg-background flex-col justify-between">
+      {/* Progress Dialog */}
+      <ProgressDialog visible={dialogVisible} progress={progress} />
+
       {/* Header Info  */}
       <View className="">
         <InfoRow label="TANGGAL" value={formatDateTime(new Date())} />
@@ -249,11 +202,12 @@ export default function PembayaranScreen() {
             variant="outline"
             onPress={handleExactAmount}
             className="flex-1"
+            disabled={isProcessing}
           />
           <Button
-            title="LANJUT"
+            title={isProcessing ? "MEMPROSES..." : "LANJUT"}
             onPress={handleProceed}
-            disabled={!isValid}
+            disabled={!isValid || isProcessing}
             className="flex-1"
           />
         </View>

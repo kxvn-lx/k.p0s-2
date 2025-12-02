@@ -3,6 +3,7 @@ import { Tabs } from "expo-router"
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { getTabOptions } from "@/lib/navigation"
 import { getThemeColors } from "@/lib/theme"
+import { isDev } from "@/lib/utils"
 import { hslToRgb } from "@/lib/utils"
 import { useThemeStore } from "@/lib/store/theme-store"
 import { useColorScheme } from "react-native"
@@ -45,6 +46,13 @@ export default function AuthenticatedLayout() {
         color={color}
       />
     ),
+    Debug: (focused: boolean, color: string, size: number) => (
+      <Ionicons
+        name={focused ? "bug" : "bug-outline"}
+        size={size}
+        color={color}
+      />
+    ),
   }
 
   return (
@@ -61,6 +69,7 @@ export default function AuthenticatedLayout() {
       <Tabs.Screen name="stok" options={{ title: "Stok" }} />
       <Tabs.Screen name="ringkasan" options={{ title: "Ringkasan" }} />
       <Tabs.Screen name="menu" options={{ title: "Menu" }} />
+      {isDev() && <Tabs.Screen name="(debug)" options={{ title: "Debug" }} />}
     </Tabs>
   )
 }
