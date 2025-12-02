@@ -43,13 +43,6 @@ const formatRow = (left: string, right: string): string => {
 }
 
 /**
- * Create separator line (32 dashes)
- */
-const makeLine = (): string => {
-  return "-".repeat(LINE_WIDTH)
-}
-
-/**
  * Truncate text with ellipsis if too long
  */
 const truncate = (text: string, maxLen: number): string => {
@@ -310,4 +303,4 @@ export function usePrint() {
 }
 
 // Export generateReceiptCommands for reuse
-export { generateReceiptCommands }
+export { generateReceiptCommands, formatDateIndonesian, formatTime }

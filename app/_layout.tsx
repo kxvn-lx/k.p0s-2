@@ -3,6 +3,7 @@ import {
   UbuntuMono_700Bold,
   useFonts,
 } from "@expo-google-fonts/ubuntu-mono"
+import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider } from "@react-navigation/native"
 import { PortalHost } from "@rn-primitives/portal"
 import { QueryClientProvider } from "@tanstack/react-query"
@@ -105,11 +106,14 @@ function InnerLayout() {
 
 // ----- Root Layout -----
 export default function RootLayout() {
+  const statusBarColor = useColorScheme() === "dark" ? "light" : "dark"
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <InnerLayout />
+          <StatusBar style={statusBarColor} />
         </AuthProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

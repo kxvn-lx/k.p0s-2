@@ -6,7 +6,7 @@ import { Text } from "@/components/ui/text"
 import { ReceiptPreview } from "@/components/shared/receipt-preview"
 import { usePrinterStore } from "@/lib/printer/store/printer.store"
 import { toast } from "@/lib/store/toast-store"
-import { usePrint, generateReceiptCommands } from "./hooks/use-print"
+import { usePrint } from "./hooks/use-print"
 import { isDev } from "@/lib/utils"
 import type { PenjualanResult } from "./types/penjualan-result.types"
 
@@ -28,10 +28,6 @@ export default function SelesaiScreen() {
   const selectedPrinter = usePrinterStore((s) => s.selectedPrinter)
   const { printReceipt, printDebug, isPrinting } = usePrint()
 
-  const receiptCommands = useMemo(() => {
-    if (!result) return []
-    return generateReceiptCommands(result)
-  }, [result])
 
   const handlePrint = useCallback(async () => {
     if (!result) return
@@ -72,7 +68,7 @@ export default function SelesaiScreen() {
     <View className="flex-1 bg-background">
       {/* Receipt Preview */}
       <ScrollView contentContainerClassName="flex-grow items-center justify-center">
-        <ReceiptPreview commands={receiptCommands} />
+        <ReceiptPreview result={result} isPrinting={isPrinting} />
       </ScrollView>
 
       {/* Action Buttons */}

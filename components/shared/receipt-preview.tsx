@@ -1,129 +1,149 @@
-import { View } from "react-native"
+import { View, useWindowDimensions } from "react-native"
 import { Text } from "@/components/ui/text"
-import type { PrintCommand, TextSize } from "@/lib/printer/printer.types"
-import { LINE_WIDTH } from "@/lib/printer/services/printer.service"
+import Svg, { Defs, Path, Pattern, Rect } from "react-native-svg"
+import type { PenjualanResult } from "@/features/keranjang/types/penjualan-result.types"
+import { formatDateIndonesian, formatTime } from "@/features/keranjang/hooks/use-print"
 
-// ----- Props -----
-type ReceiptPreviewProps = {
-    commands: PrintCommand[]
+const STORE_NAME = "PIRAMID"
+
+// ----- Divider Component -----
+const Divider = () => {
+    return (
+        <View className="my-2 border-b border-dashed border-black w-full" />
+    )
 }
 
+// ----- Zigzag Edge Component -----
+const ZigzagEdge = ({ inverted = true }) => {
+    const { width } = useWindowDimensions()
+    const zigzagWidth = 7 // Width of a single zigzag
+    const zigzagHeight = 3.5 // Height of the zigzag
+
+    return (
+        <Svg height={zigzagHeight} width={width}>
+            <Defs>
+                <Pattern
+                    id="zigzag"
+                    width={zigzagWidth}
+                    height={zigzagHeight}
+                    patternUnits="userSpaceOnUse"
+                >
+                    <Path
+                        d={`M0 ${inverted ? zigzagHeight : 0}
+                L${zigzagWidth / 2} ${inverted ? 0 : zigzagHeight}
+                L${zigzagWidth} ${inverted ? zigzagHeight : 0}`}
+                        fill="white"
+                        stroke="white"
+                        strokeWidth="1"
+                    />
+                </Pattern>
+            </Defs>
+            <Rect
+                x="0"
+                y="0"
+                width={width}
+                height={zigzagHeight}
+                fill="url(#zigzag)"
+            />
+        </Svg>
+    )
+}
+
+// ----- Receipt Content Component -----
+interface IReceiptContent {
+    result: PenjualanResult
+    userEmail?: string | null
+}
+
+const ReceiptContent = ({ result, userEmail }: IReceiptContent) => {
+    const date = new Date(result.penjualan.tanggal)
+    const transactionNo = result.penjualan.id.substring(0, 6).toUpperCase()
+    const staffName = result.penjualan.staff_name.split('@')[0].charAt(0).toUpperCase()
+
+    return (
+        <>
+            <Text className="text-center text-black">{STORE_NAME}</Text>
+            <Text className="font-mono text-center text-xs text-black">
+                {formatDateIndonesian(date)} {formatTime(date)}
+            </Text>
+            <Divider />
+            <View className="flex-row justify-between items-center">
+                <Text className="font-mono text-xs text-black">No. #{transactionNo}</Text>
+                <Text className="font-mono text-xs text-black">
+                    {userEmail?.split("@")[0].slice(0, 1).toUpperCase() || staffName}
+                </Text>
+            </View>
+            <Divider />
+            {result.details?.map((item, index) => (
+                <View key={index} className="mb-1 flex-row items-center">
+                    <Text className="font-mono text-xs w-4 mr-1 text-black">
+                        {item.qty.toString()}
+                    </Text>
+                    <Text
+                        className="font-mono text-xs flex-1 truncate mr-1 text-black"
+                        numberOfLines={1}
+                    >
+                        {item.nama}
+                    </Text>
+                    <Text className="font-mono text-xs text-right w-16 mr-1 text-black">
+                        {(item.jumlah_total / item.qty).toLocaleString("id-ID")}
+                    </Text>
+                    <Text className="font-mono text-xs text-right w-16">
+                        {item.jumlah_total.toLocaleString("id-ID")}
+                    </Text>
+                </View>
+            ))}
+            <Divider />
+            <View className="flex-row justify-between items-center">
+                <Text className="font-mono text-xs text-black">Total</Text>
+                <Text className="font-mono text-xs text-black">
+                    {result.penjualan.jumlah_total.toLocaleString("id-ID")}
+                </Text>
+            </View>
+            {result.payment && (
+                <>
+                    <View className="flex-row justify-between items-center">
+                        <Text className="font-mono text-xs">Tunai</Text>
+                        <Text className="font-mono text-xs">
+                            {result.payment.cashReceived.toLocaleString("id-ID")}
+                        </Text>
+                    </View>
+                    <View className="flex-row justify-between items-center">
+                        <Text className="font-mono text-xs">Kembali</Text>
+                        <Text className="font-mono text-xs">
+                            {result.payment.change.toLocaleString("id-ID")}
+                        </Text>
+                    </View>
+                </>
+            )}
+            <Divider />
+            <Text className="text-center font-mono mb-4 text-xs">
+                Terima Kasih
+            </Text>
+        </>
+    )
+}
 
 // ----- Main Component -----
-export function ReceiptPreview({ commands }: ReceiptPreviewProps) {
+interface IReceiptView {
+    result: PenjualanResult
+    isPrinting: boolean
+}
+
+export function ReceiptPreview({ result, isPrinting }: IReceiptView) {
     return (
-        <View className="bg-white p-2">
-            {commands.map((cmd, index) => (
-                <CommandRenderer key={index} command={cmd} />
-            ))}
+        <View className="flex-1 items-center justify-center">
+            <View className="overflow-hidden">
+                <ZigzagEdge />
+                <View className="p-4 bg-white">
+                    <ReceiptContent
+                        result={result}
+                        userEmail={null}
+                    />
+                </View>
+                <ZigzagEdge inverted={false} />
+            </View>
         </View>
-    )
-}
-
-// ----- Command Renderer -----
-function CommandRenderer({ command }: { command: PrintCommand }) {
-    switch (command.type) {
-        case "text":
-            return <TextCommand {...command} />
-
-        case "line":
-            return <LineCommand char={command.char} />
-
-        case "row":
-            return <RowCommand left={command.left} right={command.right} />
-
-        case "blank":
-            return <View style={{ height: 16 }} />
-
-        case "feed":
-            return <View style={{ height: 16 * command.lines }} />
-
-        default:
-            return null
-    }
-}
-
-// ----- Text Command -----
-function TextCommand({
-    content,
-    align,
-    bold,
-    size,
-}: {
-    content: string
-    align: "left" | "center" | "right"
-    bold: boolean
-    size: TextSize
-}) {
-    const SIZE_SCALE: Record<TextSize, number> = {
-        normal: 1,
-        wide: 1.5,
-        tall: 1.5,
-        large: 2,
-        xlarge: 2.5,
-    }
-
-    const scale = SIZE_SCALE[size]
-
-    return (
-        <Text
-            className={`font-mono text-black ${bold ? "font-bold" : ""}`}
-            style={{
-                fontSize: 12 * scale,
-                lineHeight: 16 * scale,
-                textAlign: align,
-                paddingHorizontal: 8,
-            }}
-        >
-            {content}
-        </Text>
-    )
-}
-
-// ----- Line Command (separator) -----
-function LineCommand({ char }: { char: string }) {
-    const line = char.repeat(LINE_WIDTH)
-
-    return (
-        <Text
-            className="font-mono text-black text-center"
-            style={{
-                fontSize: 12,
-                lineHeight: 16,
-                paddingHorizontal: 8,
-            }}
-        >
-            {line}
-        </Text>
-    )
-}
-
-// ----- Row Command (left + right aligned) -----
-function RowCommand({ left, right }: { left: string; right: string }) {
-    const rightLen = Math.min(right.length, LINE_WIDTH - 2)
-    const leftLen = LINE_WIDTH - rightLen
-
-    const leftPadded = left.length >= leftLen
-        ? left.substring(0, leftLen)
-        : left + " ".repeat(leftLen - left.length)
-
-    const rightPadded = right.length >= rightLen
-        ? right.substring(0, rightLen)
-        : " ".repeat(rightLen - right.length) + right
-
-    const formattedLine = leftPadded + rightPadded
-
-    return (
-        <Text
-            className="font-mono text-black"
-            style={{
-                fontSize: 12,
-                lineHeight: 16,
-                paddingHorizontal: 8,
-            }}
-        >
-            {formattedLine}
-        </Text>
     )
 }
 

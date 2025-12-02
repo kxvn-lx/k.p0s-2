@@ -1,2 +1,0 @@
-- test printer on ios
-- rework printer receipt UI
