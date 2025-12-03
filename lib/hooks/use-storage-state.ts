@@ -1,6 +1,5 @@
-import * as SecureStore from "expo-secure-store"
 import { useEffect, useReducer } from "react"
-import { Platform } from "react-native"
+import { largeSecureStore } from "../large-secure-store"
 
 type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void]
 
@@ -16,43 +15,29 @@ function useAsyncState<T>(
   ) as UseStateHook<T>
 }
 
+// ----- Storage Functions -----
+
 export async function setStorageItemAsync(key: string, value: string | null) {
-  if (Platform.OS === "web") {
-    try {
-      if (value === null) {
-        localStorage.removeItem(key)
-      } else {
-        localStorage.setItem(key, value)
-      }
-    } catch (e) {
-      console.error("Local storage is unavailable:", e)
-    }
-  } else {
+  try {
     if (value == null) {
-      await SecureStore.deleteItemAsync(key)
+      await largeSecureStore.removeItem(key)
     } else {
-      await SecureStore.setItemAsync(key, value)
+      await largeSecureStore.setItem(key, value)
     }
+  } catch (e) {
+    console.error("Storage error:", e)
   }
 }
+
+// ----- Hook -----
 
 export function useStorageState(key: string): UseStateHook<string> {
   const [state, setState] = useAsyncState<string>()
 
   useEffect(() => {
-    if (Platform.OS === "web") {
-      try {
-        if (typeof localStorage !== "undefined") {
-          setState(localStorage.getItem(key))
-        }
-      } catch (e) {
-        console.error("Local storage is unavailable:", e)
-      }
-    } else {
-      SecureStore.getItemAsync(key).then((value: string | null) => {
-        setState(value)
-      })
-    }
+    largeSecureStore.getItem(key).then((value: string | null) => {
+      setState(value)
+    })
   }, [key, setState])
 
   const setValue = (value: string | null) => {

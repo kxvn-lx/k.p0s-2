@@ -1,5 +1,12 @@
 import type { Session, User } from "@supabase/supabase-js"
-import { createContext, use, useEffect, type PropsWithChildren } from "react"
+import {
+  createContext,
+  use,
+  useCallback,
+  useEffect,
+  useState,
+  type PropsWithChildren,
+} from "react"
 import { useStorageState } from "./hooks/use-storage-state"
 import { supabase } from "./supabase"
 
@@ -28,78 +35,87 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [[isLoading, sessionString], setSessionString] =
+  const [[isStorageLoading, sessionString], setSessionString] =
     useStorageState("session")
+  const [isValidating, setIsValidating] = useState(false)
 
   const session: Session | null = sessionString
     ? JSON.parse(sessionString)
     : null
   const user = session?.user ?? null
 
-  // Validate session on mount and listen for auth state changes
-  useEffect(() => {
-    // Validate the cached session with Supabase
-    const validateSession = async () => {
-      const { data, error } = await supabase.auth.getSession()
-
-      if (error || !data.session) {
-        // Session is invalid or expired, clear it
-        if (sessionString) {
-          setSessionString(null)
-        }
-      } else if (data.session) {
-        // Session is valid, update storage with fresh session
-        const freshSessionString = JSON.stringify(data.session)
-        if (freshSessionString !== sessionString) {
-          setSessionString(freshSessionString)
-        }
-      }
-    }
-
-    if (!isLoading) {
-      validateSession()
-    }
-
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session) {
-        setSessionString(JSON.stringify(session))
+  const updateSession = useCallback(
+    (newSession: Session | null) => {
+      if (newSession) {
+        setSessionString(JSON.stringify(newSession))
       } else {
         setSessionString(null)
       }
+    },
+    [setSessionString]
+  )
+
+  const validateSession = useCallback(async () => {
+    if (isStorageLoading) return
+
+    setIsValidating(true)
+    try {
+      const { data, error } = await supabase.auth.getUser()
+
+      if (error || !data.user) {
+        updateSession(null)
+      } else if (sessionString) {
+        const currentSession = JSON.parse(sessionString)
+        const {
+          data: { session: freshSession },
+        } = await supabase.auth.getSession()
+
+        if (freshSession && JSON.stringify(freshSession) !== sessionString) {
+          updateSession(freshSession)
+        }
+      }
+    } catch (err) {
+      console.error("Session validation error:", err)
+      updateSession(null)
+    } finally {
+      setIsValidating(false)
+    }
+  }, [isStorageLoading, sessionString, updateSession])
+
+  useEffect(() => {
+    validateSession()
+  }, [])
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      updateSession(session)
     })
 
     return () => {
       subscription.unsubscribe()
     }
-  }, [isLoading, sessionString, setSessionString])
+  }, [updateSession])
 
-  const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (error) {
-      throw error
-    }
+      if (error) throw error
+      if (data.session) updateSession(data.session)
+    },
+    [updateSession]
+  )
 
-    if (data.session) {
-      setSessionString(JSON.stringify(data.session))
-    }
-  }
-
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut()
-
-    if (error) {
-      throw error
-    }
-
-    setSessionString(null)
-  }
+    if (error) throw error
+    updateSession(null)
+  }, [updateSession])
 
   return (
     <AuthContext.Provider
@@ -108,7 +124,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         signOut,
         session,
         user,
-        isLoading,
+        isLoading: isStorageLoading || isValidating,
       }}
     >
       {children}

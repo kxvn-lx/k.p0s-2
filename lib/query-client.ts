@@ -1,4 +1,5 @@
 import { QueryClient } from "@tanstack/react-query"
+import { supabase } from "./supabase"
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,4 +15,14 @@ export const queryClient = new QueryClient({
       retry: 2,
     },
   },
+})
+
+// ----- Auth Integration -----
+
+supabase.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_OUT") {
+    queryClient.clear()
+  } else if (event === "TOKEN_REFRESHED") {
+    queryClient.invalidateQueries()
+  }
 })
