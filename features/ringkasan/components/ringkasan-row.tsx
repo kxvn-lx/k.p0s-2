@@ -2,6 +2,7 @@ import { View } from "react-native"
 import { RefreshControlProps } from "react-native"
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list"
 import { Text } from "@/components/ui/text"
+import { SectionHeader } from "@/components/ui/section-header"
 import type { TransactionItem } from "../hooks/ringkasan.queries"
 import { format, isToday, isYesterday } from "date-fns"
 import { id } from "date-fns/locale"
@@ -22,11 +23,11 @@ type ListItem =
   | { type: "header"; title: string; id: string }
   | { type: "empty"; id: string }
   | {
-      type: "item"
-      data: TransactionItem
-      isFirst: boolean
-      isLast: boolean
-    }
+    type: "item"
+    data: TransactionItem
+    isFirst: boolean
+    isLast: boolean
+  }
 
 export function RingkasanRow({
   transactions,
@@ -93,19 +94,10 @@ export function RingkasanRow({
     if (item.type === "header") {
       const isSticky = target === "StickyHeader"
       return (
-        <View
-          className={cn(
-            "px-4 py-2",
-            isSticky && "bg-background border-b border-border"
-          )}
-        >
-          <Text
-            variant="muted"
-            className="font-mono-bold text-xs uppercase tracking-wider"
-          >
-            {item.title}
-          </Text>
-        </View>
+        <SectionHeader
+          title={item.title}
+          isSticky={isSticky}
+        />
       )
     }
 
@@ -149,22 +141,22 @@ export function RingkasanRow({
         )}
       >
         {/* Left Content: Description & Metadata */}
-        <View className="flex-1 gap-2">
+        <View className="flex-1">
           <Text className="uppercase">{data.type}</Text>
 
-          <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center gap-1">
             <Text variant="muted">{formatDateTime(data.tanggal)}</Text>
-            <Text className="text-muted-foreground/50 text-xs">•</Text>
+            <Text className="text-muted-foreground/25 text-xs">•</Text>
             <Text variant="muted" className="uppercase">
               {data.staff_name.split("@")[0].toUpperCase() || "-"}
             </Text>
             {data.keterangan && (
               <>
-                <Text className="text-muted-foreground/50 text-xs">•</Text>
+                <Text className="text-muted-foreground/25 text-xs">•</Text>
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"
-                  className="text-xs flex-1 text-muted-foreground/60"
+                  className="text-xs flex-1 text-muted-foreground/50"
                 >
                   {data.keterangan}
                 </Text>

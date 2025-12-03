@@ -1,6 +1,6 @@
 // ----- IMPORTS -----
 import React from "react"
-import { View, Pressable } from "react-native"
+import { View } from "react-native"
 import { Text } from "@/components/ui/text"
 import { Icon } from "@/components/ui/icon"
 import { cn } from "@/lib/utils"
@@ -9,96 +9,125 @@ import PressableRow from "@/components/shared/pressable-row"
 
 // ----- TYPES -----
 interface InfoRowProps {
-  label?: string | React.ReactNode
-  value?: string
-  containerClassName?: string
-  labelClassName?: string
-  valueClassName?: string
+  leadingElement?: React.ReactNode | string
+  trailingElement?: React.ReactNode | string
   leadingIcon?: LucideIcon
-  leadingElement?: React.ReactNode
-  trailingElement?: React.ReactNode
-  trailingIcon?: LucideIcon
+  trailingIcon?: LucideIcon | null
   onPress?: () => void
-  showChevron?: boolean | LucideIcon
   isLast?: boolean
+  className?: string
+  iconBackgroundColor?: string
+  iconColor?: string
+  iconClassName?: string
+  destructive?: boolean
 }
 
 // ----- COMPONENT -----
 export default function InfoRow({
-  label,
-  value,
-  containerClassName,
-  labelClassName,
-  valueClassName,
-  leadingIcon,
   leadingElement,
   trailingElement,
+  leadingIcon,
   trailingIcon,
   onPress,
-  showChevron,
   isLast = false,
+  className,
+  iconBackgroundColor,
+  iconColor = "white",
+  iconClassName,
+  destructive = false,
 }: InfoRowProps) {
-  // Determine which chevron icon to show
-  const getChevronIcon = (): LucideIcon | null => {
-    if (showChevron === false) return null
-    if (showChevron === true) return ChevronRight
-    if (showChevron && typeof showChevron !== "boolean") return showChevron
-    if (onPress) return ChevronRight
-    return null
-  }
+  // Determine if we should show a chevron automatically if onPress is present and no trailingIcon is provided
+  // If trailingIcon is explicitly null, we show nothing.
+  const finalTrailingIcon = trailingIcon === null ? null : (trailingIcon ?? (onPress ? ChevronRight : undefined))
 
-  const chevronIcon = getChevronIcon()
-
-  const renderLabel = () => {
-    if (typeof label === 'string') {
+  const renderLeading = () => {
+    if (typeof leadingElement === "string") {
       return (
         <Text
-          variant="muted"
-          className={cn("flex-1 uppercase text-sm", labelClassName)}
+          className={cn(
+            "flex-1 text-base",
+            destructive && "text-destructive"
+          )}
         >
-          {label}
+          {leadingElement}
         </Text>
       )
     }
-    return label
+    return leadingElement
+  }
+
+  const renderTrailing = () => {
+    if (typeof trailingElement === "string") {
+      return (
+        <Text variant="muted">
+          {trailingElement}
+        </Text>
+      )
+    }
+    return trailingElement
+  }
+
+  const renderIcon = () => {
+    if (!leadingIcon) return null
+
+    if (iconBackgroundColor) {
+      return (
+        <View
+          className="size-7 rounded-[--radius] items-center justify-center mx-2"
+          style={{ backgroundColor: iconBackgroundColor }}
+        >
+          <Icon as={leadingIcon} size={16} color={iconColor} />
+        </View>
+      )
+    }
+
+    return (
+      <Icon
+        as={leadingIcon}
+        size={16}
+        className={cn("mx-2", destructive ? "text-destructive" : "text-foreground", iconClassName)}
+      />
+    )
   }
 
   const content = (
     <>
-      {leadingElement && <View className="mr-2">{leadingElement}</View>}
-      {leadingIcon && (
-        <Icon as={leadingIcon} size={16} className="mr-2 text-foreground" />
-      )}
-      {renderLabel()}
-      {trailingElement && <View className="mr-2">{trailingElement}</View>}
-      {trailingIcon && (
-        <Icon as={trailingIcon} size={16} className="ml-2 text-muted-foreground" />
-      )}
-      {value && (
-        <Text className={cn("text-foreground", valueClassName)}>{value}</Text>
-      )}
-      {chevronIcon && (
-        <Icon
-          as={chevronIcon}
-          size={16}
-          className="ml-2 text-muted-foreground"
-        />
-      )}
+      {renderIcon()}
+
+      <View
+        className={cn(
+          "flex-1 flex-row items-center justify-between py-2 pr-2",
+          !isLast && "border-b border-border"
+        )}
+      >
+        {renderLeading()}
+
+        <View className="flex-row items-center gap-2">
+          {renderTrailing()}
+
+          {finalTrailingIcon && (
+            <Icon
+              as={finalTrailingIcon}
+              size={16}
+              className="text-muted-foreground"
+            />
+          )}
+        </View>
+      </View>
     </>
   )
 
-  const className = cn(
-    "flex-row items-center border-b border-border p-2",
-    isLast && "border-b-0",
-    containerClassName
+  const wrapperClassName = cn(
+    "flex-row items-center pgap-x-2",
+    className
   )
 
   if (!onPress) {
-    return <View className={className}>{content}</View>
+    return <View className={wrapperClassName}>{content}</View>
   }
 
   return (
-    <PressableRow onPress={onPress} className={className}>
+    <PressableRow onPress={onPress} className={wrapperClassName}>
       {content}
     </PressableRow>
   )

@@ -65,7 +65,7 @@ export default function SelesaiScreen() {
   return (
     <View className="flex-1 bg-background">
       {/* Receipt Preview */}
-      <ScrollView contentContainerClassName="flex-grow items-center justify-center">
+      <ScrollView contentContainerClassName="flex-grow ">
         <ReceiptPreview result={result} />
       </ScrollView>
 

@@ -109,16 +109,32 @@ export default function PembayaranScreen() {
 
       {/* Header Info  */}
       <View className="">
-        <InfoRow label="TANGGAL" value={formatDateTime(new Date())} />
+        <InfoRow 
+          leadingElement="TANGGAL" 
+          trailingElement={formatDateTime(new Date())} 
+          className="bg-transparent p-2 pl-2 min-h-0"
+        />
 
-        <InfoRow label="TOTAL" value={totalAmount.toLocaleString()} containerClassName="gap-2" />
+        <InfoRow 
+          leadingElement="TOTAL" 
+          trailingElement={totalAmount.toLocaleString()} 
+          className="bg-transparent p-2 pl-2 min-h-0 gap-2"
+        />
 
         {change > 0 && (
-          <InfoRow label="KEMBALIAN" value={change.toLocaleString()} containerClassName="gap-2" valueClassName="text-green-500" />
+          <InfoRow 
+            leadingElement="KEMBALIAN" 
+            trailingElement={<Text className="text-green-500">{change.toLocaleString()}</Text>} 
+            className="bg-transparent p-2 pl-2 min-h-0 gap-2"
+          />
         )}
 
         {change < 0 && (
-          <InfoRow label="KURANG" value={Math.abs(change).toLocaleString()} containerClassName="gap-2" valueClassName="text-destructive" />
+          <InfoRow 
+            leadingElement="KURANG" 
+            trailingElement={<Text className="text-destructive">{Math.abs(change).toLocaleString()}</Text>} 
+            className="bg-transparent p-2 pl-2 min-h-0 gap-2"
+          />
         )}
       </View>
 

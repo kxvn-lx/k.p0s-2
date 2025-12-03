@@ -1,4 +1,4 @@
-import { ProgressViewer } from "@/features/penjualan/debug/progress-viewer"
+import { ProgressViewer } from "@/features/debug/components/progress-viewer"
 
 export default function DebugProgressScreen() {
   return <ProgressViewer />

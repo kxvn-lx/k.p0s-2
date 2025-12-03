@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react"
-import { simulateProgressFlowQuick } from "@/features/penjualan/utils/debug-progress"
+import { simulateProgressFlowQuick } from "@/features/debug/utils/debug-progress"
 import type { ProgressStep } from "@/features/penjualan/api/penjualan.service"
 
 const COMPLETION_DELAY = 1200
@@ -18,7 +18,11 @@ export function useDebugMutation() {
 
     setIsPending(false)
 
-    return { penjualan: {}, details: [], payment: { cashReceived: 100000, change: 20000 } }
+    return {
+      penjualan: {},
+      details: [],
+      payment: { cashReceived: 100000, change: 20000 },
+    }
   }, [])
 
   const closeDialogAndNavigate = useCallback((onComplete: () => void) => {

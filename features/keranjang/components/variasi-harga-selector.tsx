@@ -3,6 +3,7 @@ import { View } from "react-native"
 import PressableRow from '@/components/shared/pressable-row'
 import { useRef } from 'react'
 import { Text } from "@/components/ui/text"
+import { SectionHeader } from "@/components/ui/section-header"
 import BadgeStepper from './badge-stepper'
 import SharedBottomSheetModal, { BottomSheetModalRef } from '@/components/shared/bottom-sheet-modal'
 import type {
@@ -151,9 +152,12 @@ export default function VariasiHargaSelector({
             renderItem={({ item }: { item: typeof flatData[0] }) => {
                 if (item.type === 'header') {
                     return (
-                        <View className="px-2 mt-4">
-                            <Text variant="muted" className="text-xs uppercase">{item.title}</Text>
-                        </View>
+                        <SectionHeader
+                            title={item.title}
+                            className="px-2 mt-4"
+                            variant="muted"
+                            textClassName="text-xs normal-case"
+                        />
                     )
                 } else {
                     return (

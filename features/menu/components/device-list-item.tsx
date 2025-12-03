@@ -41,17 +41,11 @@ export function DeviceListItem({
 
   return (
     <InfoRow
-      label={deviceInfo}
-      leadingElement={
-        <Icon
-          as={Bluetooth}
-          size={16}
-          className={cn(isSelected && "text-primary")}
-        />
-      }
+      leadingElement={deviceInfo}
+      leadingIcon={Bluetooth}
+      iconClassName={isSelected ? "text-primary" : undefined}
       trailingElement={trailingContent}
       isLast={isLast}
-      showChevron={!isSelected}
       onPress={isSelected ? undefined : () => onSelect(device)}
     />
   )

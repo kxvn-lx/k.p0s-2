@@ -1,6 +1,7 @@
 import InfoRow from "@/components/shared/info-row"
 import { RefreshCw } from "lucide-react-native"
 import { useAppUpdates, type UpdateStatus } from "../hooks/use-app-updates"
+import { Text } from "@/components/ui/text"
 
 // ----- Helper -----
 function getStatusText(status: UpdateStatus): string {
@@ -50,10 +51,9 @@ export function UpdateRow() {
 
   return (
     <InfoRow
-      label="Cek Pembaruan"
+      leadingElement="Cek Pembaruan"
       leadingIcon={RefreshCw}
-      value={statusText}
-      valueClassName={statusColor}
+      trailingElement={<Text className={statusColor}>{statusText}</Text>}
       onPress={handlePress}
       isLast
     />

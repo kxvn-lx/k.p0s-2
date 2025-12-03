@@ -37,18 +37,19 @@ export function SharedDetailContent<T>({
                     </View>
                     <View className="bg-card rounded-[--radius] overflow-hidden border border-border">
                         <InfoRow
-                            label="STAFF"
-                            value={staffName}
-                            valueClassName="uppercase"
+                            leadingElement="STAFF"
+                            trailingElement={<Text className="uppercase text-foreground">{staffName}</Text>}
+                            className="bg-transparent p-2 pl-2 min-h-0"
                         />
                         <InfoRow
-                            label="TANGGAL"
-                            value={formatDateTime(tanggal, true, true)}
-                            valueClassName="uppercase "
+                            leadingElement="TANGGAL"
+                            trailingElement={<Text className="uppercase text-foreground">{formatDateTime(tanggal, true, true)}</Text>}
+                            className="bg-transparent p-2 pl-2 min-h-0"
                         />
                         <InfoRow
-                            label="TOTAL"
-                            value={jumlahTotal.toLocaleString("id-ID")}
+                            leadingElement="TOTAL"
+                            trailingElement={jumlahTotal.toLocaleString("id-ID")}
+                            className="bg-transparent p-2 pl-2 min-h-0"
                         />
                         <View className="p-2">
                             <Text variant="muted" className="text-sm">

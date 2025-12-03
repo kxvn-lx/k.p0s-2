@@ -39,10 +39,10 @@ export function ThemeSection() {
       >
         <SelectTrigger className="h-auto w-full border-0 bg-transparent p-0 shadow-none [&>svg]:hidden">
           <InfoRow
-            label="Tema Aplikasi"
+            leadingElement="Tema Aplikasi"
             leadingIcon={Palette}
-            value={THEME_LABELS[theme as ThemeType]}
-            showChevron={ChevronDown}
+            trailingElement={THEME_LABELS[theme as ThemeType]}
+            trailingIcon={ChevronDown}
             isLast
           />
         </SelectTrigger>

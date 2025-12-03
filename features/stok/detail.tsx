@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text"
+import { SectionHeader } from "@/components/ui/section-header"
 import { cn } from '@/lib/utils'
 import { FlatList, View, Keyboard, RefreshControl } from "react-native"
 import type { StockRow } from "./api/stock.service"
@@ -47,14 +48,10 @@ export default function StockDetail({ stock }: { stock: StockRow }) {
           <View>
             <StockDetailHeader stock={stock} />
 
-            <View className={cn('px-4 py-2 mt-2')}>
-              <Text
-                variant="muted"
-                className="font-mono-bold text-xs uppercase tracking-wider"
-              >
-                PERGERAKAN STOK
-              </Text>
-            </View>
+            <SectionHeader
+              title="PERGERAKAN STOK"
+              className="mt-2"
+            />
           </View>
         )}
         renderItem={({ item }) => <StockLogItem item={item} />}

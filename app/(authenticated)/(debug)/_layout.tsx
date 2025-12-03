@@ -21,6 +21,12 @@ export default function DebugLayout() {
           title: "Progress Dialog",
         }}
       />
+      <Stack.Screen
+        name="receipt-preview"
+        options={{
+          title: "Receipt Preview",
+        }}
+      />
     </Stack>
   )
 }

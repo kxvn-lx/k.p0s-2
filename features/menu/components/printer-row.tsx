@@ -8,8 +8,8 @@ export default function PrinterRow() {
 
   return (
     <InfoRow
-      label="Printer"
-      value={selectedPrinter?.name ?? "Belum dipilih"}
+      leadingElement="Printer"
+      trailingElement={selectedPrinter?.name ?? "Belum dipilih"}
       leadingIcon={Printer}
       onPress={() => router.push("/(authenticated)/menu/printer")}
     />

@@ -22,11 +22,11 @@ export function AuthSection() {
   return (
     <View className="overflow-hidden rounded-[--radius] border border-border bg-card">
       <InfoRow
-        label="Keluar"
+        leadingElement="Keluar"
         leadingIcon={LogOut}
         onPress={handleSignOut}
-        showChevron={false}
-        labelClassName="text-destructive"
+        trailingIcon={null}
+        destructive
         isLast
       />
     </View>

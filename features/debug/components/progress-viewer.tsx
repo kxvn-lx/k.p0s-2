@@ -2,7 +2,7 @@ import { View } from "react-native"
 import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { ProgressDialog } from "@/features/penjualan/components/progress-dialog"
-import { simulateProgressFlowQuick } from "@/features/penjualan/utils/debug-progress"
+import { simulateProgressFlowQuick } from "@/features/debug/utils/debug-progress"
 import type { ProgressStep } from "@/features/penjualan/api/penjualan.service"
 
 export function ProgressViewer() {
