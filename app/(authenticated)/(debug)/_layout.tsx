@@ -1,18 +1,17 @@
+import { getStackOptions } from "@/lib/navigation"
+import { useTheme } from "@react-navigation/native"
 import { Stack } from "expo-router"
 
 export default function DebugLayout() {
+  const theme = useTheme()
   return (
     <Stack
-      screenOptions={{
-        headerShown: true,
-        headerBackVisible: true,
-      }}
+      screenOptions={getStackOptions(theme)}
     >
       <Stack.Screen
         name="index"
         options={{
-          title: "Debug Menu",
-          headerShown: true,
+          title: "DEBUG",
         }}
       />
       <Stack.Screen

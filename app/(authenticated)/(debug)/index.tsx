@@ -17,27 +17,25 @@ export default function DebugMenu() {
   if (!isDev()) return <Redirect href="/" />
 
   return (
-    <View className="flex-1 bg-secondary/30">
-      <ScrollView contentContainerClassName="p-2">
+    <ScrollView contentContainerClassName="p-2">
 
-        {/* Tools Section */}
-        <SettingsGroup title="Development Tools">
-          <InfoRow
-            leadingIcon={Activity}
-            iconBackgroundColor="#007AFF" // System Blue
-            leadingElement="Progress Dialog Viewer"
-            onPress={() => router.push("/(authenticated)/(debug)/progress")}
-          />
-          <InfoRow
-            leadingIcon={Receipt}
-            iconBackgroundColor="#FF9500" // System Orange
-            leadingElement="Receipt Preview"
-            onPress={() => router.push("/(authenticated)/(debug)/receipt-preview")}
-            isLast
-          />
-        </SettingsGroup>
+      {/* Tools Section */}
+      <SettingsGroup title="Development Tools">
+        <InfoRow
+          leadingIcon={Activity}
+          iconBackgroundColor="#007AFF"
+          leadingElement="Progress Dialog Viewer"
+          onPress={() => router.push("/(authenticated)/(debug)/progress")}
+        />
+        <InfoRow
+          leadingIcon={Receipt}
+          iconBackgroundColor="#FF9500"
+          leadingElement="Receipt Preview"
+          onPress={() => router.push("/(authenticated)/(debug)/receipt-preview")}
+          isLast
+        />
+      </SettingsGroup>
 
-      </ScrollView>
-    </View>
+    </ScrollView>
   )
 }
