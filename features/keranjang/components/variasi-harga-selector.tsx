@@ -154,7 +154,6 @@ export default function VariasiHargaSelector({
                     return (
                         <SectionHeader
                             title={item.title}
-                            className="px-2 mt-4"
                             variant="muted"
                             textClassName="text-xs normal-case"
                         />

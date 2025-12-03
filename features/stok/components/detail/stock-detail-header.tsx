@@ -10,8 +10,8 @@ export function StockDetailHeader({ stock }: { stock: StockRow }) {
 
   return (
     <Fragment>
-      <View className="bg-background flex gap-2 p-2">
-        <Text variant="h2" className="uppercase text-center mt-8 mb-4">
+      <View className="bg-background flex gap-4 p-2">
+        <Text variant="h2" className="uppercase text-center">
           {stock.nama}
         </Text>
 

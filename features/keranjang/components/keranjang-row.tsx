@@ -64,8 +64,8 @@ export default function KeranjangRow({
           qty={selectedQty}
           stockQty={qty}
           satuan={stock.satuan_utama ?? ""}
-          onDecrement={onDecrement ?? (() => {})}
-          onIncrement={onIncrement ?? (() => {})}
+          onDecrement={onDecrement ?? (() => { })}
+          onIncrement={onIncrement ?? (() => { })}
         />
       </SharedBottomSheetModal>
     </>
@@ -74,7 +74,7 @@ export default function KeranjangRow({
   const Content = (
     <View
       testID={`keranjang-row-${stock.id}`}
-      className="flex-row items-center justify-between p-2 bg-background"
+      className="flex-row items-center justify-between p-2 bg-card"
     >
       <View className="flex-col">
         <Text>{stock.nama}</Text>
@@ -109,8 +109,8 @@ export default function KeranjangRow({
           <VariasiHargaSelector
             stock={stock}
             options={options}
-            onSelectOriginal={onSelectOriginal ?? (() => {})}
-            onSelectVariation={onSelectVariation ?? (() => {})}
+            onSelectOriginal={onSelectOriginal ?? (() => { })}
+            onSelectVariation={onSelectVariation ?? (() => { })}
             selectedQty={selectedQty}
             remaining={remaining}
             selectedVariasiId={selectedVariasiId}

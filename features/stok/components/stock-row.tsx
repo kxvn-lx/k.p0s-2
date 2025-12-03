@@ -22,7 +22,7 @@ export default function StockRow({
       onPress={onPress}
       testID={`stock-row-${stock.id}`}
     >
-      <View className="flex-row items-center justify-between p-2 bg-background">
+      <View className="flex-row items-center justify-between p-2 bg-card">
 
         <View className="flex-1 flex-col pr-2">
           <Text>{stock.nama}</Text>

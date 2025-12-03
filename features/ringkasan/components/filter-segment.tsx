@@ -19,7 +19,7 @@ const options: { label: string; value: PeriodFilter }[] = [
 export function FilterSegment({ filter, onFilterChange }: FilterSegmentProps) {
   return (
     <View
-      className="flex-row items-center mx-2 mt-2"
+      className="flex-row items-center mx-2 -mt-2"
     >
       {options.map((option) => {
         const isActive = filter === option.value

@@ -20,7 +20,7 @@ export function AuthSection() {
   }
 
   return (
-    <View className="overflow-hidden rounded-[--radius] border border-border bg-card">
+    <View className="bg-card">
       <InfoRow
         leadingElement="Keluar"
         leadingIcon={LogOut}

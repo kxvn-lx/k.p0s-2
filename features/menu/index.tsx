@@ -5,6 +5,7 @@ import { AuthSection } from "./components/auth-section"
 import PrinterRow from "./components/printer-row"
 import { ThemeSection } from "./components/theme-section"
 import { UpdateRow } from "./components/update-row"
+import { SectionHeader } from "@/components/ui/section-header"
 
 // ----- Menu Screen -----
 export default function Menu() {
@@ -17,7 +18,7 @@ export default function Menu() {
   return (
     <ScrollView
       className="flex-1 bg-background"
-      contentContainerClassName="p-2 gap-4"
+      contentContainerClassName="gap-4"
     >
       {/* Profile Section */}
       <View className="flex-row items-center justify-between gap-2">
@@ -28,40 +29,30 @@ export default function Menu() {
       </View>
 
       {/* General Settings */}
-      <View className="gap-2">
-        <View className="px-2">
-          <Text variant="muted" className="text-xs uppercase">
-            Umum
-          </Text>
-        </View>
-        <View className="overflow-hidden rounded-[--radius] border border-border bg-card">
-          <PrinterRow />
-          <UpdateRow />
+      <View className="gap-4">
+        <View>
+          <SectionHeader title="UMUM" />
+          <View className="bg-card">
+            <PrinterRow />
+            <UpdateRow />
+          </View>
         </View>
       </View>
 
       {/* Appearance */}
-      <View className="gap-2">
-        <View className="px-2">
-          <Text variant="muted" className="text-xs uppercase">
-            Tampilan
-          </Text>
-        </View>
+      <View>
+        <SectionHeader title="Tampilan" />
         <ThemeSection />
       </View>
 
       {/* Account */}
-      <View className="gap-2">
-        <View className="px-2">
-          <Text variant="muted" className="text-xs uppercase">
-            Akun
-          </Text>
-        </View>
+      <View>
+        <SectionHeader title="Akun" />
         <AuthSection />
       </View>
 
-      <Text className="text-center text-xs text-muted-foreground pt-4">
-        Versi Aplikasi 1.0.0
+      <Text variant="muted" className="text-center text-xs">
+        V1.0.0
       </Text>
     </ScrollView>
   )

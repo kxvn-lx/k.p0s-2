@@ -29,7 +29,7 @@ export function ThemeSection() {
   }
 
   return (
-    <View className="overflow-hidden rounded-[--radius] border border-border bg-card">
+    <View className="bg-card">
       <Select
         value={{
           value: theme,

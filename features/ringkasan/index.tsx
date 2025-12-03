@@ -62,10 +62,9 @@ export default function RingkasanScreen() {
   }
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-background gap-4">
       <DateNavigator date={currentDate} onDateChange={handleDateChange} filter={filter} />
       <FilterSegment filter={filter} onFilterChange={setFilter} />
-      <SummaryCard summary={summary} />
       <RingkasanRow
         transactions={transactions}
         isLoading={isLoading}
@@ -77,6 +76,7 @@ export default function RingkasanScreen() {
             tintColor="#007AFF"
           />
         }
+        ListHeaderComponent={<SummaryCard summary={summary} />}
       />
     </View>
   )
