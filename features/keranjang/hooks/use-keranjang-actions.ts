@@ -24,12 +24,12 @@ export function useKeranjangActions() {
     minQty = 0
   ): ActionResult {
     if (qtyToAdd <= 0) {
-      return { ok: false, message: "qty nd valid (qty <= 0)" }
+      return { ok: false, message: "QTY ND VALID (QTY <= 0)" }
     }
 
     const availableStock = remainingFor(stock)
     if (availableStock < qtyToAdd) {
-      return { ok: false, message: "Stok nd cukup" }
+      return { ok: false, message: "STOK ND CUKUP" }
     }
 
     addItem(stock, qtyToAdd, variasiId, hargaUnit, minQty)
@@ -47,11 +47,11 @@ export function useKeranjangActions() {
       if (currentCartItem) {
         if (!currentCartItem.variasi_harga_id) {
           if (remainingFor(stock) < 1)
-            return { ok: false, message: "Stok nd cukup" }
+            return { ok: false, message: "STOK NND CUKUP" }
           addItem(stock, 1, null, stock.harga_jual, 0)
           return { ok: true }
         }
-        if (availableStock < 1) return { ok: false, message: "Stok nd cukup" }
+        if (availableStock < 1) return { ok: false, message: "STOK NND CUKUP" }
         setQty(stock.id, 1, stock.harga_jual, null, 0)
         return { ok: true }
       }
@@ -59,23 +59,23 @@ export function useKeranjangActions() {
     }
 
     const minimumQuantity = variation.min_qty > 0 ? variation.min_qty : 1
-    if (minimumQuantity <= 0) return { ok: false, message: "Jumlah minimum nd valid" }
+    if (minimumQuantity <= 0) return { ok: false, message: "JUMLAH MINIMUM ND VALID" }
 
     if (currentCartItem) {
       if (currentCartItem.variasi_harga_id === variation.id) {
         if (remainingFor(stock) < minimumQuantity)
-          return { ok: false, message: "Stok nd cukup" }
+          return { ok: false, message: "STOK ND CUKUP" }
         addItem(stock, minimumQuantity, variation.id, variation.harga_jual, minimumQuantity)
         return { ok: true }
       }
 
-      if (availableStock < minimumQuantity) return { ok: false, message: "Stok nd cukup" }
+      if (availableStock < minimumQuantity) return { ok: false, message: "STOK ND CUKUP" }
       setQty(stock.id, minimumQuantity, variation.harga_jual, variation.id, minimumQuantity)
       return { ok: true }
     }
 
     if (remainingFor(stock) < minimumQuantity)
-      return { ok: false, message: "Stok tidak cukup" }
+      return { ok: false, message: "STOK ND CUKUP" }
     addItem(stock, minimumQuantity, variation.id, variation.harga_jual, minimumQuantity)
     return { ok: true }
   }
@@ -85,7 +85,7 @@ export function useKeranjangActions() {
     delta: number
   ): ActionResult {
     const cartItem = items[stockId]
-    if (!cartItem) return { ok: false, message: "Stok nd ada di keranjang" }
+    if (!cartItem) return { ok: false, message: "STOK ND ADA DI KERANJANG" }
 
     const currentQuantity = cartItem.qty
     const newQuantity = currentQuantity + delta
@@ -94,13 +94,13 @@ export function useKeranjangActions() {
       : 0
 
     if (delta < 0 && newQuantity < minimumQuantity) {
-      return { ok: false, message: `Jumlah minimum for ini variasi harga: ${minimumQuantity} ${cartItem.stock.satuan_utama ?? ''}` }
+      return { ok: false, message: `JUMLAH MINIMUM FOR INI VARIASI HARGA: ${minimumQuantity} ${cartItem.stock.satuan_utama ?? ''}` }
     }
 
     if (delta > 0) {
       const remaining = remainingFor(cartItem.stock)
       if (remaining < delta) {
-        return { ok: false, message: "Stok nd cukup" }
+        return { ok: false, message: "STOK ND CUKUP" }
       }
     }
 

@@ -35,7 +35,7 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
 
     // ----- EXPOSE METHODS -----
     const rowApi = { close: () => swipeableRef.current?.close() }
-    
+
     useImperativeHandle(forwardedRef, () => rowApi)
 
     // ----- HANDLERS -----
@@ -91,7 +91,7 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
         >
           <View
             testID={`perincian-row-${stock.id}`}
-            className="flex-row items-center justify-between p-2 bg-background"
+            className="flex-row items-center justify-between p-2 bg-card"
           >
             {/* Left: Stock Info */}
             <View className="flex-1 flex-col gap-y-1">

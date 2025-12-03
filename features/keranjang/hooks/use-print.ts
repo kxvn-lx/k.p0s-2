@@ -196,15 +196,14 @@ export function usePrint() {
       if (!device) {
         const error: BluetoothErrorInfo = {
           code: "DEVICE_NOT_FOUND",
-          message: "Pilih printer terlebih dahulu di menu pengaturan",
+          message: "PILIH PRINTER DULU DI MENU",
         }
-        toast.warning("Printer Tidak Tersedia", error.message)
+        toast.warning("PRINTER ND TASADIA", error.message)
         return { success: false, error }
       }
 
       setIsPrinting(true)
       try {
-        // Generate commands for preview (100% match with actual print)
         const commands = generateReceiptCommands(result)
 
         const printResult = await printerService.printWithReconnect(device, async () => {
@@ -275,9 +274,9 @@ export function usePrint() {
       if (!device) {
         const error: BluetoothErrorInfo = {
           code: "DEVICE_NOT_FOUND",
-          message: "Pilih printer terlebih dahulu",
+          message: "PILIH PRINTER DULU",
         }
-        toast.warning("Printer Tidak Tersedia", error.message)
+        toast.warning("PRINTER ND TERSEDIA", error.message)
         return { success: false, error }
       }
 

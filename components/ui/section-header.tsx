@@ -1,4 +1,5 @@
 import { View } from "react-native"
+import React from "react"
 import { Text } from "./text"
 import { cn } from "@/lib/utils"
 
@@ -7,12 +8,14 @@ interface SectionHeaderProps {
     className?: string
     variant?: "default" | "muted"
     textClassName?: string
+    secondary?: string
 }
 
 export function SectionHeader({
     title,
     className,
     textClassName,
+    secondary,
 }: SectionHeaderProps) {
     return (
         <View
@@ -21,15 +24,21 @@ export function SectionHeader({
                 className
             )}
         >
-            <Text
-                variant={"muted"}
-                className={cn(
-                    "font-mono-bold text-xs uppercase tracking-wider",
-                    textClassName
-                )}
-            >
-                {title}
-            </Text>
+            <View className="flex-row items-center justify-between">
+                <Text
+                    variant={"muted"}
+                    className={cn(
+                        "font-mono-bold text-xs uppercase tracking-wider",
+                        textClassName
+                    )}
+                >
+                    {title}
+                </Text>
+
+                {secondary ? <Text variant="muted" className="text-xs">
+                    {secondary}
+                </Text> : null}
+            </View>
         </View>
     )
 }

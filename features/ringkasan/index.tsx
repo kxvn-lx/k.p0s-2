@@ -24,9 +24,7 @@ export default function RingkasanScreen() {
     yearly: new Date(),
   })
   const [filter, setFilter] = useState<PeriodFilter>("daily")
-
   const currentDate = date[filter]
-
   const { startDate, endDate } = useMemo(() => {
     let start: Date
     let end: Date
@@ -47,13 +45,9 @@ export default function RingkasanScreen() {
       endDate: end.toISOString(),
     }
   }, [currentDate, filter])
-
   const { summary, transactions, isLoading, isRefetching, refetch } = useRingkasanData(startDate, endDate)
 
-  const onRefresh = async () => {
-    await refetch()
-  }
-
+  // --- METHOD ---
   const handleDateChange = (newDate: Date) => {
     setDate(prev => ({
       ...prev,
@@ -71,7 +65,7 @@ export default function RingkasanScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={onRefresh}
+            onRefresh={async () => await refetch()}
             colors={["#007AFF"]}
             tintColor="#007AFF"
           />

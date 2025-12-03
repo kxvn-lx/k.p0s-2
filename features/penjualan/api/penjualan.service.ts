@@ -47,10 +47,10 @@ export const PenjualanService = {
 
     try {
       // ----- VALIDATION -----
-      onProgress?.({ step: "validating", message: "Memvalidasi data..." })
+      onProgress?.({ step: "validating", message: "VALIDASI DATA..." })
 
       if (itemsArray.length === 0) {
-        return { data: null, error: new Error("Keranjang kosong") }
+        return { data: null, error: new Error("KERANJANG KOSONG") }
       }
 
       const jumlahTotal = itemsArray.reduce(
@@ -61,12 +61,12 @@ export const PenjualanService = {
       if (cashReceived < jumlahTotal) {
         return {
           data: null,
-          error: new Error(`Pembayaran kurang (Rp ${jumlahTotal.toLocaleString()})`),
+          error: new Error(`PEMBAYARAN KURANG (Rp ${jumlahTotal.toLocaleString()})`),
         }
       }
 
       // ----- STOCK VALIDATION -----
-      onProgress?.({ step: "validating", message: "Memeriksa ketersediaan stok..." })
+      onProgress?.({ step: "validating", message: "PERIKSA STOK ADA ATO ND..." })
 
       const stockIds = itemsArray.map((item) => item.stock.id)
       const { data: currentStocks, error: stockFetchError } = await supabase
@@ -77,7 +77,7 @@ export const PenjualanService = {
       if (stockFetchError) return { data: null, error: stockFetchError }
 
       if (!currentStocks || currentStocks.length !== itemsArray.length) {
-        return { data: null, error: new Error("Beberapa stok tidak ditemukan") }
+        return { data: null, error: new Error("BBRAPA STOK ND ADA") }
       }
 
       const stockMap = new Map<string, { id: string; jumlah_stok: number; nama: string }>(
@@ -88,9 +88,9 @@ export const PenjualanService = {
       for (const item of itemsArray) {
         const current = stockMap.get(item.stock.id)
         if (!current) {
-          validationErrors.push(`"${item.stock.nama}" tidak ditemukan`)
+          validationErrors.push(`"${item.stock.nama}" ND DAPA DI DATABASE`)
         } else if (current.jumlah_stok < item.qty) {
-          validationErrors.push(`"${item.stock.nama}": stok ${current.jumlah_stok}, diminta ${item.qty}`)
+          validationErrors.push(`"${item.stock.nama}": STOK ${current.jumlah_stok}, DIMINTA ${item.qty}`)
         }
       }
 
@@ -99,7 +99,7 @@ export const PenjualanService = {
       }
 
       // ----- INSERT PENJUALAN -----
-      onProgress?.({ step: "penjualan", message: "Menyimpan transaksi..." })
+      onProgress?.({ step: "penjualan", message: "BASIMPAN TRANSAKSI..." })
 
       const penjualanData: PenjualanInsert = {
         staff_id: staffId,
@@ -116,15 +116,15 @@ export const PenjualanService = {
         .single()
 
       if (penjualanError || !penjualanRow) {
-        return { data: null, error: penjualanError || new Error("Gagal menyimpan penjualan") }
+        return { data: null, error: penjualanError || new Error("GAGAL BASIMPAN penjualan") }
       }
 
       const penjualanId = penjualanRow.id
 
       // ----- INSERT DETAILS -----
-      onProgress?.({ 
-        step: "details", 
-        message: "Menyimpan detail item...",
+      onProgress?.({
+        step: "details",
+        message: "BASIMPAN STOK KE PENJUALAN...",
         current: 0,
         total: itemsArray.length,
       })
@@ -149,12 +149,12 @@ export const PenjualanService = {
 
       if (detailsError || !detailRows) {
         await supabase.from("penjualan").delete().eq("id", penjualanId)
-        return { data: null, error: detailsError || new Error("Gagal menyimpan detail") }
+        return { data: null, error: detailsError || new Error("GAGAL BASIMPAN STOK KE PENJUALAN") }
       }
 
-      onProgress?.({ 
-        step: "details", 
-        message: "Detail item tersimpan",
+      onProgress?.({
+        step: "details",
+        message: "STOK TASIMPAN KE PENJUALAN",
         current: itemsArray.length,
         total: itemsArray.length,
       })
@@ -166,9 +166,9 @@ export const PenjualanService = {
         const current = stockMap.get(item.stock.id)!
         const newQty = current.jumlah_stok - item.qty
 
-        onProgress?.({ 
-          step: "stock", 
-          message: `Memperbarui stok "${item.stock.nama}"...`,
+        onProgress?.({
+          step: "stock",
+          message: `GANTI JMLH QTY STOK: "${item.stock.nama}"...`,
           current: i + 1,
           total: itemsArray.length,
         })
@@ -186,13 +186,13 @@ export const PenjualanService = {
       if (stockUpdateErrors.length > 0) {
         await supabase.from("penjualan_detail").delete().eq("penjualan_id", penjualanId)
         await supabase.from("penjualan").delete().eq("id", penjualanId)
-        return { data: null, error: new Error(`Gagal perbarui stok:\n${stockUpdateErrors.join("\n")}`) }
+        return { data: null, error: new Error(`GAGAL MENGGANTI JMLH QTY STOK :\n${stockUpdateErrors.join("\n")}`) }
       }
 
       // ----- INSERT AUDIT LOGS -----
-      onProgress?.({ 
-        step: "audit", 
-        message: "Mencatat riwayat pergerakan stok...",
+      onProgress?.({
+        step: "audit",
+        message: "MENCATAT RIWAYAT PERGERAKAN STOK...",
         current: 0,
         total: itemsArray.length,
       })
@@ -221,15 +221,15 @@ export const PenjualanService = {
         console.warn("Audit log gagal (non-critical):", logsError)
       }
 
-      onProgress?.({ 
-        step: "audit", 
-        message: "Riwayat tercatat",
+      onProgress?.({
+        step: "audit",
+        message: "PERGERAKAN STOK TA CATAT",
         current: itemsArray.length,
         total: itemsArray.length,
       })
 
       // ----- COMPLETED -----
-      onProgress?.({ step: "completed", message: "Transaksi berhasil" })
+      onProgress?.({ step: "completed", message: "PENJUALAN BERHASIL" })
 
       return {
         data: {
@@ -240,13 +240,13 @@ export const PenjualanService = {
         error: null,
       }
     } catch (err) {
-      onProgress?.({ 
-        step: "failed", 
-        message: err instanceof Error ? err.message : "Kesalahan sistem" 
+      onProgress?.({
+        step: "failed",
+        message: err instanceof Error ? err.message : "KESALAHAN SISTEM"
       })
       return {
         data: null,
-        error: err instanceof Error ? err : new Error("Kesalahan sistem"),
+        error: err instanceof Error ? err : new Error("KESALAHAN SISTEM"),
       }
     }
   },

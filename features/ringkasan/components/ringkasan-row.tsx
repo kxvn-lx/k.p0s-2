@@ -12,6 +12,7 @@ import { cn, formatDateTime } from "@/lib/utils"
 import { Icon } from "@/components/ui/icon"
 import { ChevronRight } from "lucide-react-native"
 import PressableRow from "@/components/shared/pressable-row"
+import { StatusMessage } from "@/components/shared/status-message"
 
 interface RingkasanRowProps {
   transactions: TransactionItem[]
@@ -198,9 +199,7 @@ export function RingkasanRow({
     return (
       <View className="flex-1">
         {ListHeaderComponent && (typeof ListHeaderComponent === "function" ? <ListHeaderComponent /> : ListHeaderComponent)}
-        <View className="flex-1 justify-center items-center">
-          <Text className="text-muted-foreground text-sm">Memuat data...</Text>
-        </View>
+        <StatusMessage isLoading message="BAAMBIL DATA..." />
       </View>
     )
   }

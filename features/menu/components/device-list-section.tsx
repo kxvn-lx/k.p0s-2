@@ -2,6 +2,7 @@ import { View } from "react-native"
 import { Text } from "@/components/ui/text"
 import { DeviceListItem } from "./device-list-item"
 import { BluetoothDevice } from "@/lib/printer/types/bluetooth.types"
+import { SectionHeader } from "@/components/ui/section-header"
 
 // ----- Types -----
 type DeviceListSectionProps = {
@@ -25,15 +26,13 @@ export function DeviceListSection({
   if (devices.length === 0 && !emptyMessage) return null
 
   return (
-    <View className="gap-2">
-      <View className="flex-row items-center justify-between px-2">
-        <Text variant="muted" className="text-xs uppercase">
-          {title}
-        </Text>
-        <Text variant="muted" className="text-xs">
-          {devices.length} ditemukan
-        </Text>
-      </View>
+    <View>
+      <SectionHeader
+        title={title}
+        secondary={
+          `${devices.length} ditemukan`
+        }
+      />
 
       <View className="overflow-hidden rounded-[--radius] border border-border bg-card">
         {devices.length === 0 ? (

@@ -22,7 +22,7 @@ export function usePenjualanMutation() {
   const mutation = useMutation({
     mutationFn: async (payload: CreatePenjualanPayload): Promise<CreatePenjualanResult> => {
       setDialogVisible(true)
-      setProgress({ step: "validating", message: "Memulai..." })
+      setProgress({ step: "validating", message: "MEMULAI..." })
 
       const { data, error } = await PenjualanService.create(payload, handleProgress)
 
@@ -37,7 +37,7 @@ export function usePenjualanMutation() {
     },
 
     onError: (error: Error) => {
-      setProgress({ step: "failed", message: error.message || "Transaksi gagal" })
+      setProgress({ step: "failed", message: error.message || "TRANSAKSI GAGAL" })
     },
   })
 

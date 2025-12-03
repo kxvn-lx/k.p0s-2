@@ -109,36 +109,36 @@ export default function PembayaranScreen() {
 
       {/* Header Info  */}
       <View className="">
-        <InfoRow 
-          leadingElement="TANGGAL" 
-          trailingElement={formatDateTime(new Date())} 
-          className="bg-transparent p-2 pl-2 min-h-0"
+        <InfoRow
+          leadingElement="TANGGAL"
+          primarySide="trailing"
+          trailingElement={formatDateTime(new Date())}
         />
 
-        <InfoRow 
-          leadingElement="TOTAL" 
-          trailingElement={totalAmount.toLocaleString()} 
-          className="bg-transparent p-2 pl-2 min-h-0 gap-2"
+        <InfoRow
+          primarySide="trailing"
+          leadingElement="TOTAL"
+          trailingElement={totalAmount.toLocaleString()}
         />
 
         {change > 0 && (
-          <InfoRow 
-            leadingElement="KEMBALIAN" 
-            trailingElement={<Text className="text-green-500">{change.toLocaleString()}</Text>} 
-            className="bg-transparent p-2 pl-2 min-h-0 gap-2"
+          <InfoRow
+            leadingElement="KEMBALIAN"
+            primarySide="trailing"
+            trailingElement={<Text className="text-green-500">{change.toLocaleString()}</Text>}
           />
         )}
 
         {change < 0 && (
-          <InfoRow 
-            leadingElement="KURANG" 
-            trailingElement={<Text className="text-destructive">{Math.abs(change).toLocaleString()}</Text>} 
-            className="bg-transparent p-2 pl-2 min-h-0 gap-2"
+          <InfoRow
+            leadingElement="KURANG"
+            primarySide="trailing"
+            trailingElement={<Text className="text-destructive">{Math.abs(change).toLocaleString()}</Text>}
           />
         )}
       </View>
 
-      <View>
+      <View className="flex-col gap-4">
         {/* Payment Input & Keypad */}
         <View>
           <View className="flex-row gap-x-2 items-center justify-end">

@@ -12,6 +12,7 @@ import { SelectedPrinterCard } from "./components/selected-printer-card"
 import { DeviceListSection } from "./components/device-list-section"
 import { PermissionRequiredView } from "./components/permission-required-view"
 import { BluetoothDevice } from "@/lib/printer/types/bluetooth.types"
+import { SectionHeader } from "@/components/ui/section-header"
 
 // ----- Screen -----
 export default function PrinterScreen() {
@@ -91,29 +92,24 @@ export default function PrinterScreen() {
     >
       {/* Selected Printer */}
       <View className="gap-2">
-        <View className="px-2">
-          <Text variant="muted" className="text-xs uppercase">
-            Printer yang Dipilih
-          </Text>
+        <View>
+          <SectionHeader title="PRINTER YANG TAPILIH" />
+          {selectedPrinter ? (
+            <SelectedPrinterCard
+              printer={selectedPrinter}
+              connectionState={connectionState}
+              isPrinting={isPrinting}
+              onTestPrint={handleTestPrint}
+              onDeselect={deselectPrinter}
+            />
+          ) : (
+            <View className="rounded-[--radius] border border-dashed border-border bg-card p-4">
+              <Text variant="muted" className="text-center text-sm">
+                ND ADA PRINTER YG TAPILIH
+              </Text>
+            </View>
+          )}
         </View>
-        {selectedPrinter ? (
-          <SelectedPrinterCard
-            printer={selectedPrinter}
-            connectionState={connectionState}
-            isPrinting={isPrinting}
-            onTestPrint={handleTestPrint}
-            onDeselect={deselectPrinter}
-          />
-        ) : (
-          <View className="rounded-[--radius] border border-dashed border-border bg-muted/20 p-4">
-            <Text variant="muted" className="text-center text-sm">
-              Belum ada printer yang dipilih.
-            </Text>
-            <Text variant="muted" className="mt-1 text-center text-xs">
-              Pilih printer dari daftar di bawah
-            </Text>
-          </View>
-        )}
       </View>
 
       {/* Found Devices */}
@@ -122,7 +118,7 @@ export default function PrinterScreen() {
         devices={printerDevices}
         selectedAddress={selectedPrinter?.address}
         onSelect={handleSelectDevice}
-        emptyMessage="Tarik ke bawah untuk memuat ulang daftar printer Bluetooth yang tersedia"
+        emptyMessage="TARIK KA BAWAH FOR MUAT ULANG DAFTAR PRINTER BLUETOOTH YG ADA"
       />
     </ScrollView>
   )

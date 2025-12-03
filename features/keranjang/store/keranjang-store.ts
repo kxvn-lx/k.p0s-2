@@ -31,8 +31,8 @@ export type KeranjangState = {
 
 // ----- LOGGING UTILITY -----
 const logBasket = (items: Record<string, BasketItem>, action: string) => {
+  return
   if (__DEV__) {
-    return
     console.group(`[KERANJANG] ${action}`)
     console.log("Time:", new Date().toLocaleTimeString())
     console.log("Items Count:", Object.values(items).length)
@@ -82,7 +82,7 @@ export const useKeranjangStore = create<KeranjangState>()((set, get) => ({
 
       // Determine the price being used
       const currentPrice = hargaUnit ?? existingItem?.harga_satuan ?? stock.harga_jual ?? 0
-      
+
       // If this is a new item or price is changing, set the original price
       const originalPrice = existingItem?.harga_satuan_asal ?? existingItem?.harga_satuan ?? currentPrice
 
