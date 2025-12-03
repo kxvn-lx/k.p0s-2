@@ -15,7 +15,7 @@ type PerincianRowProps = {
   item: BasketItem
   onDelete?: () => void
   onEdit?: () => void
-  onSwipeOpen?: () => void
+  onSwipeOpen?: (ref: PerincianRowRef) => void
 }
 
 export type PerincianRowRef = {
@@ -24,7 +24,7 @@ export type PerincianRowRef = {
 
 // ----- COMPONENT -----
 const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
-  ({ item, onDelete, onEdit, onSwipeOpen }, ref) => {
+  ({ item, onDelete, onEdit, onSwipeOpen }, forwardedRef) => {
     const { stock, qty, harga_satuan, variasi_harga_id, harga_satuan_asal } = item
     const swipeableRef = useRef<SwipeableMethods>(null)
 
@@ -34,11 +34,9 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
     const totalPrice = qty * harga_satuan
 
     // ----- EXPOSE METHODS -----
-    useImperativeHandle(ref, () => ({
-      close: () => {
-        swipeableRef.current?.close()
-      },
-    }))
+    const rowApi = { close: () => swipeableRef.current?.close() }
+    
+    useImperativeHandle(forwardedRef, () => rowApi)
 
     // ----- HANDLERS -----
     const handleDelete = () => {
@@ -56,9 +54,7 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
     }
 
     const handleSwipeWillOpen = () => {
-      if (onSwipeOpen) {
-        onSwipeOpen()
-      }
+      onSwipeOpen?.(rowApi)
     }
 
     // ----- RENDER FUNCTIONS -----

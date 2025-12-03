@@ -2,17 +2,17 @@ import SearchInput from "@/components/shared/search-input"
 import { Separator } from "@/components/ui/separator"
 import { StatusMessage } from "@/components/shared/status-message"
 import { useRouter } from "expo-router"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import { FlatList, RefreshControl, View, Keyboard } from "react-native"
 import type { StockRow } from "./api/stock.service"
-import SwipeableStockRowWrapper from "./components/swipeable-stock-row-wrapper"
-import type { SwipeableStockRowRef } from "./components/swipeable-stock-row"
+import SwipeableStockRow from "./components/swipeable-stock-row"
 import { useStocksQuery } from "./hooks/stock.queries"
+import { useCloseSwipeableOnScroll } from "@/lib/hooks/use-close-swipeable-on-scroll"
 
 export default function StockIndex() {
   const router = useRouter()
   const [query, setQuery] = useState("")
-  const openRowRef = useRef<SwipeableStockRowRef | null>(null)
+  const { handleSwipeOpen, closeOpenRow } = useCloseSwipeableOnScroll()
 
   const {
     data = [],
@@ -26,16 +26,9 @@ export default function StockIndex() {
     await refetch()
   }, [refetch])
 
-  const handleSwipeOpen = useCallback((rowRef: SwipeableStockRowRef | null) => {
-    if (openRowRef.current && openRowRef.current !== rowRef) {
-      openRowRef.current.close()
-    }
-    openRowRef.current = rowRef
-  }, [])
-
   const renderItem = useCallback(
     ({ item }: { item: StockRow }) => (
-      <SwipeableStockRowWrapper
+      <SwipeableStockRow
         stock={item}
         onPress={() => {
           router.push(`/stok/${item.id}?stock=${encodeURIComponent(JSON.stringify(item))}`)
@@ -60,7 +53,10 @@ export default function StockIndex() {
       <FlatList
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="never"
-        onScrollBeginDrag={() => Keyboard.dismiss()}
+        onScrollBeginDrag={() => {
+          Keyboard.dismiss()
+          closeOpenRow()
+        }}
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
         }

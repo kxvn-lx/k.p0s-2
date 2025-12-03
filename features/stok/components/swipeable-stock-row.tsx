@@ -19,12 +19,12 @@ export type SwipeableStockRowRef = {
 type SwipeableStockRowProps = {
   stock: StockRow
   onPress?: () => void
-  onSwipeOpen?: () => void
+  onSwipeOpen?: (ref: SwipeableStockRowRef) => void
 }
 
 // ----- Component -----
 const SwipeableStockRow = forwardRef<SwipeableStockRowRef, SwipeableStockRowProps>(
-  ({ stock, onPress, onSwipeOpen }, ref) => {
+  ({ stock, onPress, onSwipeOpen }, forwardedRef) => {
     const swipeableRef = useRef<SwipeableMethods>(null)
     const { mutate: updateLokasi } = useUpdateStockLokasiMutation()
 
@@ -32,9 +32,9 @@ const SwipeableStockRow = forwardRef<SwipeableStockRowRef, SwipeableStockRowProp
     const actionVariant = nextLokasi === "TOKO" ? "success" : "warning"
 
     // ----- Expose Methods -----
-    useImperativeHandle(ref, () => ({
-      close: () => swipeableRef.current?.close(),
-    }))
+    const rowApi = { close: () => swipeableRef.current?.close() }
+    
+    useImperativeHandle(forwardedRef, () => rowApi)
 
     // ----- Handlers -----
     const handleToggleLokasi = () => {
@@ -44,7 +44,7 @@ const SwipeableStockRow = forwardRef<SwipeableStockRowRef, SwipeableStockRowProp
     }
 
     const handleSwipeWillOpen = () => {
-      onSwipeOpen?.()
+      onSwipeOpen?.(rowApi)
     }
 
     // ----- Render Actions -----

@@ -3,7 +3,7 @@ import { StatusMessage } from "@/components/shared/status-message"
 import { useRouter } from "expo-router"
 import { useCallback, useMemo, useRef } from "react"
 import { FlatList, View } from "react-native"
-import PerincianRowWrapper from "./components/perincian-row-wrapper"
+import PerincianRow from "./components/perincian-row"
 import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
 import useKeranjangActions from "./hooks/use-keranjang-actions"
@@ -16,6 +16,7 @@ import type { BasketItem } from "./types/keranjang.types"
 import EditPriceModal, {
   EditPriceModalRef,
 } from "./components/edit-price-modal"
+import { useCloseSwipeableOnScroll } from "@/lib/hooks/use-close-swipeable-on-scroll"
 
 // ----- COMPONENT -----
 export default function Perincian() {
@@ -24,7 +25,7 @@ export default function Perincian() {
   const resetBasket = useKeranjangStore((s: KeranjangState) => s.reset)
 
   // ----- REFS -----
-  const openRowRef = useRef<{ close: () => void } | null>(null)
+  const { handleSwipeOpen, closeOpenRow } = useCloseSwipeableOnScroll()
   const editModalRef = useRef<EditPriceModalRef>(null)
 
   // ----- DERIVED STATE -----
@@ -33,15 +34,6 @@ export default function Perincian() {
   const canProceed = itemCount > 0
 
   // ----- HANDLERS -----
-  const handleSwipeOpen = useCallback(
-    (rowRef: { close: () => void } | null) => {
-      if (openRowRef.current && openRowRef.current !== rowRef) {
-        openRowRef.current.close()
-      }
-      openRowRef.current = rowRef
-    },
-    []
-  )
 
   const handleDeleteItem = useCallback(
     (stockId: string) => {
@@ -84,7 +76,7 @@ export default function Perincian() {
   // ----- RENDER FUNCTIONS -----
   const renderItem = useCallback(
     ({ item }: { item: BasketItem }) => (
-      <PerincianRowWrapper
+      <PerincianRow
         item={item}
         onDelete={() => handleDeleteItem(item.stock.id)}
         onEdit={() => handleEditItem(item)}
@@ -114,6 +106,7 @@ export default function Perincian() {
     <View className="flex-1 bg-background">
       {/* List */}
       <FlatList
+        onScrollBeginDrag={closeOpenRow}
         data={basketItems}
         keyExtractor={(item) => item.stock.id}
         renderItem={renderItem}

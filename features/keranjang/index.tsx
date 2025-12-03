@@ -29,10 +29,6 @@ export default function Keranjang() {
     isRefetching,
   } = useTruckStocksQuery(query)
 
-  const onRefresh = useCallback(async () => {
-    await refetch()
-  }, [refetch])
-
   const {
     items,
     addToBasket,
@@ -97,7 +93,7 @@ export default function Keranjang() {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={onRefresh}
+            onRefresh={async() => {await refetch()}}
           />
         }
         data={data as StockWithVariations[]}
