@@ -1,18 +1,24 @@
-import { Button } from "@/components/ui/button"
 import { Icon } from "@/components/ui/icon"
 import { useToastStore } from "@/lib/store/toast-store"
 import { cn } from "@/lib/utils"
 import { Portal } from "@rn-primitives/portal"
 import * as ToastPrimitive from "@rn-primitives/toast"
-import { X } from "lucide-react-native"
+import * as Haptics from "expo-haptics"
+import {
+  AlertCircle,
+  AlertTriangle,
+  Check,
+  Info,
+} from "lucide-react-native"
 import * as React from "react"
-import { View } from "react-native"
+import { Platform, View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -23,21 +29,42 @@ export function ToastProvider() {
   const [open, setOpen] = React.useState(false)
 
   // Animation Values
-  const translateY = useSharedValue(-100) // Start off-screen
-  const isDragging = useSharedValue(false)
+  const translateY = useSharedValue(-150)
+  const opacity = useSharedValue(0)
+  const scale = useSharedValue(0.95)
 
   // Sync store state with local open state
   React.useEffect(() => {
     if (activeToast) {
       setOpen(true)
-      // Reset position and animate in
-      translateY.value = -150 // Ensure it starts above
+      
+      // Haptic Feedback
+      const feedbackType =
+        activeToast.type === "error"
+          ? Haptics.NotificationFeedbackType.Error
+          : activeToast.type === "warning"
+          ? Haptics.NotificationFeedbackType.Warning
+          : Haptics.NotificationFeedbackType.Success
+      
+      Haptics.notificationAsync(feedbackType)
+
+      // Reset
+      translateY.value = -150
+      opacity.value = 0
+      scale.value = 0.95
+
+      // Animate In (iOS Notification Style)
       translateY.value = withSpring(0, {
-        damping: 15,
-        stiffness: 150,
+        damping: 14,
+        stiffness: 120,
         mass: 0.8,
-        overshootClamping: false,
       })
+      opacity.value = withTiming(1, { duration: 200 })
+      scale.value = withSpring(1, {
+        damping: 14,
+        stiffness: 120,
+      })
+
     } else {
       setOpen(false)
     }
@@ -46,116 +73,101 @@ export function ToastProvider() {
   // Handle auto-hide
   React.useEffect(() => {
     if (open && activeToast) {
-      const duration = activeToast.duration || 3000
+      const duration = activeToast.duration || 4000
       const timer = setTimeout(() => {
-        // Animate out before hiding
-        translateY.value = withSpring(
-          -150,
-          {
-            damping: 20,
-            stiffness: 200,
-            mass: 0.5,
-          },
-          (finished) => {
-            if (finished) {
-              runOnJS(setOpen)(false)
-              runOnJS(hide)()
-            }
-          }
-        )
+        dismiss()
       }, duration)
       return () => clearTimeout(timer)
     }
   }, [open, activeToast, hide])
 
+  const dismiss = () => {
+    opacity.value = withTiming(0, { duration: 250 })
+    scale.value = withTiming(0.95, { duration: 250 })
+    translateY.value = withSpring(
+      -150,
+      {
+        damping: 18,
+        stiffness: 120,
+        mass: 0.6,
+      },
+      (finished) => {
+        if (finished) {
+          runOnJS(setOpen)(false)
+          runOnJS(hide)()
+        }
+      }
+    )
+  }
+
   // Gesture Handler
   const pan = Gesture.Pan()
-    .activeOffsetY([-10, 10]) // Ignore small vertical movements to allow taps
-    .onStart(() => {
-      isDragging.value = true
-    })
+    .activeOffsetY([-10, 10])
     .onUpdate((event) => {
-      // Allow dragging up (negative) freely, drag down (positive) with resistance
       if (event.translationY < 0) {
+        // Drag up to dismiss
         translateY.value = event.translationY
+        opacity.value = 1 + event.translationY / 100
       } else {
-        translateY.value = event.translationY * 0.15 // Heavy resistance
+        // Drag down resistance
+        translateY.value = event.translationY * 0.2
       }
     })
     .onEnd((event) => {
-      isDragging.value = false
-      if (event.translationY < -40 || event.velocityY < -500) {
-        // Dismiss
-        translateY.value = withSpring(
-          -150,
-          {
-            damping: 20,
-            stiffness: 200,
-            mass: 0.5,
-            velocity: event.velocityY,
-          },
-          (finished) => {
-            if (finished) {
-              runOnJS(setOpen)(false)
-              runOnJS(hide)()
-            }
-          }
-        )
+      if (event.translationY < -30 || event.velocityY < -500) {
+        runOnJS(dismiss)()
       } else {
         // Spring back
         translateY.value = withSpring(0, {
           damping: 15,
           stiffness: 150,
-          mass: 0.8,
         })
+        opacity.value = withTiming(1)
       }
     })
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
+    transform: [{ translateY: translateY.value }, { scale: scale.value }],
+    opacity: opacity.value,
   }))
-
-  // Custom Entering Animation (Slide from Top)
-  // We use a useEffect to trigger the entering animation manually to ensure control
-  // But we can also use the entering prop if we define it as a worklet correctly.
-  // However, since we are managing translateY manually for gestures, it's better to control it fully.
 
   if (!activeToast || !open) return null
 
-  const borderColor =
-    activeToast.type === "error"
-      ? "border-destructive"
-      : activeToast.type === "success"
-        ? "border-green-500"
-        : activeToast.type === "warning"
-          ? "border-yellow-500"
-          : "border-primary"
-
-  const iconColor =
-    activeToast.type === "error"
-      ? "text-destructive"
-      : activeToast.type === "success"
-        ? "text-green-500"
-        : activeToast.type === "warning"
-          ? "text-yellow-500"
-          : "text-primary"
+  const getIcon = () => {
+    switch (activeToast.type) {
+      case "success":
+        return <Icon as={Check} className="text-primary w-5 h-5" />
+      case "error":
+        return <Icon as={AlertCircle} className="text-destructive w-5 h-5" />
+      case "warning":
+        return <Icon as={AlertTriangle} className="text-amber-500 w-5 h-5" />
+      default:
+        return <Icon as={Info} className="text-primary w-5 h-5" />
+    }
+  }
 
   return (
     <Portal name="toast-portal">
       <View
         style={{
-          top: insets.top + 10,
-          left: 16,
-          right: 16,
+          top: insets.top + (Platform.OS === 'ios' ? 6 : 12),
+          left: 12,
+          right: 12,
           position: "absolute",
           zIndex: 9999,
+          alignItems: 'center',
         }}
         pointerEvents="box-none"
-        className="flex-row justify-center"
       >
         <GestureDetector gesture={pan}>
           <Animated.View
-            style={[{ width: "100%", maxWidth: 450 }, animatedStyle]}
+            style={[
+              { 
+                width: "100%", 
+                maxWidth: 420, // Standard iOS notification width limit
+              }, 
+              animatedStyle
+            ]}
           >
             <ToastPrimitive.Root
               type="foreground"
@@ -165,45 +177,37 @@ export function ToastProvider() {
                 if (!isOpen) hide()
               }}
               className={cn(
-                "flex-row items-center justify-between w-full p-2 bg-card border rounded-[--radius] shadow-lg shadow-black/20",
-                borderColor
+                "flex-row items-center p-2 gap-2",
+                "bg-card border border-border", 
+                "rounded-[--radius]"
               )}
             >
-              <View className="flex-1 gap-1 mr-2">
+              {/* Icon Container - subtle background for better hierarchy */}
+              <View className={cn(
+                "p-2 rounded-full shrink-0",
+                activeToast.type === "error" ? "bg-destructive/10" :
+                activeToast.type === "warning" ? "bg-amber-500/10" :
+                "bg-primary/10"
+              )}>
+                {getIcon()}
+              </View>
+
+              {/* Text Content */}
+              <View className="flex-1 justify-center gap-1">
                 <ToastPrimitive.Title
-                  className={cn("font-mono-bold", iconColor)}
+                  className="font-mono-bold text-base text-card-foreground"
                 >
                   {activeToast.title}
                 </ToastPrimitive.Title>
-
+                
                 {activeToast.message && (
-                  <ToastPrimitive.Description className="text-muted-foreground">
+                  <ToastPrimitive.Description 
+                    className="text text-muted-foreground"
+                  >
                     {activeToast.message}
                   </ToastPrimitive.Description>
                 )}
               </View>
-
-              <Button
-                variant="ghost"
-                onPress={() => {
-                  translateY.value = withSpring(
-                    -150,
-                    {
-                      damping: 20,
-                      stiffness: 200,
-                      mass: 0.5,
-                    },
-                    (finished) => {
-                      if (finished) {
-                        runOnJS(setOpen)(false)
-                        runOnJS(hide)()
-                      }
-                    }
-                  )
-                }}
-              >
-                <Icon as={X} />
-              </Button>
             </ToastPrimitive.Root>
           </Animated.View>
         </GestureDetector>
