@@ -35,7 +35,7 @@ export function VariasiInfoDisplay({ item, type }: VariasiInfoDisplayProps) {
     const unit = stockData.appliedVariation?.satuan ?? item.satuan_utama ?? "-"
 
     return (
-        <View className="flex-row items-center justify-between border-border border bg-background p-2 rounded-[--radius]">
+        <View className="flex-row items-center justify-between bg-background p-1">
             {/* Left: Price Data */}
             <View className="flex-row items-baseline gap-2">
                 <Text variant="muted" className="text-xs line-through">

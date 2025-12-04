@@ -4,6 +4,7 @@ import { Text } from "@/components/ui/text"
 import { formatDateTime } from "@/lib/utils"
 import InfoRow from "@/components/shared/info-row"
 import { Separator } from "@/components/ui/separator"
+import { SectionHeader } from "@/components/ui/section-header"
 
 interface SharedDetailContentProps<T> {
     infoTitle: string
@@ -13,6 +14,7 @@ interface SharedDetailContentProps<T> {
     keterangan?: string | null
     detailsTitle: string
     details: T[]
+    idExtractor: (item: T) => string
     renderDetail: (item: T) => React.ReactElement
 }
 
@@ -24,63 +26,44 @@ export function SharedDetailContent<T>({
     keterangan,
     detailsTitle,
     details,
+    idExtractor,
     renderDetail,
 }: SharedDetailContentProps<T>) {
     return (
         <ScrollView className="flex-1 bg-background">
-            <View className="p-2 gap-2">
+            <View className="gap-4">
                 <View>
-                    <View className="px-4 py-2">
-                        <Text variant="muted" className="font-mono-bold text-xs uppercase tracking-wider">
-                            {infoTitle}
-                        </Text>
-                    </View>
-                    <View className="bg-card rounded-[--radius] overflow-hidden border border-border">
+                    <SectionHeader title={infoTitle} />
+                    <View className="bg-card">
                         <InfoRow
+                            primarySide="trailing"
                             leadingElement="STAFF"
                             trailingElement={<Text className="uppercase text-foreground">{staffName}</Text>}
-                            className="bg-transparent p-2 pl-2 min-h-0"
                         />
                         <InfoRow
+                            primarySide="trailing"
                             leadingElement="TANGGAL"
                             trailingElement={<Text className="uppercase text-foreground">{formatDateTime(tanggal, true, true)}</Text>}
-                            className="bg-transparent p-2 pl-2 min-h-0"
                         />
                         <InfoRow
                             leadingElement="TOTAL"
                             trailingElement={jumlahTotal.toLocaleString("id-ID")}
-                            className="bg-transparent p-2 pl-2 min-h-0"
+                            primarySide="trailing"
                         />
-                        <View className="p-2">
-                            <Text variant="muted" className="text-sm">
-                                KETERANGAN
-                            </Text>
-                            <Text className="text-foreground text-sm uppercase">
-                                {keterangan ?? "-"}
-                            </Text>
-                        </View>
+                        <InfoRow leadingElement="KETERANGAN" trailingElement={keterangan ?? "-"} primarySide="trailing" />
                     </View>
                 </View>
 
-                <View >
-                    <View className="px-4 py-2 flex-row justify-between">
-                        <Text variant="muted" className="font-mono-bold text-xs uppercase tracking-wider">
-                            {detailsTitle}
-                        </Text>
-                        <Text variant="muted" className="font-mono-bold text-xs uppercase tracking-wider">
-                            {details.length} ITEM
-                        </Text>
-                    </View>
-                    <View className="bg-card rounded-[--radius] border border-border">
-                        {details.map((item, index) => (
-                            <View key={(item as any).id}>
-                                {index > 0 && <Separator />}
-                                <View className="p-2 ap-2">
-                                    {renderDetail(item)}
-                                </View>
+                <View>
+                    <SectionHeader title={detailsTitle} secondary={`${details.length} ITEM`} />
+                    {details.map((item, index) => (
+                        <View key={idExtractor(item)}>
+                            {index > 0 && <Separator />}
+                            <View>
+                                {renderDetail(item)}
                             </View>
-                        ))}
-                    </View>
+                        </View>
+                    ))}
                 </View>
             </View>
         </ScrollView>

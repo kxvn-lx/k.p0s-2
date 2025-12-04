@@ -1,5 +1,6 @@
 import { Text } from "@/components/ui/text"
 import { View } from "react-native"
+import PerincianItem from "@/components/shared/perincian-item"
 import type { BasketItem } from "@/features/keranjang/types/keranjang.types"
 import Animated, {
   LinearTransition,
@@ -89,37 +90,16 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
           friction={2}
           onSwipeableWillOpen={handleSwipeWillOpen}
         >
-          <View
+          <PerincianItem
             testID={`perincian-row-${stock.id}`}
-            className="flex-row items-center justify-between p-2 bg-card"
-          >
-            {/* Left: Stock Info */}
-            <View className="flex-1 flex-col gap-y-1">
-              <Text className="font-medium">{stock.nama}</Text>
-
-              <View className="flex-row items-center gap-x-2">
-                <Text className="text-sm text-muted-foreground">
-                  {qty} {stock.satuan_utama ?? ""}
-                </Text>
-
-                <Text className="text-accent">x</Text>
-
-                <View className="flex-row items-center gap-x-2">
-                  {(isVariasiHarga || hasEditedPrice) && (
-                    <Text variant="muted" className="line-through text-sm">
-                      {originalPrice.toLocaleString()}
-                    </Text>
-                  )}
-                  <Text className={isVariasiHarga ? "text-green-500 text-sm" : "text-sm text-muted-foreground"}>
-                    {harga_satuan.toLocaleString()}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Right: Total */}
-            <Text className="font-medium">{totalPrice.toLocaleString()}</Text>
-          </View>
+            name={stock.nama}
+            qty={qty}
+            unit={stock.satuan_utama ?? ""}
+            price={harga_satuan}
+            originalPrice={originalPrice}
+            isVariation={isVariasiHarga || hasEditedPrice}
+            total={totalPrice}
+          />
         </Swipeable>
       </Animated.View>
     )

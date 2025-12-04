@@ -108,7 +108,7 @@ export default function PembayaranScreen() {
       <ProgressDialog visible={dialogVisible} progress={progress} />
 
       {/* Header Info  */}
-      <View className="">
+      <View className="bg-card">
         <InfoRow
           leadingElement="TANGGAL"
           primarySide="trailing"

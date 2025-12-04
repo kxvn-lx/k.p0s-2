@@ -34,7 +34,7 @@ export function PenjualanRingkasanDetail({
     const appliedPrice = stockData?.appliedPrice ?? item.harga_jual
 
     return (
-      <View className="p-2 bg-card">
+      <>
         <PerincianItem
           name={item.nama}
           qty={item.qty}
@@ -45,13 +45,10 @@ export function PenjualanRingkasanDetail({
           total={item.jumlah_total}
         />
 
-
-        {hasVariation && (
-          <View>
-            <VariasiInfoDisplay item={item} type="penjualan" />
-          </View>
-        )}
-      </View>
+        <View className="mt-2">
+          <VariasiInfoDisplay item={item} type="penjualan" />
+        </View>
+      </>
     )
   }
 
@@ -64,9 +61,7 @@ export function PenjualanRingkasanDetail({
       keterangan={keterangan}
       detailsTitle="STOK"
       details={details}
-      idExtractor={(item) => item.id}
       renderDetail={(item) => <DetailRow item={item} />}
     />
   )
 }
-

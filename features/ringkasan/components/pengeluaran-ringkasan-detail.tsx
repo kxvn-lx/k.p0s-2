@@ -47,6 +47,7 @@ export function PengeluaranRingkasanDetail({
             keterangan={keterangan}
             detailsTitle="KATEGORI"
             details={details}
+            idExtractor={(item) => item.id}
             renderDetail={renderDetail}
         />
     )
