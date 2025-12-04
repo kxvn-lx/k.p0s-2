@@ -22,7 +22,9 @@ import {
   SelectTrigger,
   NativeSelectScrollView,
   type Option,
+  SelectSeparator,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import {
   useTimPenjualanMutations,
   type TimPenjualanHarianRow,
@@ -188,12 +190,13 @@ const TimPenjualanModal = forwardRef<TimPenjualanModalRef, object>((_, ref) => {
                   trailingIcon={ChevronDown}
                 />
               </SelectTrigger>
-              <SelectContent>
-                <NativeSelectScrollView>
-                  {STAFF_OPTIONS.map(option => (
-                    <SelectItem key={option.value} value={option.value} label={option.label} />
-                  ))}
-                </NativeSelectScrollView>
+              <SelectContent align="end" insets={{ right: 8 }}>
+                {STAFF_OPTIONS.map((option, index) => (
+                  <View key={option.value}>
+                    <SelectItem value={option.value} label={option.label} />
+                    {index < STAFF_OPTIONS.length - 1 && <SelectSeparator />}
+                  </View>
+                ))}
               </SelectContent>
             </Select>
           </View>
@@ -209,19 +212,20 @@ const TimPenjualanModal = forwardRef<TimPenjualanModalRef, object>((_, ref) => {
                   isLast
                 />
               </SelectTrigger>
-              <SelectContent>
-                <NativeSelectScrollView>
-                  {REKAN_OPTIONS.map(option => (
-                    <SelectItem key={option.value} value={option.value} label={option.label} />
-                  ))}
-                </NativeSelectScrollView>
+              <SelectContent align="end" insets={{ right: 8 }}>
+                {REKAN_OPTIONS.map((option, index) => (
+                  <View key={option.value}>
+                    <SelectItem value={option.value} label={option.label} />
+                    {index < REKAN_OPTIONS.length - 1 && <SelectSeparator />}
+                  </View>
+                ))}
               </SelectContent>
             </Select>
           </View>
         </View>
 
         {/* Actions */}
-        <View className="gap-y-2 mt-auto">
+        <View className="-mt-4 gap-2 p-2">
           {isEditing && (
             <Button
               variant="ghost"

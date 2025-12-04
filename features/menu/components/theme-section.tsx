@@ -46,7 +46,7 @@ export function ThemeSection() {
             isLast
           />
         </SelectTrigger>
-        <SelectContent align="end">
+        <SelectContent align="end" insets={{ right: 8 }}>
           <SelectItem label="Metal" value="metal">
             Metal
           </SelectItem>

@@ -105,14 +105,14 @@ function SelectContent({
             >
               <SelectPrimitive.Content
                 className={cn(
-                  "bg-popover border-border relative z-50 min-w-[8rem] rounded-[--radius] border shadow-md shadow-black/5",
+                  "bg-popover overflow-hidden border-border relative z-50 min-w-[8rem] rounded-[--radius] border shadow-black/5",
                   Platform.select({
                     web: cn(
                       "animate-in fade-in-0 zoom-in-95 origin-(--radix-select-content-transform-origin) max-h-52 overflow-y-auto overflow-x-hidden",
                       props.side === "bottom" && "slide-in-from-top-2",
                       props.side === "top" && "slide-in-from-bottom-2"
                     ),
-                    native: "p-1",
+                    native: "",
                   }),
                   position === "popper" &&
                   Platform.select({
@@ -174,7 +174,7 @@ function SelectItem({
   return (
     <SelectPrimitive.Item
       className={cn(
-        "active:bg-accent group relative flex w-full flex-row items-center gap-2 rounded-[--radius] py-2 pl-2 pr-8 sm:py-1.5",
+        "active:bg-accent  group relative flex w-full flex-row items-center gap-1 p-2",
         Platform.select({
           web: "focus:bg-accent focus:text-accent-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2 cursor-default outline-none data-[disabled]:pointer-events-none [&_svg]:pointer-events-none",
         }),
@@ -201,7 +201,7 @@ function SelectSeparator({
   return (
     <SelectPrimitive.Separator
       className={cn(
-        "bg-border -mx-1 my-1 h-px",
+        "bg-border -mx-1 h-px",
         Platform.select({ web: "pointer-events-none" }),
         className
       )}
