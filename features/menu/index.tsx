@@ -21,7 +21,7 @@ export default function Menu() {
       contentContainerClassName="gap-4"
     >
       {/* Profile Section */}
-      <View className="flex-row items-center justify-between gap-2">
+      <View className="flex-row items-center justify-between gap-2 m-2">
         <Text>{name}</Text>
         <Text variant="muted" className="capitalize">
           {role}
