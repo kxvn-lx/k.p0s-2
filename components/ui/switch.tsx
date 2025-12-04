@@ -1,15 +1,23 @@
 import { cn } from '@/lib/utils';
+import haptic from '@/lib/utils/haptics';
 import * as SwitchPrimitives from '@rn-primitives/switch';
 import { Platform } from 'react-native';
 
 function Switch({
   className,
+  onCheckedChange,
   ...props
 }: SwitchPrimitives.RootProps & React.RefAttributes<SwitchPrimitives.RootRef>) {
+  // ----- Handlers -----
+  const handleCheckedChange = (checked: boolean) => {
+    haptic('selection');
+    onCheckedChange?.(checked);
+  };
+
   return (
     <SwitchPrimitives.Root
       className={cn(
-        'flex h-[1.15rem] w-8 shrink-0 flex-row items-center rounded-full border border-transparent shadow-sm shadow-black/5',
+        'flex h-[1.15rem] w-8 shrink-0 flex-row items-center rounded-full border border-transparent',
         Platform.select({
           web: 'focus-visible:border-ring focus-visible:ring-ring/50 peer inline-flex outline-none transition-all focus-visible:ring-[3px] disabled:cursor-not-allowed',
         }),
@@ -17,6 +25,7 @@ function Switch({
         props.disabled && 'opacity-50',
         className
       )}
+      onCheckedChange={handleCheckedChange}
       {...props}>
       <SwitchPrimitives.Thumb
         className={cn(

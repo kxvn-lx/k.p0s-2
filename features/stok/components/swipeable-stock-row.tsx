@@ -9,7 +9,7 @@ import type { StockLokasi, StockRow } from "../api/stock.service"
 import { useUpdateStockLokasiMutation } from "../hooks/stock.queries"
 import StockRowContent from "./stock-row"
 import * as Haptics from "expo-haptics"
-import { useAuth } from "@/lib/auth-context"
+import { useRole } from "@/lib/hooks/use-role"
 
 // ----- Types -----
 export type SwipeableStockRowRef = {
@@ -25,8 +25,7 @@ type SwipeableStockRowProps = {
 // ----- Component -----
 const SwipeableStockRow = forwardRef<SwipeableStockRowRef, SwipeableStockRowProps>(
   ({ stock, onPress, onSwipeOpen }, forwardedRef) => {
-    const { user } = useAuth()
-    const isAdmin = user?.app_metadata?.role === "Admin"
+    const { isAdmin } = useRole()
     const swipeableRef = useRef<SwipeableMethods>(null)
     const { mutate: updateLokasi } = useUpdateStockLokasiMutation()
 

@@ -9,13 +9,12 @@ import SwipeableStockRow from "./components/swipeable-stock-row"
 import StockRowContent from "./components/stock-row"
 import { useStocksQuery } from "./hooks/stock.queries"
 import { useCloseSwipeableOnScroll } from "@/lib/hooks/use-close-swipeable-on-scroll"
-import { useAuth } from "@/lib/auth-context"
+import { useRole } from "@/lib/hooks/use-role"
 
 export default function StockIndex() {
   const router = useRouter()
   const [query, setQuery] = useState("")
-  const { user } = useAuth()
-  const isAdmin = user?.app_metadata?.role === "Admin"
+  const { isAdmin } = useRole()
   const { handleSwipeOpen, closeOpenRow } = useCloseSwipeableOnScroll()
 
   const {

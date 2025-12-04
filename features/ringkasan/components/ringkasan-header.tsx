@@ -3,7 +3,7 @@ import { useCallback, useRef } from "react"
 import { useRouter } from "expo-router"
 import { startOfDay } from "date-fns"
 import type { RingkasanHeaderData } from "../hooks/ringkasan.queries"
-import { useAuth } from "@/lib/auth-context"
+import { useRole } from "@/lib/hooks/use-role"
 import { Text } from "@/components/ui/text"
 import InfoRow from "@/components/shared/info-row"
 import TimPenjualanModal, { type TimPenjualanModalRef } from "./tim-penjualan-modal"
@@ -22,11 +22,10 @@ export function RingkasanHeader({
   isLoadingTimPenjualan = false,
 }: RingkasanHeaderProps) {
   const router = useRouter()
-  const { user } = useAuth()
+  const { isAdmin } = useRole()
   const modalRef = useRef<TimPenjualanModalRef>(null)
 
   const { summary, timPenjualan } = data
-  const isAdmin = user?.app_metadata?.role === "Admin"
 
   // ----- Handlers -----
   const handleAddPengeluaran = useCallback(() => {

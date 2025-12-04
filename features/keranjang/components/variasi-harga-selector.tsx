@@ -1,5 +1,5 @@
 // ----- Imports -----
-import { View } from "react-native"
+import { Pressable, View } from "react-native"
 import PressableRow from '@/components/shared/pressable-row'
 import { useRef } from 'react'
 import { Text } from "@/components/ui/text"
@@ -91,15 +91,15 @@ export default function VariasiHargaSelector({
 
         const badge = (
             <>
-                <Button
-                    title={`QTY: ${selectedQty}`}
-                    variant="outline"
-                    size="icon"
+                <Pressable
+                    className="row-pressable bg-background active:bg-accent px-2 rounded-[--radius]"
                     onPress={(e) => {
                         e.stopPropagation()
                         badgeModalRef.current?.present()
                     }}
-                />
+                >
+                    <Text>{`QTY: ${selectedQty}`}</Text>
+                </Pressable>
 
                 <SharedBottomSheetModal ref={badgeModalRef} snapPoints={["25%"]}>
                     <BadgeStepper
@@ -122,7 +122,7 @@ export default function VariasiHargaSelector({
                     'flex flex-row items-center justify-between p-2 gap-x-2 border-y border-border',
                 )}
             >
-                <View className="flex-row items-center flex-1 h-7">
+                <View className="flex-row items-center flex-1">
                     <Text className="uppercase w-28">MIN: {item.minQty} {item.satuan}</Text>
 
                     {isVariation ? (

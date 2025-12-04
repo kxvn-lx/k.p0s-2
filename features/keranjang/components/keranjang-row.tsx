@@ -1,5 +1,5 @@
 import { Text } from "@/components/ui/text"
-import { View } from "react-native"
+import { Pressable, View } from "react-native"
 import { useRef } from "react"
 import SharedBottomSheetModal, {
   BottomSheetModalRef,
@@ -11,7 +11,6 @@ import type {
   StockWithVariations,
   VariasiHargaRow,
 } from "@/features/keranjang/types/keranjang.types"
-import { Button } from "@/components/ui/button"
 
 type KeranjangRowProps = {
   stock: StockWithVariations
@@ -46,15 +45,16 @@ export default function KeranjangRow({
   const badgeModalRef = useRef<BottomSheetModalRef>(null)
   const Badge = (
     <>
-      <Button
-        variant="outline"
-        size="icon"
-        title={`QTY: ${selectedQty}`}
+      <Pressable
+        className="row-pressable border border-border bg-background active:bg-accent px-2 py-1 rounded-[--radius]"
         onPress={(e) => {
           e.stopPropagation()
           badgeModalRef.current?.present()
         }}
-      />
+      >
+        <Text>{`QTY: ${selectedQty}`}</Text>
+      </Pressable>
+
       <SharedBottomSheetModal
         ref={badgeModalRef}
         headerTitle="Ganti QTY"

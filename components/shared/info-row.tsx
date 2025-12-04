@@ -58,7 +58,7 @@ export default function InfoRow({
       return (
         <Text
           className={cn(
-            "flex-1 text-base",
+            "flex-1 uppercase",
             destructive ? "text-destructive" : (isLeadingPrimary ? "text-foreground" : "text-muted-foreground"),
             leadingTextClassName
           )}
