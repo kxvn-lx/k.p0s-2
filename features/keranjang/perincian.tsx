@@ -3,7 +3,7 @@ import { StatusMessage } from "@/components/shared/status-message"
 import { useRouter } from "expo-router"
 import { useCallback, useMemo, useRef } from "react"
 import { FlatList, View } from "react-native"
-import PerincianRow from "./components/perincian-row"
+import SwipeablePerincianRow from "./components/swipeable-perincian-row"
 import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
 import useKeranjangActions from "./hooks/use-keranjang-actions"
@@ -76,7 +76,7 @@ export default function Perincian() {
   // ----- RENDER FUNCTIONS -----
   const renderItem = useCallback(
     ({ item }: { item: BasketItem }) => (
-      <PerincianRow
+      <SwipeablePerincianRow
         item={item}
         onDelete={() => handleDeleteItem(item.stock.id)}
         onEdit={() => handleEditItem(item)}

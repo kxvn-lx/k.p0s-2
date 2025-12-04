@@ -14,8 +14,8 @@ interface ProgressDialogProps {
 const STEPS = [
   { key: "validating", label: "Validasi", icon: ShieldCheck },
   { key: "penjualan", label: "Transaksi", icon: FileText },
-  { key: "details", label: "Detail", icon: ClipboardList },
-  { key: "stock", label: "Stok", icon: Package },
+  { key: "details", label: "Stok", icon: ClipboardList },
+  { key: "stock", label: "Stok Qty", icon: Package },
   { key: "audit", label: "Riwayat", icon: ClipboardList },
 ] as const
 

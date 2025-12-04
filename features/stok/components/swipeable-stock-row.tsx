@@ -77,11 +77,6 @@ const SwipeableStockRow = forwardRef<SwipeableStockRowRef, SwipeableStockRowProp
           renderLeftActions={renderLeftActions}
           friction={2}
           onSwipeableWillOpen={handleSwipeWillOpen}
-          // Fix: Allow press events to work alongside swipe functionality
-          overshootLeft={false}
-          overshootRight={false}
-          // Require significant horizontal movement to trigger swipe (prevents accidental swipes)
-          activeOffsetX={[-10, 10]}
         >
           <StockRowContent stock={stock} onPress={onPress} />
         </Swipeable>
