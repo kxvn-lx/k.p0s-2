@@ -1,11 +1,13 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useMemo } from "react"
+import * as Crypto from "expo-crypto"
 import {
   RingkasanService,
   type PenjualanDetailRow,
   type PembelianDetailRow,
   type PengeluaranDetailRow,
 } from "../api/ringkasan.service"
+import { TimPenjualanService, type TimPenjualanHarianRow } from "../api/tim-penjualan.service"
 import { ringkasanKeys } from "../api/ringkasan.keys"
 import { StockService } from "@/features/stok/api/stock.service"
 import type { Database } from "@/lib/types/supabase-types"
@@ -44,14 +46,20 @@ export type RingkasanSummary = {
   pembelian: number
 }
 
-export function useRingkasanData(startDate: string, endDate: string) {
+export type RingkasanHeaderData = {
+  summary: RingkasanSummary
+  timPenjualan: TimPenjualanHarianRow | null
+}
+
+// ----- Main Ringkasan Hook -----
+export function useRingkasanData(startDate: string, endDate: string, currentDate: Date) {
+  const dateKey = startDate.split("T")[0]
+
+
   const penjualanQuery = useQuery({
     queryKey: ringkasanKeys.penjualan(startDate, endDate),
     queryFn: async () => {
-      const { data, error } = await RingkasanService.getPenjualan(
-        startDate,
-        endDate
-      )
+      const { data, error } = await RingkasanService.getPenjualan(startDate, endDate)
       if (error) throw new Error(error.message || "Gagal memuat data penjualan")
       return data || []
     },
@@ -63,10 +71,7 @@ export function useRingkasanData(startDate: string, endDate: string) {
   const pembelianQuery = useQuery({
     queryKey: ringkasanKeys.pembelian(startDate, endDate),
     queryFn: async () => {
-      const { data, error } = await RingkasanService.getPembelian(
-        startDate,
-        endDate
-      )
+      const { data, error } = await RingkasanService.getPembelian(startDate, endDate)
       if (error) throw new Error(error.message || "Gagal memuat data pembelian")
       return data || []
     },
@@ -78,12 +83,8 @@ export function useRingkasanData(startDate: string, endDate: string) {
   const pengeluaranQuery = useQuery({
     queryKey: ringkasanKeys.pengeluaran(startDate, endDate),
     queryFn: async () => {
-      const { data, error } = await RingkasanService.getPengeluaran(
-        startDate,
-        endDate
-      )
-      if (error)
-        throw new Error(error.message || "Gagal memuat data pengeluaran")
+      const { data, error } = await RingkasanService.getPengeluaran(startDate, endDate)
+      if (error) throw new Error(error.message || "Gagal memuat data pengeluaran")
       return data || []
     },
     staleTime: 1000 * 60 * 5,
@@ -91,18 +92,23 @@ export function useRingkasanData(startDate: string, endDate: string) {
     refetchOnWindowFocus: false,
   })
 
+  const timPenjualanQuery = useQuery({
+    queryKey: ringkasanKeys.timPenjualan(dateKey),
+    queryFn: async () => {
+      const { data, error } = await TimPenjualanService.getByDate(startDate)
+      if (error) throw new Error(error.message || "Gagal memuat tim penjualan")
+      return data
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+  })
+
+  // ----- Derived: Summary -----
   const summary = useMemo<RingkasanSummary>(() => {
-    const grossPenjualan =
-      penjualanQuery.data?.reduce((sum, item) => sum + item.jumlah_total, 0) ||
-      0
-    const totalPengeluaran =
-      pengeluaranQuery.data?.reduce(
-        (sum, item) => sum + item.jumlah_total,
-        0
-      ) || 0
-    const totalPembelian =
-      pembelianQuery.data?.reduce((sum, item) => sum + item.jumlah_total, 0) ||
-      0
+    const grossPenjualan = penjualanQuery.data?.reduce((sum, item) => sum + item.jumlah_total, 0) || 0
+    const totalPengeluaran = pengeluaranQuery.data?.reduce((sum, item) => sum + item.jumlah_total, 0) || 0
+    const totalPembelian = pembelianQuery.data?.reduce((sum, item) => sum + item.jumlah_total, 0) || 0
 
     return {
       grossPenjualan,
@@ -112,6 +118,13 @@ export function useRingkasanData(startDate: string, endDate: string) {
     }
   }, [penjualanQuery.data, pengeluaranQuery.data, pembelianQuery.data])
 
+  // ----- Derived: Header Data -----
+  const headerData = useMemo<RingkasanHeaderData>(() => ({
+    summary,
+    timPenjualan: timPenjualanQuery.data ?? null,
+  }), [summary, timPenjualanQuery.data])
+
+  // ----- Derived: Transactions -----
   const transactions = useMemo<TransactionItem[]>(() => {
     const allTransactions: TransactionItem[] = [
       ...(penjualanQuery.data?.map((item) => ({
@@ -149,16 +162,19 @@ export function useRingkasanData(startDate: string, endDate: string) {
   }, [penjualanQuery.data, pembelianQuery.data, pengeluaranQuery.data])
 
   return {
-    summary,
+    headerData,
+    currentDate,
     transactions,
     isLoading:
       penjualanQuery.isLoading ||
       pembelianQuery.isLoading ||
       pengeluaranQuery.isLoading,
+    isLoadingTimPenjualan: timPenjualanQuery.isLoading,
     isRefetching:
       penjualanQuery.isRefetching ||
       pembelianQuery.isRefetching ||
-      pengeluaranQuery.isRefetching,
+      pengeluaranQuery.isRefetching ||
+      timPenjualanQuery.isRefetching,
     isError:
       penjualanQuery.isError ||
       pembelianQuery.isError ||
@@ -168,18 +184,121 @@ export function useRingkasanData(startDate: string, endDate: string) {
         penjualanQuery.refetch(),
         pembelianQuery.refetch(),
         pengeluaranQuery.refetch(),
+        timPenjualanQuery.refetch(),
       ])
     },
   }
 }
 
+// ----- Tim Penjualan Mutations -----
+export function useTimPenjualanMutations(dateKey: string, currentDate: Date) {
+  const queryClient = useQueryClient()
+  const queryKey = ringkasanKeys.timPenjualan(dateKey)
+
+
+  const createMutation = useMutation({
+    mutationFn: async (payload: { staffId: string; staffName: string; rekan: string }) => {
+      const { data, error } = await TimPenjualanService.create({
+        date: currentDate.toISOString(),
+        ...payload,
+      })
+      if (error) throw error
+      return data
+    },
+    onMutate: async (payload) => {
+      await queryClient.cancelQueries({ queryKey })
+      const previous = queryClient.getQueryData<TimPenjualanHarianRow | null>(queryKey)
+
+      queryClient.setQueryData<TimPenjualanHarianRow | null>(queryKey, {
+        id: Crypto.randomUUID(),
+        created_at: currentDate.toISOString(),
+        staff_id: payload.staffId,
+        staff_name: payload.staffName,
+        rekan: payload.rekan,
+        updated_at: new Date().toISOString(),
+      })
+
+      return { previous }
+    },
+    onError: (_error, _payload, context) => {
+      if (context?.previous !== undefined) {
+        queryClient.setQueryData(queryKey, context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey })
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: async (payload: { id: string; staffId: string; staffName: string; rekan: string }) => {
+      const { data, error } = await TimPenjualanService.update(payload.id, {
+        staffId: payload.staffId,
+        staffName: payload.staffName,
+        rekan: payload.rekan,
+      })
+      if (error) throw error
+      return data
+    },
+    onMutate: async (payload) => {
+      await queryClient.cancelQueries({ queryKey })
+      const previous = queryClient.getQueryData<TimPenjualanHarianRow | null>(queryKey)
+
+      queryClient.setQueryData<TimPenjualanHarianRow | null>(queryKey, (old) => ({
+        ...old!,
+        staff_id: payload.staffId,
+        staff_name: payload.staffName,
+        rekan: payload.rekan,
+        updated_at: new Date().toISOString(),
+      }))
+
+      return { previous }
+    },
+    onError: (_error, _payload, context) => {
+      if (context?.previous !== undefined) {
+        queryClient.setQueryData(queryKey, context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey })
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await TimPenjualanService.delete(id)
+      if (error) throw error
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey })
+      const previous = queryClient.getQueryData<TimPenjualanHarianRow | null>(queryKey)
+      queryClient.setQueryData<TimPenjualanHarianRow | null>(queryKey, null)
+      return { previous }
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previous !== undefined) {
+        queryClient.setQueryData(queryKey, context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey })
+    },
+  })
+
+  return {
+    create: createMutation,
+    update: updateMutation,
+    delete: deleteMutation,
+  }
+}
+
+// ----- Detail Hooks -----
 export function usePenjualanDetail(id: string) {
   return useQuery({
     queryKey: ringkasanKeys.penjualanDetail(id),
     queryFn: async () => {
       const { data, error } = await RingkasanService.getPenjualanDetail(id)
-      if (error)
-        throw new Error(error.message || "Gagal memuat detail penjualan")
+      if (error) throw new Error(error.message || "Gagal memuat detail penjualan")
       return data
     },
     enabled: !!id,
@@ -191,8 +310,7 @@ export function usePembelianDetail(id: string) {
     queryKey: ringkasanKeys.pembelianDetail(id),
     queryFn: async () => {
       const { data, error } = await RingkasanService.getPembelianDetail(id)
-      if (error)
-        throw new Error(error.message || "Gagal memuat detail pembelian")
+      if (error) throw new Error(error.message || "Gagal memuat detail pembelian")
       return data
     },
     enabled: !!id,
@@ -204,15 +322,14 @@ export function usePengeluaranDetail(id: string) {
     queryKey: ringkasanKeys.pengeluaranDetail(id),
     queryFn: async () => {
       const { data, error } = await RingkasanService.getPengeluaranDetail(id)
-      if (error)
-        throw new Error(error.message || "Gagal memuat detail pengeluaran")
+      if (error) throw new Error(error.message || "Gagal memuat detail pengeluaran")
       return data
     },
     enabled: !!id,
   })
 }
 
-// Hook for fetching stock with variations using TanStack Query best practices
+// ----- Stock Variation Hooks -----
 export function useStockWithVariations(stockId: string | null) {
   const isValidId = !!stockId && /^[0-9a-fA-F-]{36}$/.test(stockId)
 
@@ -227,23 +344,21 @@ export function useStockWithVariations(stockId: string | null) {
       return data as StockWithVariations
     },
     enabled: isValidId,
-    staleTime: 1000 * 60 * 10, // 10 minutes - stock data doesn't change frequently
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
   })
 }
 
-// Hook for computing variation information for display
 export function useVariationInfo(
   stockId: string | null,
   currentPrice: number,
-  variationData?: any,
+  variationData?: unknown,
   type?: "penjualan" | "pembelian"
 ) {
   const { data: stockData, isLoading } = useStockWithVariations(stockId)
 
   return useMemo(() => {
-    // Return early if still loading or no data
     if (isLoading || !stockData) {
       return {
         hasVariation: false,
@@ -260,7 +375,6 @@ export function useVariationInfo(
 
     const hasVariation = currentPrice !== basePrice
 
-    // Find the applied variation
     const appliedVariation = stockData.variasi_harga_barang?.find(
       (v) => v.harga_jual === currentPrice
     )
@@ -273,3 +387,6 @@ export function useVariationInfo(
     } as VariationInfo
   }, [stockData, currentPrice, variationData, type, isLoading])
 }
+
+// Re-export types
+export type { TimPenjualanHarianRow } from "../api/tim-penjualan.service"

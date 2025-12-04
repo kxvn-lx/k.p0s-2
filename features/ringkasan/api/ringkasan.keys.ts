@@ -13,4 +13,6 @@ export const ringkasanKeys = {
     [...ringkasanKeys.all, "pembelian-detail", id] as const,
   pengeluaranDetail: (id: string) =>
     [...ringkasanKeys.all, "pengeluaran-detail", id] as const,
+  timPenjualan: (date: string) =>
+    [...ringkasanKeys.all, "tim-penjualan", date] as const,
 }

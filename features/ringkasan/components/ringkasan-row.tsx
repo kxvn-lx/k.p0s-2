@@ -3,23 +3,25 @@ import { RefreshControlProps } from "react-native"
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list"
 import { Text } from "@/components/ui/text"
 import { SectionHeader } from "@/components/ui/section-header"
-import type { TransactionItem, RingkasanSummary } from "../hooks/ringkasan.queries"
+import type { TransactionItem, RingkasanHeaderData } from "../hooks/ringkasan.queries"
 import { format, isToday, isYesterday } from "date-fns"
 import { id } from "date-fns/locale"
 import { useRouter } from "expo-router"
-import { useMemo } from "react"
+import { useMemo, useCallback } from "react"
 import { cn, formatDateTime } from "@/lib/utils"
 import { Icon } from "@/components/ui/icon"
 import { ChevronRight } from "lucide-react-native"
 import PressableRow from "@/components/shared/pressable-row"
 import { StatusMessage } from "@/components/shared/status-message"
-import { SummaryCard } from "./summary-card"
+import { RingkasanHeader } from "./ringkasan-header"
 
 // ----- Types -----
 interface RingkasanRowProps {
+  headerData: RingkasanHeaderData
+  currentDate: Date
   transactions: TransactionItem[]
-  summary: RingkasanSummary
   isLoading: boolean
+  isLoadingTimPenjualan?: boolean
   refreshControl?: React.ReactElement<RefreshControlProps>
 }
 
@@ -34,18 +36,20 @@ type ListItem =
   }
 
 export function RingkasanRow({
+  headerData,
+  currentDate,
   transactions,
-  summary,
   isLoading,
+  isLoadingTimPenjualan = false,
   refreshControl,
 }: RingkasanRowProps) {
   const router = useRouter()
 
-  const handlePress = (item: TransactionItem) => {
+  const handlePress = useCallback((item: TransactionItem) => {
     router.push(
       `/ringkasan/rincian?transaction=${encodeURIComponent(JSON.stringify(item))}`
     )
-  }
+  }, [router])
 
   // ----- Flatten Data -----
   const flattenedData = useMemo(() => {
@@ -95,7 +99,7 @@ export function RingkasanRow({
   const SectionGap = () => <View className="h-4" />
 
   // ----- Render Item -----
-  const renderItem = ({ item }: ListRenderItemInfo<ListItem>) => {
+  const renderItem = useCallback(({ item }: ListRenderItemInfo<ListItem>) => {
     if (item.type === "header") {
       return (
         <SectionHeader title={item.title} className="bg-background" />
@@ -178,13 +182,17 @@ export function RingkasanRow({
         {item.isLast && <SectionGap />}
       </>
     )
-  }
+  }, [handlePress])
 
   // ----- Loading State -----
   if (isLoading && transactions.length === 0) {
     return (
       <View className="flex-1">
-        <SummaryCard summary={summary} />
+        <RingkasanHeader
+          data={headerData}
+          currentDate={currentDate}
+          isLoadingTimPenjualan={isLoadingTimPenjualan}
+        />
         <View className="h-4" />
         <StatusMessage isLoading message="BAAMBIL DATA..." />
       </View>
@@ -194,7 +202,11 @@ export function RingkasanRow({
   // ----- Header Component -----
   const ListHeader = () => (
     <>
-      <SummaryCard summary={summary} />
+      <RingkasanHeader
+        data={headerData}
+        currentDate={currentDate}
+        isLoadingTimPenjualan={isLoadingTimPenjualan}
+      />
       <View className="h-4" />
     </>
   )
