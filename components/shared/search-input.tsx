@@ -55,7 +55,7 @@ export default function SearchInput({
         />
 
         {showClearBtn ? (
-          <Button variant="outline" onPress={handleClear}>
+          <Button variant="outline" size="bare" className="h-8 px-2" onPress={handleClear}>
             <Icon as={X} size={16} className="text-muted-foreground" />
           </Button>
         ) : null}

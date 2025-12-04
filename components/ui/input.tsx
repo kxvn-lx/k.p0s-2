@@ -6,7 +6,7 @@ import { Platform, TextInput, type TextInputProps } from "react-native"
 // ----- SHARED STYLES -----
 const getInputClassNames = (editable: boolean | undefined, className?: string) => {
   return cn(
-    "font-mono dark:bg-input/30 border-input bg-input/30 text-foreground h-10 flex w-full min-w-0 flex-row items-center rounded-[--radius] border p-1 shadow-sm shadow-black/5 sm:h-9 text-base leading-none",
+    "font-mono dark:bg-input/30 border-input bg-input/30 text-foreground h-8 flex w-full min-w-0 flex-row items-center rounded-[--radius] border p-1 shadow-sm shadow-black/5 sm:h-6 text-base leading-none",
     editable === false &&
     cn(
       "opacity-50",

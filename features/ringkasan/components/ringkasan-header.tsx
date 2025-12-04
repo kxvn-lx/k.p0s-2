@@ -43,19 +43,15 @@ export function RingkasanHeader({
   // ----- Render Helpers -----
   const renderTimPenjualanTrailing = () => {
     if (isLoadingTimPenjualan) {
-      return <Text className="text-muted-foreground">...</Text>
+      return "..."
     }
 
     if (!timPenjualan) {
-      return <Text className="text-muted-foreground">Nd Ada</Text>
+      return "Nd Ada"
     }
 
     const staffName = timPenjualan.staff_name.split("@")[0].toUpperCase()
-    return (
-      <Text className="text-foreground">
-        {staffName} + {timPenjualan.rekan.toUpperCase()}
-      </Text>
-    )
+    return `${staffName} & ${timPenjualan.rekan.toUpperCase()}`
   }
 
   return (

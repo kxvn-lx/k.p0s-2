@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/lib/auth-context"
 import { isDev } from "@/lib/utils"
 import { useState } from "react"
 import { KeyboardAvoidingView, Platform, View } from "react-native"
+import InfoRow from "@/components/shared/info-row"
 
 // ----- Login Screen -----
 export default function Login() {
@@ -18,13 +17,13 @@ export default function Login() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1"
+      className="flex-1 bg-background items-center justify-center"
     >
-      <View className="flex-1 justify-center p-4 bg-background">
-        <Card>
-          <CardContent className="gap-2">
-            <View className="gap-2">
-              <Label nativeID="email">Email</Label>
+      <View className="max-w-xs w-full mx-auto">
+        <View className="bg-card rounded-[--radius] border-border border">
+          <InfoRow
+            leadingElement="EMAIL"
+            trailingElement={
               <Input
                 placeholder="nama@email.com"
                 value={email}
@@ -33,11 +32,15 @@ export default function Login() {
                 autoComplete="email"
                 keyboardType="email-address"
                 editable={!isLoading}
-                aria-labelledby="email"
+                className="border-none w-40 text-right"
               />
-            </View>
-            <View className="gap-2">
-              <Label nativeID="password">Password</Label>
+            }
+            primarySide="trailing"
+          />
+          <InfoRow
+            isLast
+            leadingElement="PASSWORD"
+            trailingElement={
               <Input
                 placeholder="••••••••"
                 value={password}
@@ -45,23 +48,49 @@ export default function Login() {
                 secureTextEntry
                 autoComplete="password"
                 editable={!isLoading}
-                aria-labelledby="password"
+                className="border-none w-40 text-right"
               />
-            </View>
-            <Button
-              title={isLoading ? "Masuk..." : "Masuk"}
-              onPress={async () => {
-                if (!email || !password) {
-                  toast.error("Error", "Silakan masukkan email dan password")
-                  return
-                }
+            }
+            primarySide="trailing"
+          />
 
+        </View>
+
+        <View className="mt-4 flex-col gap-2">
+          <Button
+            title={isLoading ? "MASUK..." : "MASUK"}
+            onPress={async () => {
+              if (!email || !password) {
+                toast.error("ERROR", "MUSTI ISI EMAIL DG PASSWORD")
+                return
+              }
+
+              setIsLoading(true)
+              try {
+                await signIn(email, password)
+              } catch (error) {
+                toast.error(
+                  "GAGAL MASUK",
+                  error instanceof Error ? error.message : "Gagal masuk"
+                )
+              } finally {
+                setIsLoading(false)
+              }
+            }}
+            disabled={isLoading}
+          />
+          {isDev() ? (
+            <Button
+              variant="outline"
+              title="Masuk (dev)"
+              onPress={async () => {
+                // quick dev login
                 setIsLoading(true)
                 try {
-                  await signIn(email, password)
+                  await signIn("kevin@bjb.com", "adminadmin")
                 } catch (error) {
                   toast.error(
-                    "Gagal Masuk",
+                    "Gagal Masuk (dev)",
                     error instanceof Error ? error.message : "Gagal masuk"
                   )
                 } finally {
@@ -70,30 +99,8 @@ export default function Login() {
               }}
               disabled={isLoading}
             />
-            {isDev() ? (
-              <Button
-                variant="outline"
-                className="mt-2"
-                title="Masuk (dev)"
-                onPress={async () => {
-                  // quick dev login
-                  setIsLoading(true)
-                  try {
-                    await signIn("kevin@bjb.com", "adminadmin")
-                  } catch (error) {
-                    toast.error(
-                      "Gagal Masuk (dev)",
-                      error instanceof Error ? error.message : "Gagal masuk"
-                    )
-                  } finally {
-                    setIsLoading(false)
-                  }
-                }}
-                disabled={isLoading}
-              />
-            ) : null}
-          </CardContent>
-        </Card>
+          ) : null}
+        </View>
       </View>
     </KeyboardAvoidingView>
   )
