@@ -6,12 +6,16 @@ import { useCallback, useState } from "react"
 import { FlatList, RefreshControl, View, Keyboard } from "react-native"
 import type { StockRow } from "./api/stock.service"
 import SwipeableStockRow from "./components/swipeable-stock-row"
+import StockRowContent from "./components/stock-row"
 import { useStocksQuery } from "./hooks/stock.queries"
 import { useCloseSwipeableOnScroll } from "@/lib/hooks/use-close-swipeable-on-scroll"
+import { useAuth } from "@/lib/auth-context"
 
 export default function StockIndex() {
   const router = useRouter()
   const [query, setQuery] = useState("")
+  const { user } = useAuth()
+  const isAdmin = user?.app_metadata?.role === "Admin"
   const { handleSwipeOpen, closeOpenRow } = useCloseSwipeableOnScroll()
 
   const {
@@ -27,17 +31,29 @@ export default function StockIndex() {
   }, [refetch])
 
   const renderItem = useCallback(
-    ({ item }: { item: StockRow }) => (
-      <SwipeableStockRow
-        stock={item}
-        onPress={() => {
-          router.push(`/stok/${item.id}?stock=${encodeURIComponent(JSON.stringify(item))}`)
-        }
-        }
-        onSwipeOpen={handleSwipeOpen}
-      />
-    ),
-    [router, handleSwipeOpen]
+    ({ item }: { item: StockRow }) => {
+      if (isAdmin) {
+        return (
+          <SwipeableStockRow
+            stock={item}
+            onPress={() => {
+              router.push(`/stok/${item.id}?stock=${encodeURIComponent(JSON.stringify(item))}`)
+            }}
+            onSwipeOpen={handleSwipeOpen}
+          />
+        )
+      }
+
+      return (
+        <StockRowContent
+          stock={item}
+          onPress={() => {
+            router.push(`/stok/${item.id}?stock=${encodeURIComponent(JSON.stringify(item))}`)
+          }}
+        />
+      )
+    },
+    [router, handleSwipeOpen, isAdmin]
   )
 
   const renderContent = () => {

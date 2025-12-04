@@ -90,16 +90,18 @@ const PerincianRow = forwardRef<PerincianRowRef, PerincianRowProps>(
           friction={2}
           onSwipeableWillOpen={handleSwipeWillOpen}
         >
-          <PerincianItem
-            testID={`perincian-row-${stock.id}`}
-            name={stock.nama}
-            qty={qty}
-            unit={stock.satuan_utama ?? ""}
-            price={harga_satuan}
-            originalPrice={originalPrice}
-            isVariation={isVariasiHarga || hasEditedPrice}
-            total={totalPrice}
-          />
+          <View className="p-2 bg-card">
+            <PerincianItem
+              testID={`perincian-row-${stock.id}`}
+              name={stock.nama}
+              qty={qty}
+              unit={stock.satuan_utama ?? ""}
+              price={harga_satuan}
+              originalPrice={originalPrice}
+              isVariation={isVariasiHarga || hasEditedPrice}
+              total={totalPrice}
+            />
+          </View>
         </Swipeable>
       </Animated.View>
     )

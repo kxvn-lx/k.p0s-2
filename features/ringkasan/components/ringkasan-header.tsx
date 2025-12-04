@@ -48,7 +48,7 @@ export function RingkasanHeader({
     }
 
     if (!timPenjualan) {
-      return <Text className="text-muted-foreground">Belum diisi</Text>
+      return <Text className="text-muted-foreground">Nd Ada</Text>
     }
 
     const staffName = timPenjualan.staff_name.split("@")[0].toUpperCase()

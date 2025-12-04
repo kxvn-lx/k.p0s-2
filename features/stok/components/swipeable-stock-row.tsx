@@ -1,5 +1,4 @@
 // ----- Swipeable Stock Row -----
-// Uses ReanimatedSwipeable for smooth swipe behavior (same pattern as perincian-row)
 import { forwardRef, useImperativeHandle, useRef } from "react"
 import { View } from "react-native"
 import Animated, { LinearTransition, SharedValue } from "react-native-reanimated"
@@ -10,6 +9,7 @@ import type { StockLokasi, StockRow } from "../api/stock.service"
 import { useUpdateStockLokasiMutation } from "../hooks/stock.queries"
 import StockRowContent from "./stock-row"
 import * as Haptics from "expo-haptics"
+import { useAuth } from "@/lib/auth-context"
 
 // ----- Types -----
 export type SwipeableStockRowRef = {
@@ -25,6 +25,8 @@ type SwipeableStockRowProps = {
 // ----- Component -----
 const SwipeableStockRow = forwardRef<SwipeableStockRowRef, SwipeableStockRowProps>(
   ({ stock, onPress, onSwipeOpen }, forwardedRef) => {
+    const { user } = useAuth()
+    const isAdmin = user?.app_metadata?.role === "Admin"
     const swipeableRef = useRef<SwipeableMethods>(null)
     const { mutate: updateLokasi } = useUpdateStockLokasiMutation()
 
@@ -33,7 +35,7 @@ const SwipeableStockRow = forwardRef<SwipeableStockRowRef, SwipeableStockRowProp
 
     // ----- Expose Methods -----
     const rowApi = { close: () => swipeableRef.current?.close() }
-    
+
     useImperativeHandle(forwardedRef, () => rowApi)
 
     // ----- Handlers -----
@@ -62,6 +64,11 @@ const SwipeableStockRow = forwardRef<SwipeableStockRowRef, SwipeableStockRowProp
         />
       </View>
     )
+
+    // For non-admin users, just render the regular content without swipe functionality
+    if (!isAdmin) {
+      return <StockRowContent stock={stock} onPress={onPress} />
+    }
 
     return (
       <Animated.View layout={LinearTransition.springify()}>
