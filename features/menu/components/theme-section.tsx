@@ -37,7 +37,7 @@ export function ThemeSection() {
         }}
         onValueChange={handleTemaChange}
       >
-        <SelectTrigger className="h-auto w-full rounded-none !bg-card p-0 row-pressable border-none">
+        <SelectTrigger className="h-auto w-full rounded-none !bg-card p-0 row-pressable border-none border-0">
           <InfoRow
             leadingElement="Tema Aplikasi"
             leadingIcon={Palette}

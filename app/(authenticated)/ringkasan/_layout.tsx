@@ -14,6 +14,12 @@ export default function RingkasanLayout() {
         }}
       />
       <Stack.Screen name="rincian" />
+      <Stack.Screen
+        name="tambah-pengeluaran"
+        options={{
+          title: "TAMBAH PENGELUARAN",
+        }}
+      />
     </Stack>
   )
 }

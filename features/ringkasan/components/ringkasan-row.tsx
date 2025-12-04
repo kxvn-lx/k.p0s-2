@@ -3,7 +3,7 @@ import { RefreshControlProps } from "react-native"
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list"
 import { Text } from "@/components/ui/text"
 import { SectionHeader } from "@/components/ui/section-header"
-import type { TransactionItem } from "../hooks/ringkasan.queries"
+import type { TransactionItem, RingkasanSummary } from "../hooks/ringkasan.queries"
 import { format, isToday, isYesterday } from "date-fns"
 import { id } from "date-fns/locale"
 import { useRouter } from "expo-router"
@@ -13,18 +13,19 @@ import { Icon } from "@/components/ui/icon"
 import { ChevronRight } from "lucide-react-native"
 import PressableRow from "@/components/shared/pressable-row"
 import { StatusMessage } from "@/components/shared/status-message"
+import { SummaryCard } from "./summary-card"
 
+// ----- Types -----
 interface RingkasanRowProps {
   transactions: TransactionItem[]
+  summary: RingkasanSummary
   isLoading: boolean
   refreshControl?: React.ReactElement<RefreshControlProps>
-  ListHeaderComponent?: React.ComponentType | React.ReactElement | null
 }
 
 type ListItem =
   | { type: "header"; title: string; id: string }
   | { type: "empty"; id: string }
-  | { type: "listHeader"; id: string }
   | {
     type: "item"
     data: TransactionItem
@@ -34,9 +35,9 @@ type ListItem =
 
 export function RingkasanRow({
   transactions,
+  summary,
   isLoading,
   refreshControl,
-  ListHeaderComponent,
 }: RingkasanRowProps) {
   const router = useRouter()
 
@@ -46,6 +47,7 @@ export function RingkasanRow({
     )
   }
 
+  // ----- Flatten Data -----
   const flattenedData = useMemo(() => {
     const groups: Record<string, TransactionItem[]> = {}
 
@@ -61,11 +63,6 @@ export function RingkasanRow({
 
     const result: ListItem[] = []
 
-    if (ListHeaderComponent) {
-      result.push({ type: "listHeader", id: "list-header" })
-    }
-
-    // Add empty state if no transactions
     if (transactions.length === 0) {
       result.push({ type: "empty", id: "empty-state" })
     } else {
@@ -83,29 +80,22 @@ export function RingkasanRow({
     }
 
     return result
-  }, [transactions, ListHeaderComponent])
+  }, [transactions])
 
+  // ----- Sticky Header Indices -----
   const stickyHeaderIndices = useMemo(
-    () => flattenedData.map((item, index) => (item.type === "header" || item.type === "listHeader" ? index : -1)).filter((i) => i !== -1),
+    () => flattenedData.map((item, index) => (item.type === "header" ? index : -1)).filter((i) => i !== -1),
     [flattenedData]
   )
 
+  // ----- Helpers -----
   const getItemColor = (type: string) =>
     type === "penjualan" ? "text-green-400" : type === "pengeluaran" ? "text-[#da2f8b]" : type === "pembelian" ? "text-red-500" : "text-foreground"
 
   const SectionGap = () => <View className="h-4" />
 
+  // ----- Render Item -----
   const renderItem = ({ item }: ListRenderItemInfo<ListItem>) => {
-    if (item.type === "listHeader") {
-      if (!ListHeaderComponent) return null
-      const element = typeof ListHeaderComponent === "function" ? <ListHeaderComponent /> : ListHeaderComponent
-      return (
-        <>
-          {element}
-          <SectionGap />
-        </>
-      )
-    }
     if (item.type === "header") {
       return (
         <SectionHeader title={item.title} className="bg-background" />
@@ -115,22 +105,17 @@ export function RingkasanRow({
     if (item.type === "empty") {
       return (
         <View className="flex-1 pt-8">
-          {/* placeholder row */}
           <View className="flex-row items-center p-2 bg-card gap-x-2 border-y border-border">
             <View className="flex-1 gap-2">
               <Text className="uppercase text-muted-foreground">
                 Nd ada transaksi
               </Text>
-
               <View className="flex-row items-center gap-2">
                 <Text variant="muted">-</Text>
                 <Text className="text-muted-foreground/50 text-xs">•</Text>
-                <Text variant="muted" className="uppercase">
-                  -
-                </Text>
+                <Text variant="muted" className="uppercase">-</Text>
               </View>
             </View>
-
             <View className="flex-row items-center gap-2">
               <Text className="text-muted-foreground">0</Text>
             </View>
@@ -195,14 +180,24 @@ export function RingkasanRow({
     )
   }
 
+  // ----- Loading State -----
   if (isLoading && transactions.length === 0) {
     return (
       <View className="flex-1">
-        {ListHeaderComponent && (typeof ListHeaderComponent === "function" ? <ListHeaderComponent /> : ListHeaderComponent)}
+        <SummaryCard summary={summary} />
+        <View className="h-4" />
         <StatusMessage isLoading message="BAAMBIL DATA..." />
       </View>
     )
   }
+
+  // ----- Header Component -----
+  const ListHeader = () => (
+    <>
+      <SummaryCard summary={summary} />
+      <View className="h-4" />
+    </>
+  )
 
   return (
     <View className="flex-1">
@@ -211,7 +206,7 @@ export function RingkasanRow({
         renderItem={renderItem}
         getItemType={(item) => item.type}
         keyExtractor={(item) =>
-          item.type === "header" || item.type === "listHeader"
+          item.type === "header"
             ? item.id
             : item.type === "empty"
               ? item.id
@@ -219,6 +214,7 @@ export function RingkasanRow({
         }
         stickyHeaderIndices={stickyHeaderIndices}
         refreshControl={refreshControl}
+        ListHeaderComponent={ListHeader}
       />
     </View>
   )

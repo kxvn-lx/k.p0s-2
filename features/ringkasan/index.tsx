@@ -12,7 +12,6 @@ import {
 import { useRingkasanData } from "./hooks/ringkasan.queries"
 import { DateNavigator } from "./components/date-navigator"
 import { FilterSegment } from "./components/filter-segment"
-import { SummaryCard } from "./components/summary-card"
 import { RingkasanRow } from "@/features/ringkasan/components/ringkasan-row"
 
 type PeriodFilter = "daily" | "weekly" | "yearly"
@@ -61,6 +60,7 @@ export default function RingkasanScreen() {
       <FilterSegment filter={filter} onFilterChange={setFilter} />
       <RingkasanRow
         transactions={transactions}
+        summary={summary}
         isLoading={isLoading}
         refreshControl={
           <RefreshControl
@@ -70,7 +70,6 @@ export default function RingkasanScreen() {
             tintColor="#007AFF"
           />
         }
-        ListHeaderComponent={<SummaryCard summary={summary} />}
       />
     </View>
   )

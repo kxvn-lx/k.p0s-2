@@ -1,6 +1,6 @@
 import { View } from "react-native"
+import { useRouter } from "expo-router"
 import type { RingkasanSummary } from "../hooks/ringkasan.queries"
-// no local utility used
 import InfoRow from "@/components/shared/info-row"
 
 interface SummaryCardProps {
@@ -8,6 +8,12 @@ interface SummaryCardProps {
 }
 
 export function SummaryCard({ summary }: SummaryCardProps) {
+    const router = useRouter()
+
+    const handleAddPengeluaran = () => {
+        router.push("/ringkasan/tambah-pengeluaran")
+    }
+
     return (
         <View className="bg-card overflow-hidden">
             {/* Main Header / Net Position */}
@@ -23,6 +29,7 @@ export function SummaryCard({ summary }: SummaryCardProps) {
                 leadingElement="PENGELUARAN"
                 trailingElement={summary.pengeluaran.toLocaleString("id-ID")}
                 primarySide="trailing"
+                onPress={handleAddPengeluaran}
             />
 
             <InfoRow
