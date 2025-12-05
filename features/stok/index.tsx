@@ -11,6 +11,10 @@ import { useStocksQuery } from "./hooks/stock.queries"
 import { useCloseSwipeableOnScroll } from "@/lib/hooks/use-close-swipeable-on-scroll"
 import { useRole } from "@/lib/hooks/use-role"
 
+// ----- Stable Components -----
+const ItemSeparator = () => <Separator />
+const ListEmpty = () => <StatusMessage type="muted" message="Tidak ada hasil" className="mt-12" />
+
 export default function StockIndex() {
   const router = useRouter()
   const [query, setQuery] = useState("")
@@ -78,10 +82,8 @@ export default function StockIndex() {
         data={data as StockRow[]}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        ItemSeparatorComponent={() => <Separator />}
-        ListEmptyComponent={() => (
-          <StatusMessage type="muted" message="Tidak ada hasil" className="mt-12" />
-        )}
+        ItemSeparatorComponent={ItemSeparator}
+        ListEmptyComponent={ListEmpty}
       />
     )
   }

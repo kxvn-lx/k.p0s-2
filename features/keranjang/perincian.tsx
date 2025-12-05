@@ -18,6 +18,9 @@ import EditPriceModal, {
 } from "./components/edit-price-modal"
 import { useCloseSwipeableOnScroll } from "@/lib/hooks/use-close-swipeable-on-scroll"
 
+// ----- Stable Components -----
+const ItemSeparator = () => <Separator />
+
 // ----- COMPONENT -----
 export default function Perincian() {
   const router = useRouter()
@@ -110,7 +113,7 @@ export default function Perincian() {
         data={basketItems}
         keyExtractor={(item) => item.stock.id}
         renderItem={renderItem}
-        ItemSeparatorComponent={() => <Separator />}
+        ItemSeparatorComponent={ItemSeparator}
         ListEmptyComponent={renderListEmpty}
         contentContainerClassName="pb-2"
       />

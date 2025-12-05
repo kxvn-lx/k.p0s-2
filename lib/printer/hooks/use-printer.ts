@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState, useEffect } from "react"
 import { Platform, PermissionsAndroid, Linking, Alert } from "react-native"
 import { create } from "zustand"
-import { persist, createJSONStorage } from "zustand/middleware"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import { persist, createJSONStorage, type StateStorage } from "zustand/middleware"
+import Storage from "expo-sqlite/kv-store"
 import { bluetoothCore } from "../services/bluetooth-core.service"
 import { printerCore } from "../services/printer-core.service"
 import { printerService } from "../services/printer.service"
@@ -49,6 +49,13 @@ const initialState = {
     isScanning: false,
 }
 
+// ----- Synchronous SQLite KV Storage -----
+const sqliteStorage: StateStorage = {
+    getItem: (key) => Storage.getItemSync(key),
+    setItem: (key, value) => Storage.setItemSync(key, value),
+    removeItem: (key) => Storage.removeItemSync(key),
+}
+
 export const usePrinterStore = create<PrinterState>()(
     persist(
         (set, get) => ({
@@ -71,7 +78,7 @@ export const usePrinterStore = create<PrinterState>()(
         }),
         {
             name: "printer-storage",
-            storage: createJSONStorage(() => AsyncStorage),
+            storage: createJSONStorage(() => sqliteStorage),
             partialize: (state) => ({ selectedPrinter: state.selectedPrinter }),
         }
     )
@@ -260,8 +267,8 @@ export function usePrinter() {
             setConnectionState(state)
         }
 
-        // Setup interval to check state changes
-        const intervalId = setInterval(stateChangeListener, 100)
+        // Setup interval to check state changes (1s interval to reduce CPU usage)
+        const intervalId = setInterval(stateChangeListener, 1000)
         unsubscribesRef.current = [
             () => clearInterval(intervalId),
             () => { }, // Placeholder for connection lost listener

@@ -18,6 +18,10 @@ import useKeranjangStore, {
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/toast"
 
+// ----- Stable Components -----
+const ItemSeparator = () => <Separator />
+const ListEmpty = () => <StatusMessage type="muted" message="ND ADA DATA" className="mt-12 uppercase" />
+
 export default function Keranjang() {
   const router = useRouter()
   const [query, setQuery] = useState("")
@@ -99,14 +103,8 @@ export default function Keranjang() {
         data={data as StockWithVariations[]}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        ItemSeparatorComponent={() => <Separator />}
-        ListEmptyComponent={() => (
-          <StatusMessage
-            type="muted"
-            message="ND ADA DATA"
-            className="mt-12 uppercase"
-          />
-        )}
+        ItemSeparatorComponent={ItemSeparator}
+        ListEmptyComponent={ListEmpty}
       />
     )
   }

@@ -1,8 +1,6 @@
-import * as SecureStore from "expo-secure-store"
-import { Platform } from "react-native"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import Storage from "expo-sqlite/kv-store"
 import { create } from "zustand"
-import { createJSONStorage, persist } from "zustand/middleware"
+import { createJSONStorage, persist, type StateStorage } from "zustand/middleware"
 
 type ThemeType = "metal" | "solar" | "teduh"
 
@@ -11,34 +9,23 @@ interface ThemeState {
   setTheme: (theme: ThemeType) => void
 }
 
-// ----- Storage wrapper -----
-// Use expo-secure-store on native (iOS/Android) and AsyncStorage on web.
-const isWeb = Platform.OS === "web"
-
-const secureStorage = {
-  getItem: async (name: string): Promise<string | null> => {
-    if (isWeb) return await AsyncStorage.getItem(name)
-    return await SecureStore.getItemAsync(name)
-  },
-  setItem: async (name: string, value: string): Promise<void> => {
-    if (isWeb) return await AsyncStorage.setItem(name, value)
-    return await SecureStore.setItemAsync(name, value)
-  },
-  removeItem: async (name: string): Promise<void> => {
-    if (isWeb) return await AsyncStorage.removeItem(name)
-    return await SecureStore.deleteItemAsync(name)
-  },
+// ----- Synchronous SQLite KV Storage -----
+const sqliteStorage: StateStorage = {
+  getItem: (key) => Storage.getItemSync(key),
+  setItem: (key, value) => Storage.setItemSync(key, value),
+  removeItem: (key) => Storage.removeItemSync(key),
 }
 
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set) => ({
-      theme: "metal", // Default to Metal
+      theme: "metal",
       setTheme: (theme) => set({ theme }),
     }),
     {
       name: "theme-storage",
-      storage: createJSONStorage(() => secureStorage),
+      storage: createJSONStorage(() => sqliteStorage),
     }
   )
 )
+

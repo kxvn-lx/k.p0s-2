@@ -136,7 +136,7 @@ export default function InfoRow({
             <Icon
               as={finalTrailingIcon}
               size={16}
-              className={cn(primarySide === "trailing" ? "text-foreground" : "text-muted-foreground")}
+              className={cn("text-muted-foreground")}
             />
           )}
         </View>

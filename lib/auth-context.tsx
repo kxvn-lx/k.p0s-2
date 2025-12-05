@@ -4,6 +4,7 @@ import {
   use,
   useCallback,
   useEffect,
+  useMemo,
   useState,
   type PropsWithChildren,
 } from "react"
@@ -39,9 +40,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     useStorageState("session")
   const [isValidating, setIsValidating] = useState(false)
 
-  const session: Session | null = sessionString
-    ? JSON.parse(sessionString)
-    : null
+  const session = useMemo<Session | null>(
+    () => (sessionString ? JSON.parse(sessionString) : null),
+    [sessionString]
+  )
   const user = session?.user ?? null
 
   const updateSession = useCallback(

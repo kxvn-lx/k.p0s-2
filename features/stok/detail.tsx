@@ -1,12 +1,19 @@
 import { Text } from "@/components/ui/text"
 import { SectionHeader } from "@/components/ui/section-header"
-import { cn } from '@/lib/utils'
 import { FlatList, View, Keyboard, RefreshControl } from "react-native"
-import type { StockRow } from "./api/stock.service"
+import type { StockRow, StockLogRow } from "./api/stock.service"
 import { useStockLogsQuery } from "./hooks/stock.queries"
 import StockDetailHeader from "./components/detail/stock-detail-header"
 import StockLogItem from "./components/detail/stock-log-item"
-import { useCallback, useState } from "react"
+import { useCallback } from "react"
+
+// ----- Stable Components -----
+const ListEmpty = () => (
+  <View className="items-center mt-12">
+    <Text variant="muted" className="uppercase">Nd ada data</Text>
+  </View>
+)
+const renderLogItem = ({ item }: { item: StockLogRow }) => <StockLogItem item={item} />
 
 export default function StockDetail({ stock }: { stock: StockRow }) {
   const { data: logs = [], isLoading: loadingLogs, refetch, isRefetching } = useStockLogsQuery(
@@ -44,24 +51,14 @@ export default function StockDetail({ stock }: { stock: StockRow }) {
         }
         data={logs}
         keyExtractor={(r) => r.id}
-        ListHeaderComponent={() => (
+        ListHeaderComponent={
           <View>
             <StockDetailHeader stock={stock} />
-
-            <SectionHeader
-              title="PERGERAKAN STOK"
-              className="mt-2"
-            />
+            <SectionHeader title="PERGERAKAN STOK" className="mt-2" />
           </View>
-        )}
-        renderItem={({ item }) => <StockLogItem item={item} />}
-        ListEmptyComponent={() => (
-          <View className="items-center mt-12">
-            <Text variant="muted" className="uppercase">
-              Nd ada data
-            </Text>
-          </View>
-        )}
+        }
+        renderItem={renderLogItem}
+        ListEmptyComponent={ListEmpty}
       />
     </View>
   )
