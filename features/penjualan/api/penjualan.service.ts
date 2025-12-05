@@ -26,7 +26,14 @@ export type CreatePenjualanResult = {
 }
 
 export type ProgressStep = {
-  step: "validating" | "penjualan" | "details" | "stock" | "audit" | "completed" | "failed"
+  step:
+  | "validating"
+  | "penjualan"
+  | "barang-penjualan"
+  | "stock"
+  | "audit"
+  | "completed"
+  | "failed"
   message: string
   current?: number
   total?: number
@@ -123,8 +130,8 @@ export const PenjualanService = {
 
       // ----- INSERT DETAILS -----
       onProgress?.({
-        step: "details",
-        message: "BASIMPAN STOK KE PENJUALAN...",
+        step: "barang-penjualan",
+        message: "BASIMPAN BARANG PENJUALAN...",
         current: 0,
         total: itemsArray.length,
       })
@@ -153,8 +160,8 @@ export const PenjualanService = {
       }
 
       onProgress?.({
-        step: "details",
-        message: "STOK TASIMPAN KE PENJUALAN",
+        step: "barang-penjualan",
+        message: "BARANG PENJUALAN TERSIMPAN",
         current: itemsArray.length,
         total: itemsArray.length,
       })

@@ -1,7 +1,13 @@
 import { Modal, View, ActivityIndicator } from "react-native"
+import Animated, {
+  FadeIn,
+  useAnimatedStyle,
+  withSpring,
+  useDerivedValue,
+} from "react-native-reanimated"
 import { Text } from "@/components/ui/text"
-import { Check, AlertCircle, FileText, Package, ClipboardList, ShieldCheck } from "lucide-react-native"
 import { Icon } from "@/components/ui/icon"
+import { Check, X } from "lucide-react-native"
 import type { ProgressStep } from "@/features/penjualan/api/penjualan.service"
 
 // ----- TYPES -----
@@ -11,15 +17,54 @@ interface ProgressDialogProps {
 }
 
 // ----- STEP CONFIG -----
-const STEPS = [
-  { key: "validating", label: "Validasi", icon: ShieldCheck },
-  { key: "penjualan", label: "Transaksi", icon: FileText },
-  { key: "details", label: "Stok", icon: ClipboardList },
-  { key: "stock", label: "Stok Qty", icon: Package },
-  { key: "audit", label: "Riwayat", icon: ClipboardList },
-] as const
+const STEPS = ["validating", "penjualan", "barang-penjualan", "stock", "audit"] as const
+const STEP_LABELS: Record<(typeof STEPS)[number], string> = {
+  validating: "Validasi",
+  penjualan: "Penjualan",
+  "barang-penjualan": "Barang Penjualan",
+  stock: "Stok",
+  audit: "Riwayat",
+}
 
-const STEP_ORDER = STEPS.map((s) => s.key)
+// ----- ANIMATED PROGRESS BAR -----
+function ProgressBar({ value }: { value: number }) {
+  const progress = useDerivedValue(() => value)
+  const animatedStyle = useAnimatedStyle(() => ({
+    width: withSpring(`${progress.value}%`, { damping: 15, stiffness: 120 }),
+  }))
+
+  return (
+    <View className="h-1 w-full bg-muted rounded-full overflow-hidden">
+      <Animated.View
+        style={animatedStyle}
+        className="h-full bg-primary rounded-full"
+      />
+    </View>
+  )
+}
+
+// ----- STATE INDICATOR -----
+function StateIndicator({ state }: { state: "loading" | "success" | "error" }) {
+  if (state === "loading") {
+    return <ActivityIndicator size="large" className="text-primary" />
+  }
+
+  const isSuccess = state === "success"
+  return (
+    <Animated.View
+      entering={FadeIn.duration(200)}
+      className={`size-14 rounded-full items-center justify-center ${isSuccess ? "bg-green-500" : "bg-destructive"
+        }`}
+    >
+      <Icon
+        as={isSuccess ? Check : X}
+        className="text-white"
+        size={28}
+        strokeWidth={3}
+      />
+    </Animated.View>
+  )
+}
 
 // ----- COMPONENT -----
 export function ProgressDialog({ visible, progress }: ProgressDialogProps) {
@@ -27,73 +72,74 @@ export function ProgressDialog({ visible, progress }: ProgressDialogProps) {
 
   const isCompleted = progress.step === "completed"
   const isFailed = progress.step === "failed"
-  const currentStepIndex = STEP_ORDER.indexOf(progress.step as typeof STEP_ORDER[number])
+  const isProcessing = !isCompleted && !isFailed
+
+  const currentStepIndex = STEPS.indexOf(progress.step as (typeof STEPS)[number])
+  const progressPercent = isCompleted
+    ? 100
+    : isFailed
+      ? 0
+      : Math.max(0, ((currentStepIndex + 1) / STEPS.length) * 100)
+
+  const currentStepLabel = isProcessing
+    ? STEP_LABELS[progress.step as (typeof STEPS)[number]] ?? ""
+    : ""
+
+  const state = isCompleted ? "success" : isFailed ? "error" : "loading"
 
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <View className="flex-1 bg-black/50 items-center justify-center">
-        <View className="bg-background w-full max-w-sm rounded-[--radius] px-2 py-8 gap-2">
-          {/* Header */}
-          <View className="items-center gap-2">
-            {isCompleted ? (
-              <View className="size-10 rounded-full bg-green-500 items-center justify-center">
-                <Icon as={Check} className="text-white" size={20} />
-              </View>
-            ) : isFailed ? (
-              <View className="size-10 rounded-full bg-destructive items-center justify-center">
-                <Icon as={AlertCircle} className="text-white" size={20} />
-              </View>
-            ) : (
-              <ActivityIndicator size="large" className="text-primary" />
-            )}
-            <Text className="font-mono-bold text-lg text-center">
-              {isCompleted ? "Selesai" : isFailed ? "Gagal" : "Transaksi lagi ba proses"}
-            </Text>
+      <View className="flex-1 bg-black/60 items-center justify-center px-6">
+        <View className="bg-background w-full rounded-lg p-6 gap-6">
+          {/* ----- STATE INDICATOR ----- */}
+          <View className="items-center">
+            <StateIndicator state={state} />
           </View>
 
-          {/* Step Indicators */}
-          {!isCompleted && !isFailed && (
-            <View className="flex-row justify-between px-2">
-              {STEPS.map((step, index) => {
-                const isActive = step.key === progress.step
-                const isDone = currentStepIndex > index
-
-                return (
-                  <View key={step.key} className="items-center gap-1">
-                    <View
-                      className={`w-8 h-8 rounded-full items-center justify-center ${isDone ? "bg-green-500" : isActive ? "bg-primary" : "bg-muted"
-                        }`}
-                    >
-                      {isDone ? (
-                        <Icon as={Check} size={16} />
-                      ) : (
-                        <Icon
-                          as={step.icon}
-                          className={isActive ? "text-primary-foreground" : "text-muted-foreground"}
-                          size={16}
-                        />
-                      )}
-                    </View>
-                    <Text className={`text-xs ${isActive ? "text-foreground font-mono-bold" : "text-muted-foreground"}`}>
-                      {step.label}
-                    </Text>
-                  </View>
-                )
-              })}
-            </View>
-          )}
-
-          {/* Progress Message */}
-          <View className="gap-1">
-            <Text className="text-center text-sm">
-              {progress.message}
+          {/* ----- TITLE ----- */}
+          <View className="items-center gap-1">
+            <Text className="font-mono-bold text-lg text-center">
+              {isCompleted
+                ? "Selesai"
+                : isFailed
+                  ? "Gagal"
+                  : "Memproses Transaksi"}
             </Text>
-            {progress.current != null && progress.total != null && progress.total > 1 && (
-              <Text className="text-center text-xs text-muted-foreground">
-                {progress.current}/{progress.total}
+            {isProcessing && currentStepLabel && (
+              <Text variant="muted" className="text-sm">
+                {currentStepLabel}
               </Text>
             )}
           </View>
+
+          {/* ----- PROGRESS ----- */}
+          {isProcessing && (
+            <View className="gap-2">
+              <ProgressBar value={progressPercent} />
+              <View className="flex-row justify-between">
+                <Text variant="muted" className="text-xs">
+                  {progress.message}
+                </Text>
+                {progress.current != null &&
+                  progress.total != null &&
+                  progress.total > 1 && (
+                    <Text variant="muted" className="text-xs">
+                      {progress.current}/{progress.total}
+                    </Text>
+                  )}
+              </View>
+            </View>
+          )}
+
+          {/* ----- RESULT MESSAGE ----- */}
+          {!isProcessing && (
+            <Text
+              variant="muted"
+              className={`text-center text-sm ${isFailed ? "text-destructive" : ""}`}
+            >
+              {progress.message}
+            </Text>
+          )}
         </View>
       </View>
     </Modal>

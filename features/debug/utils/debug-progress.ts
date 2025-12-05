@@ -5,22 +5,18 @@ export async function simulateProgressFlow(
   delayMs = 1000
 ): Promise<void> {
   const steps: ProgressStep[] = [
-    { step: "validating", message: "Memvalidasi data..." },
-    { step: "validating", message: "Memeriksa ketersediaan stok..." },
-    { step: "penjualan", message: "Menyimpan transaksi..." },
-    { step: "details", message: "Menyimpan detail item...", current: 0, total: 3 },
-    { step: "details", message: "Menyimpan detail item...", current: 1, total: 3 },
-    { step: "details", message: "Menyimpan detail item...", current: 2, total: 3 },
-    { step: "details", message: "Menyimpan detail item...", current: 3, total: 3 },
-    { step: "details", message: "Detail item tersimpan", current: 3, total: 3 },
-    { step: "stock", message: 'Memperbarui stok "Ayam Goreng"...', current: 1, total: 3 },
-    { step: "stock", message: 'Memperbarui stok "Nasi Putih"...', current: 2, total: 3 },
-    { step: "stock", message: 'Memperbarui stok "Teh Manis"...', current: 3, total: 3 },
-    { step: "audit", message: "Mencatat riwayat pergerakan stok...", current: 0, total: 3 },
-    { step: "audit", message: "Mencatat riwayat pergerakan stok...", current: 1, total: 3 },
-    { step: "audit", message: "Mencatat riwayat pergerakan stok...", current: 2, total: 3 },
-    { step: "audit", message: "Riwayat tercatat", current: 3, total: 3 },
-    { step: "completed", message: "Transaksi berhasil" },
+    { step: "validating", message: "MEMULAI..." },
+    { step: "validating", message: "VALIDASI DATA..." },
+    { step: "validating", message: "PERIKSA STOK ADA ATO ND..." },
+    { step: "penjualan", message: "BASIMPAN TRANSAKSI..." },
+    { step: "barang-penjualan", message: "BASIMPAN BARANG PENJUALAN...", current: 0, total: 3 },
+    { step: "barang-penjualan", message: "BARANG PENJUALAN TERSIMPAN", current: 3, total: 3 },
+    { step: "stock", message: 'GANTI JMLH QTY STOK: "AYAM GORENG"...', current: 1, total: 3 },
+    { step: "stock", message: 'GANTI JMLH QTY STOK: "NASI PUTIH"...', current: 2, total: 3 },
+    { step: "stock", message: 'GANTI JMLH QTY STOK: "TEH MANIS"...', current: 3, total: 3 },
+    { step: "audit", message: "MENCATAT RIWAYAT PERGERAKAN STOK...", current: 0, total: 3 },
+    { step: "audit", message: "PERGERAKAN STOK TA CATAT", current: 3, total: 3 },
+    { step: "completed", message: "PENJUALAN BERHASIL" },
   ]
 
   for (const step of steps) {
