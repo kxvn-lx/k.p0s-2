@@ -1,13 +1,9 @@
 import { Modal, View, ActivityIndicator } from "react-native"
-import Animated, {
-  FadeIn,
-  useAnimatedStyle,
-  withSpring,
-  useDerivedValue,
-} from "react-native-reanimated"
+import Animated, { FadeIn } from "react-native-reanimated"
 import { Text } from "@/components/ui/text"
 import { Icon } from "@/components/ui/icon"
 import { Check, X } from "lucide-react-native"
+import { Progress } from "@/components/ui/progress"
 import type { ProgressStep } from "@/features/penjualan/api/penjualan.service"
 
 // ----- TYPES -----
@@ -26,40 +22,23 @@ const STEP_LABELS: Record<(typeof STEPS)[number], string> = {
   audit: "Riwayat",
 }
 
-// ----- ANIMATED PROGRESS BAR -----
-function ProgressBar({ value }: { value: number }) {
-  const progress = useDerivedValue(() => value)
-  const animatedStyle = useAnimatedStyle(() => ({
-    width: withSpring(`${progress.value}%`, { damping: 15, stiffness: 120 }),
-  }))
-
-  return (
-    <View className="h-1 w-full bg-muted rounded-full overflow-hidden">
-      <Animated.View
-        style={animatedStyle}
-        className="h-full bg-primary rounded-full"
-      />
-    </View>
-  )
-}
-
 // ----- STATE INDICATOR -----
 function StateIndicator({ state }: { state: "loading" | "success" | "error" }) {
   if (state === "loading") {
-    return <ActivityIndicator size="large" className="text-primary" />
+    return <ActivityIndicator className="text-primary" />
   }
 
   const isSuccess = state === "success"
   return (
     <Animated.View
       entering={FadeIn.duration(200)}
-      className={`size-14 rounded-full items-center justify-center ${isSuccess ? "bg-green-500" : "bg-destructive"
+      className={`size-8 rounded-full items-center justify-center ${isSuccess ? "bg-green-500" : "bg-destructive"
         }`}
     >
       <Icon
         as={isSuccess ? Check : X}
         className="text-white"
-        size={28}
+        size={16}
         strokeWidth={3}
       />
     </Animated.View>
@@ -89,16 +68,16 @@ export function ProgressDialog({ visible, progress }: ProgressDialogProps) {
 
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <View className="flex-1 bg-black/60 items-center justify-center px-6">
-        <View className="bg-background w-full rounded-lg p-6 gap-6">
+      <View className="flex-1 bg-black/50 items-center justify-center p-8">
+        <View className="bg-background w-full rounded-[--radius] p-4 gap-4">
           {/* ----- STATE INDICATOR ----- */}
           <View className="items-center">
             <StateIndicator state={state} />
           </View>
 
           {/* ----- TITLE ----- */}
-          <View className="items-center gap-1">
-            <Text className="font-mono-bold text-lg text-center">
+          <View className="items-center">
+            <Text className="font-mono-bold text-center">
               {isCompleted
                 ? "Selesai"
                 : isFailed
@@ -112,34 +91,36 @@ export function ProgressDialog({ visible, progress }: ProgressDialogProps) {
             )}
           </View>
 
-          {/* ----- PROGRESS ----- */}
-          {isProcessing && (
-            <View className="gap-2">
-              <ProgressBar value={progressPercent} />
-              <View className="flex-row justify-between">
-                <Text variant="muted" className="text-xs">
-                  {progress.message}
-                </Text>
-                {progress.current != null &&
-                  progress.total != null &&
-                  progress.total > 1 && (
-                    <Text variant="muted" className="text-xs">
-                      {progress.current}/{progress.total}
-                    </Text>
-                  )}
+          <View>
+            {/* ----- PROGRESS ----- */}
+            {isProcessing && (
+              <View className="gap-2">
+                <Progress value={progressPercent} />
+                <View className="flex-row justify-between">
+                  <Text variant="muted" className="text-xs">
+                    {progress.message}
+                  </Text>
+                  {progress.current != null &&
+                    progress.total != null &&
+                    progress.total > 1 && (
+                      <Text variant="muted" className="text-xs">
+                        {progress.current}/{progress.total}
+                      </Text>
+                    )}
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
-          {/* ----- RESULT MESSAGE ----- */}
-          {!isProcessing && (
-            <Text
-              variant="muted"
-              className={`text-center text-sm ${isFailed ? "text-destructive" : ""}`}
-            >
-              {progress.message}
-            </Text>
-          )}
+            {/* ----- RESULT MESSAGE ----- */}
+            {!isProcessing && (
+              <Text
+                variant="muted"
+                className={`text-center text-sm ${isFailed ? "text-destructive" : ""}`}
+              >
+                {progress.message}
+              </Text>
+            )}
+          </View>
         </View>
       </View>
     </Modal>
