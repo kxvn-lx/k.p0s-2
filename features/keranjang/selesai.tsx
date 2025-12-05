@@ -8,6 +8,7 @@ import { toast } from "@/lib/store/toast-store"
 import { usePrint } from "./hooks/use-print"
 import { isDev } from "@/lib/utils"
 import type { PenjualanResult } from "./types/penjualan-result.types"
+import StatusBarFooter from "./components/status-bar-footer"
 
 // ----- Helpers -----
 const parseResult = (resultString: string | undefined): PenjualanResult | null => {
@@ -65,26 +66,33 @@ export default function SelesaiScreen() {
   return (
     <View className="flex-1 bg-background">
       {/* Receipt Preview */}
-      <ScrollView contentContainerClassName="flex-grow ">
+      <ScrollView contentContainerClassName="flex-grow">
         <ReceiptPreview result={result} />
       </ScrollView>
 
       {/* Action Buttons */}
-      <View className="flex-row gap-2 p-2 h-14 mb-safe-offset-0">
-        {isDev() ? (
-          <Button variant="outline" className="flex-1" title="DEBUG PRINT" onPress={handleDebugPrint} disabled={isPrinting || !selectedPrinter} />
-        ) : null}
-        <Button
-          variant="outline"
-          onPress={handlePrint}
-          disabled={isPrinting || !selectedPrinter}
-          className="flex-1"
-          title={isPrinting ? "Mencetak..." : "CETAK"}
-        />
-        <Button variant="default" onPress={handleFinish} className="flex-1">
-          <Text className="text-primary-foreground font-medium">SELESAI</Text>
-        </Button>
-      </View>
+      <StatusBarFooter>
+        <View className="flex-row gap-2 pb-safe">
+          {isDev() ? (
+            <View className="flex-1">
+              <Button variant="outline" title="DEBUG PRINT" onPress={handleDebugPrint} disabled={isPrinting || !selectedPrinter} />
+            </View>
+          ) : null}
+          <View className="flex-1">
+            <Button
+              variant="outline"
+              onPress={handlePrint}
+              disabled={isPrinting || !selectedPrinter}
+              title={isPrinting ? "Mencetak..." : "CETAK"}
+            />
+          </View>
+          <View className="flex-1">
+            <Button variant="default" onPress={handleFinish}>
+              <Text className="text-primary-foreground font-medium">SELESAI</Text>
+            </Button>
+          </View>
+        </View>
+      </StatusBarFooter>
     </View>
   )
 }

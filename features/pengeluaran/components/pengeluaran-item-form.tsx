@@ -3,6 +3,7 @@ import { forwardRef, useImperativeHandle, useRef } from "react"
 import { Text } from "@/components/ui/text"
 import { Input } from "@/components/ui/input"
 import InfoRow from "@/components/shared/info-row"
+import PressableRow from "@/components/shared/pressable-row"
 import SwipeActionButton from "@/components/shared/swipe-action-button"
 import {
   Select,
@@ -101,13 +102,18 @@ const PengeluaranItemForm = forwardRef<PengeluaranItemFormRef, PengeluaranItemFo
               value={{ value: item.kategori, label: KATEGORI_LABELS[item.kategori] }}
               onValueChange={handleKategoriChange}
             >
-              <SelectTrigger className="h-auto w-full rounded-none !bg-card p-0 row-pressable border-none border-0">
-                <InfoRow
-                  leadingElement="KATEGORI"
-                  trailingElement={KATEGORI_LABELS[item.kategori]}
-                  trailingIcon={ChevronDown}
-                  primarySide="trailing"
-                />
+              <SelectTrigger
+                asChild
+                className="h-auto w-full rounded-none !bg-card p-0 border-none border-0"
+              >
+                <PressableRow>
+                  <InfoRow
+                    leadingElement="KATEGORI"
+                    trailingElement={KATEGORI_LABELS[item.kategori]}
+                    trailingIcon={ChevronDown}
+                    primarySide="trailing"
+                  />
+                </PressableRow>
               </SelectTrigger>
               <SelectContent align="end">
                 {PENGELUARAN_KATEGORI_OPTIONS.map((option, index) => (

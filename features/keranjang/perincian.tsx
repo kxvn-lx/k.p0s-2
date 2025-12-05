@@ -13,10 +13,11 @@ import useKeranjangStore, {
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/toast"
 import type { BasketItem } from "./types/keranjang.types"
-import EditPriceModal, {
-  EditPriceModalRef,
-} from "./components/edit-price-modal"
+import PerincianRubahModal, {
+  PerincianRubahModalRef,
+} from "./components/perincian-rubah-modal"
 import { useCloseSwipeableOnScroll } from "@/lib/hooks/use-close-swipeable-on-scroll"
+import StatusBarFooter from "./components/status-bar-footer"
 
 // ----- Stable Components -----
 const ItemSeparator = () => <Separator />
@@ -29,8 +30,7 @@ export default function Perincian() {
 
   // ----- REFS -----
   const { handleSwipeOpen, closeOpenRow } = useCloseSwipeableOnScroll()
-  const editModalRef = useRef<EditPriceModalRef>(null)
-
+  const perincianRubahModalRef = useRef<PerincianRubahModalRef>(null)
   // ----- DERIVED STATE -----
   const basketItems = useMemo(() => Object.values(items), [items])
   const itemCount = basketItems.length
@@ -48,12 +48,12 @@ export default function Perincian() {
 
   const handleEditItem = useCallback(
     (item: BasketItem) => {
-      editModalRef.current?.present(item)
+      perincianRubahModalRef.current?.present(item)
     },
     []
   )
 
-  const handleSaveEditPrice = useCallback(
+  const handleSavePerincianRubah = useCallback(
     (item: BasketItem, newPrice: number) => {
       setQty(
         item.stock.id,
@@ -119,7 +119,7 @@ export default function Perincian() {
       />
 
       {/* Footer */}
-      <View className="bg-card border-t border-border p-2 flex-col gap-y-2">
+      <StatusBarFooter>
         <View className="flex-row items-center justify-between">
           <Text className="font-medium text-base">STOK: {itemCount}</Text>
 
@@ -133,10 +133,10 @@ export default function Perincian() {
         </View>
 
         <Button onPress={handleProceed} disabled={!canProceed} title="LANJUT" />
-      </View>
+      </StatusBarFooter>
 
       {/* Edit Price Modal */}
-      <EditPriceModal ref={editModalRef} onSave={handleSaveEditPrice} />
+      <PerincianRubahModal ref={perincianRubahModalRef} onSave={handleSavePerincianRubah} />
     </View>
   )
 }

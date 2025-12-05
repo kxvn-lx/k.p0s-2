@@ -15,6 +15,7 @@ import SharedBottomSheetModal, {
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/toast"
 import InfoRow from "@/components/shared/info-row"
+import PressableRow from "@/components/shared/pressable-row"
 import {
   Select,
   SelectContent,
@@ -183,12 +184,17 @@ const TimPenjualanModal = forwardRef<TimPenjualanModalRef, object>((_, ref) => {
           {/* Staff Selection */}
           <View className="bg-card">
             <Select value={state.staff} onValueChange={handleStaffChange}>
-              <SelectTrigger className="h-auto w-full rounded-none !bg-card p-0 row-pressable border-none border-0">
-                <InfoRow
-                  leadingElement="Staff"
-                  trailingElement={state.staff?.label || "Pilih staff"}
-                  trailingIcon={ChevronDown}
-                />
+              <SelectTrigger
+                asChild
+                className="h-auto w-full rounded-none !bg-card p-0 border-none border-0"
+              >
+                <PressableRow>
+                  <InfoRow
+                    leadingElement="Staff"
+                    trailingElement={state.staff?.label || "Pilih staff"}
+                    trailingIcon={ChevronDown}
+                  />
+                </PressableRow>
               </SelectTrigger>
               <SelectContent align="end" insets={{ right: 8 }}>
                 {STAFF_OPTIONS.map((option, index) => (
@@ -204,13 +210,18 @@ const TimPenjualanModal = forwardRef<TimPenjualanModalRef, object>((_, ref) => {
           {/* Rekan Selection */}
           <View className="bg-card">
             <Select value={state.rekan} onValueChange={handleRekanChange}>
-              <SelectTrigger className="h-auto w-full rounded-none !bg-card p-0 row-pressable border-none border-0">
-                <InfoRow
-                  leadingElement="Rekan"
-                  trailingElement={state.rekan?.label || "Pilih rekan"}
-                  trailingIcon={ChevronDown}
-                  isLast
-                />
+              <SelectTrigger
+                asChild
+                className="h-auto w-full rounded-none !bg-card p-0 border-none border-0"
+              >
+                <PressableRow>
+                  <InfoRow
+                    leadingElement="Rekan"
+                    trailingElement={state.rekan?.label || "Pilih rekan"}
+                    trailingIcon={ChevronDown}
+                    isLast
+                  />
+                </PressableRow>
               </SelectTrigger>
               <SelectContent align="end" insets={{ right: 8 }}>
                 {REKAN_OPTIONS.map((option, index) => (

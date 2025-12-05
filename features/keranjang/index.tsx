@@ -17,6 +17,7 @@ import useKeranjangStore, {
 } from "@/features/keranjang/store/keranjang-store"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/toast"
+import StatusBarFooter from "./components/status-bar-footer"
 
 // ----- Stable Components -----
 const ItemSeparator = () => <Separator />
@@ -97,7 +98,7 @@ export default function Keranjang() {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={async() => {await refetch()}}
+            onRefresh={async () => { await refetch() }}
           />
         }
         data={data as StockWithVariations[]}
@@ -121,7 +122,7 @@ export default function Keranjang() {
       <View className="flex-1">{renderContent()}</View>
 
       {/* Status Bar Footer */}
-      <View className="bg-card border-t border-border p-2 flex-col gap-y-2">
+      <StatusBarFooter>
         <View className="flex-row items-center justify-between">
           <Text>STOK: {itemCount}</Text>
 
@@ -142,7 +143,7 @@ export default function Keranjang() {
           disabled={!canProceed}
           title="LANJUT"
         />
-      </View>
+      </StatusBarFooter>
     </View>
   )
 }

@@ -11,6 +11,7 @@ import type {
   StockWithVariations,
   VariasiHargaRow,
 } from "@/features/keranjang/types/keranjang.types"
+import { Button } from "@/components/ui/button"
 
 type KeranjangRowProps = {
   stock: StockWithVariations
@@ -45,15 +46,16 @@ export default function KeranjangRow({
   const badgeModalRef = useRef<BottomSheetModalRef>(null)
   const Badge = (
     <>
-      <Pressable
-        className="row-pressable border border-border bg-background active:bg-accent px-2 py-1 rounded-[--radius]"
+      <Button
+        variant="outline"
+        size="sm"
         onPress={(e) => {
           e.stopPropagation()
           badgeModalRef.current?.present()
         }}
       >
         <Text>{`QTY: ${selectedQty}`}</Text>
-      </Pressable>
+      </Button>
 
       <SharedBottomSheetModal
         ref={badgeModalRef}
@@ -105,7 +107,7 @@ export default function KeranjangRow({
         <PressableRow onPress={() => modalRef.current?.present()}>
           {Content}
         </PressableRow>
-        <SharedBottomSheetModal ref={modalRef} headerTitle={stock.nama}>
+        <SharedBottomSheetModal snapPoints={["75%"]} ref={modalRef} headerTitle={stock.nama}>
           <VariasiHargaSelector
             stock={stock}
             options={options}

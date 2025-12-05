@@ -12,6 +12,7 @@ import { useAuth } from "@/lib/auth-context"
 import { formatDateTime, cn } from "@/lib/utils"
 import { usePenjualanMutation } from "@/features/penjualan/hooks/use-penjualan-mutation"
 import { ProgressDialog } from "@/features/penjualan/components/progress-dialog"
+import StatusBarFooter from "./components/status-bar-footer"
 
 // ----- CONSTANTS -----
 const MAX_INPUT_LENGTH = 12
@@ -87,6 +88,7 @@ export default function PembayaranScreen() {
       })
 
       reset()
+      setInputAmount("")
 
       pendingResult.current = {
         pathname: "/(authenticated)/keranjang/selesai",
@@ -212,21 +214,25 @@ export default function PembayaranScreen() {
         </View>
 
         {/* Bottom Actions */}
-        <View className="flex-row items-center justify-between h-14 p-2 gap-2">
-          <Button
-            title="DOI PAS"
-            variant="outline"
-            onPress={handleExactAmount}
-            className="flex-1"
-            disabled={isProcessing}
-          />
-          <Button
-            title={isProcessing ? "MEMPROSES..." : "LANJUT"}
-            onPress={handleProceed}
-            disabled={!isValid || isProcessing}
-            className="flex-1"
-          />
-        </View>
+        <StatusBarFooter>
+          <View className="flex-row gap-2">
+            <View className="flex-1">
+              <Button
+                title="DOI PAS"
+                variant="outline"
+                onPress={handleExactAmount}
+                disabled={isProcessing}
+              />
+            </View>
+            <View className="flex-1">
+              <Button
+                title={isProcessing ? "MEMPROSES..." : "LANJUT"}
+                onPress={handleProceed}
+                disabled={!isValid || isProcessing}
+              />
+            </View>
+          </View>
+        </StatusBarFooter>
       </View>
     </View>
   )

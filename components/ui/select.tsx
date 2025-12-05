@@ -47,12 +47,26 @@ function SelectTrigger({
   className,
   children,
   size = "default",
+  asChild,
   ...props
 }: SelectPrimitive.TriggerProps &
   React.RefAttributes<SelectPrimitive.TriggerRef> & {
     children?: React.ReactNode
     size?: "default" | "sm"
   }) {
+  if (asChild) {
+    return (
+      <SelectPrimitive.Trigger
+        ref={ref}
+        asChild
+        className={className}
+        {...props}
+      >
+        {children}
+      </SelectPrimitive.Trigger>
+    )
+  }
+
   return (
     <SelectPrimitive.Trigger
       ref={ref}

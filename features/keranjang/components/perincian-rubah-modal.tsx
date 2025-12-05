@@ -11,6 +11,7 @@ import { View } from "react-native"
 import SharedBottomSheetModal, {
   BottomSheetModalRef,
 } from "@/components/shared/bottom-sheet-modal"
+import InfoRow from "@/components/shared/info-row"
 import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/toast"
@@ -20,7 +21,7 @@ import type { BasketItem } from "../types/keranjang.types"
 import { BottomSheetInput } from "@/components/ui/input"
 
 // ----- TYPES -----
-export type EditPriceModalRef = {
+export type PerincianRubahModalRef = {
   present: (item: BasketItem) => void
   dismiss: () => void
 }
@@ -30,7 +31,7 @@ type EditState = {
   price: string
 } | null
 
-type EditPriceModalProps = {
+type PerincianRubahModalProps = {
   onSave: (item: BasketItem, newPrice: number) => void
 }
 
@@ -55,7 +56,7 @@ const sanitizeNumericInput = (value: string) => {
 }
 
 // ----- COMPONENT -----
-const EditPriceModal = forwardRef<EditPriceModalRef, EditPriceModalProps>(
+const PerincianRubahModal = forwardRef<PerincianRubahModalRef, PerincianRubahModalProps>(
   ({ onSave }, ref) => {
     const modalRef = useRef<BottomSheetModalRef>(null)
     const inputRef = useRef<any>(null)
@@ -110,9 +111,7 @@ const EditPriceModal = forwardRef<EditPriceModalRef, EditPriceModalProps>(
 
     const handleResetPrice = useCallback(() => {
       if (!editState) return
-      const originalPrice =
-        editState.item.harga_satuan_asal ?? editState.item.harga_satuan
-      setEditState({ ...editState, price: originalPrice.toString() })
+      setEditState({ ...editState, price: editState.item.harga_satuan.toString() })
     }, [editState])
 
     if (!editState) return null
@@ -140,74 +139,78 @@ const EditPriceModal = forwardRef<EditPriceModalRef, EditPriceModalProps>(
         enableBlurKeyboardOnGesture
         android_keyboardInputMode="adjustResize"
       >
-        <BottomSheetView className="flex-1 gap-y-2 p-2">
-          <View className="flex-col">
-            <View className="flex-row gap-x-2">
-              <View className="flex-1 rounded-[--radius] border border-border bg-card p-2">
-                <Text variant="muted" className="text-sm">
-                  Harga skrg
-                </Text>
-                <Text variant="h3">
-                  {editState.item.harga_satuan.toLocaleString("id-ID")}
-                </Text>
-              </View>
-
-              <View className="bg-card flex-1 rounded-[--radius] border border-border p-2">
-                <Text variant="muted" className="text-sm">
-                  Harga baru
-                </Text>
-                <Text variant="h3">
+        <BottomSheetView className="flex-1 gap-y-4">
+          <View className="bg-card">
+            <InfoRow
+              leadingElement="Harga skrg"
+              trailingElement={editState.item.harga_satuan.toLocaleString("id-ID")}
+              primarySide="trailing"
+            />
+            <InfoRow
+              leadingElement="Harga baru"
+              trailingElement={
+                hasValidNewPrice ? parsedNewPrice.toLocaleString("id-ID") : "-"
+              }
+              primarySide="trailing"
+            />
+            <InfoRow
+              leadingElement="Selisih"
+              trailingElement={
+                <Text className={deltaColorClass}>
                   {hasValidNewPrice
-                    ? `${parsedNewPrice.toLocaleString("id-ID")}`
+                    ? `${deltaValue >= 0 ? "+" : "-"}${Math.abs(deltaValue).toLocaleString("id-ID")}`
                     : "-"}
                 </Text>
-                <Text variant="muted" className={`text-sm ${deltaColorClass}`}>
-                  {hasValidNewPrice
-                    ? `${deltaValue >= 0 ? "+" : "-"}${Math.abs(
-                        deltaValue
-                      ).toLocaleString("id-ID")}`
-                    : "-"}
-                </Text>
-              </View>
-            </View>
+              }
+              isLast
+              primarySide="trailing"
+            />
           </View>
 
-          <View>
-            <Text variant="muted" className="text-sm uppercase mx-2">
-              Ganti Harga
-            </Text>
-            <View>
-              <View className="flex-row items-center gap-x-2">
-                <BottomSheetInput
-                  ref={inputRef}
-                  value={editState.price}
-                  onChangeText={handlePriceChange}
-                  keyboardType="numeric"
-                  autoFocus
-                  placeholder="0"
-                  className="flex-1"
-                />
-                {editState.price.length > 0 && (
-                  <Button
-                    variant="outline"
-                    onPress={handleResetPrice}
-                    className="h-10"
-                  >
-                    <Icon
-                      as={RotateCcw}
-                      size={16}
-                      className="text-muted-foreground"
+          <View className="bg-card">
+            <InfoRow
+              leadingElement={
+                <View className="flex-row items-center gap-2">
+                  <Text variant="muted">
+                    GANTI HARGA
+                  </Text>
+                  <Text variant="muted" className="text-xs">Maks. {maxPriceLabel}</Text>
+                </View>
+              }
+              primarySide="trailing"
+              isLast
+              trailingElement={
+                <View className="items-end">
+                  <View className="flex-row items-center gap-x-2">
+                    <BottomSheetInput
+                      ref={inputRef}
+                      value={editState.price}
+                      onChangeText={handlePriceChange}
+                      keyboardType="numeric"
+                      autoFocus
+                      placeholder="0"
+                      className="border-none w-32 text-right"
                     />
-                  </Button>
-                )}
-              </View>
-              <Text variant="muted" className="text-xs uppercase mx-2">
-                Maksimum Rp {maxPriceLabel}
-              </Text>
-            </View>
+                    {editState.price !== editState.item.harga_satuan.toString() && (
+                      <Button
+                        variant="outline"
+                        onPress={handleResetPrice}
+                        size="sm"
+                      >
+                        <Icon
+                          as={RotateCcw}
+                          size={16}
+                          className="text-muted-foreground"
+                        />
+                      </Button>
+                    )}
+                  </View>
+                </View>
+              }
+            />
           </View>
 
-          <View className="flex-row gap-x-2">
+          <View className="flex-row gap-x-2 p-2">
             <Button
               variant="outline"
               title="BATAL"
@@ -222,6 +225,6 @@ const EditPriceModal = forwardRef<EditPriceModalRef, EditPriceModalProps>(
   }
 )
 
-EditPriceModal.displayName = "EditPriceModal"
+PerincianRubahModal.displayName = "PerincianRubahModal"
 
-export default EditPriceModal
+export default PerincianRubahModal

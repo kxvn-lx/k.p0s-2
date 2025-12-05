@@ -6,6 +6,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select"
 import InfoRow from "@/components/shared/info-row"
+import PressableRow from "@/components/shared/pressable-row"
 import { useThemeStore } from "@/lib/store/theme-store"
 import { ChevronDown, Palette } from "lucide-react-native"
 import { View } from "react-native"
@@ -37,14 +38,19 @@ export function ThemeSection() {
         }}
         onValueChange={handleTemaChange}
       >
-        <SelectTrigger className="h-auto w-full rounded-none !bg-card p-0 row-pressable border-none border-0">
-          <InfoRow
-            leadingElement="Tema Aplikasi"
-            leadingIcon={Palette}
-            trailingElement={THEME_LABELS[theme as ThemeType]}
-            trailingIcon={ChevronDown}
-            isLast
-          />
+        <SelectTrigger
+          asChild
+          className="h-auto w-full rounded-none !bg-card p-0 border-none border-0"
+        >
+          <PressableRow>
+            <InfoRow
+              leadingElement="Tema Aplikasi"
+              leadingIcon={Palette}
+              trailingElement={THEME_LABELS[theme as ThemeType]}
+              trailingIcon={ChevronDown}
+              isLast
+            />
+          </PressableRow>
         </SelectTrigger>
         <SelectContent align="end" insets={{ right: 8 }}>
           <SelectItem label="Metal" value="metal">

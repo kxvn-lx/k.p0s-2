@@ -1,6 +1,7 @@
 // ----- Imports -----
-import { Pressable, View } from "react-native"
+import { View } from "react-native"
 import PressableRow from '@/components/shared/pressable-row'
+import InfoRow from '@/components/shared/info-row'
 import { useRef } from 'react'
 import { Text } from "@/components/ui/text"
 import { SectionHeader } from "@/components/ui/section-header"
@@ -11,9 +12,10 @@ import type {
     VariasiHargaRow,
 } from "@/features/keranjang/types/keranjang.types"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet"
+import { Button } from "@/components/ui/button"
 
+// ----- Types -----
 type VariasiHargaSelectorProps = {
     stock: StockWithVariations
     options: VariasiHargaRow[]
@@ -26,6 +28,19 @@ type VariasiHargaSelectorProps = {
     onIncrement?: () => void
 }
 
+type OptionItem = {
+    key: string
+    minQty: number
+    satuan: string
+    harga: number
+    onPress: () => void
+}
+
+type FlatDataItem =
+    | { type: 'header'; title: string }
+    | { type: 'item'; item: OptionItem; isVariation: boolean; isLast: boolean }
+
+// ----- Component -----
 export default function VariasiHargaSelector({
     stock,
     options,
@@ -37,25 +52,15 @@ export default function VariasiHargaSelector({
     onDecrement,
     onIncrement,
 }: VariasiHargaSelectorProps) {
-    // ----- Helpers & layout -----
     const mainPrice = stock.harga_jual ?? 0
     const mainSatuan = stock.satuan_utama ?? ''
 
-    type OptionItem = {
-        key: string | number
-        title?: string
-        minQty: number
-        satuan: string
-        price: number
-        onPress: () => void
-    }
-
+    // ----- Data -----
     const mainItem: OptionItem = {
         key: `main-${stock.id}`,
-        title: 'HARGA UTAMA',
         minQty: 1,
         satuan: mainSatuan,
-        price: mainPrice,
+        harga: mainPrice,
         onPress: onSelectOriginal,
     }
 
@@ -63,112 +68,121 @@ export default function VariasiHargaSelector({
         key: v.id,
         minQty: v.min_qty > 0 ? v.min_qty : 1,
         satuan: v.satuan ?? mainSatuan,
-        price: v.harga_jual,
+        harga: v.harga_jual,
         onPress: () => onSelectVariation(v),
     }))
 
-    const sections: { title: string; items: OptionItem[] }[] = [
-        { title: 'HARGA UTAMA', items: [mainItem] },
-        { title: 'VARIASI HARGA', items: variations },
-    ]
-
-    // Flatten data for FlatList
-    const flatData: ({ type: 'header'; title: string } | { type: 'item'; item: OptionItem; isVariation: boolean; isLast: boolean })[] = []
-    sections.forEach((section, sidx) => {
-        flatData.push({ type: 'header', title: section.title })
-        section.items.forEach((item, idx) => {
-            flatData.push({ type: 'item', item, isVariation: sidx > 0, isLast: idx === section.items.length - 1 })
+    const flatData: FlatDataItem[] = []
+    flatData.push({ type: 'header', title: 'Harga Utama' })
+    flatData.push({ type: 'item', item: mainItem, isVariation: false, isLast: true })
+    if (variations.length > 0) {
+        flatData.push({ type: 'header', title: 'Variasi Harga' })
+        variations.forEach((item, idx) => {
+            flatData.push({ type: 'item', item, isVariation: true, isLast: idx === variations.length - 1 })
         })
-    })
+    }
+
+    // ----- Helpers -----
+    const isItemSelected = (itemKey: string | number) =>
+        selectedVariasiId === undefined
+            ? itemKey === mainItem.key
+            : String(itemKey) === String(selectedVariasiId)
 
     // ----- Row -----
-    function OptionRow({ item, isVariation, isLast }: { item: OptionItem; isVariation?: boolean; isLast?: boolean }) {
-        const isSelected = selectedVariasiId === undefined
-            ? item.key === mainItem.key
-            : String(item.key) === String(selectedVariasiId)
-
+    function OptionRow({ item, isVariation, isLast }: { item: OptionItem; isVariation: boolean; isLast: boolean }) {
+        const isSelected = isItemSelected(item.key)
         const badgeModalRef = useRef<BottomSheetModalRef>(null)
+        const minQtyText = `${item.minQty} ${item.satuan}`
 
-        const badge = (
+        const qtyBadge = (
             <>
-                <Pressable
-                    className="row-pressable bg-background active:bg-accent px-2 rounded-[--radius]"
+                <Button
+                    variant="outline"
+                    size="sm"
                     onPress={(e) => {
                         e.stopPropagation()
                         badgeModalRef.current?.present()
                     }}
                 >
                     <Text>{`QTY: ${selectedQty}`}</Text>
-                </Pressable>
+                </Button>
 
-                <SharedBottomSheetModal ref={badgeModalRef} snapPoints={["25%"]}>
+                <SharedBottomSheetModal headerTitle="Ganti QTY" ref={badgeModalRef} snapPoints={["25%"]}>
                     <BadgeStepper
                         qty={selectedQty}
                         stockQty={remaining}
                         satuan={stock.satuan_utama ?? ''}
-                        onDecrement={() => { if (onDecrement) onDecrement() }}
-                        onIncrement={() => { if (onIncrement) onIncrement() }}
+                        onDecrement={() => onDecrement?.()}
+                        onIncrement={() => onIncrement?.()}
                     />
                 </SharedBottomSheetModal>
             </>
         )
 
+        const hargaContent = isVariation ? (
+            <View className="flex-row items-center gap-x-2">
+                <Text variant="muted" className="line-through">
+                    {mainPrice.toLocaleString('id-ID')}
+                </Text>
+                <Text className="text-green-500">
+                    {item.harga.toLocaleString('id-ID')}
+                </Text>
+            </View>
+        ) : `${item.harga.toLocaleString('id-ID')}`
+
         return (
             <PressableRow
-                onPress={() => {
-                    item.onPress()
-                }}
+                onPress={item.onPress}
                 className={cn(
-                    'flex flex-row items-center justify-between p-2 gap-x-2 border-y border-border',
+                    "flex-row bg-card",
+                    isVariation && !isLast && "mb-2",
                 )}
             >
-                <View className="flex-row items-center flex-1">
-                    <Text className="uppercase w-28">MIN: {item.minQty} {item.satuan}</Text>
-
-                    {isVariation ? (
-                        <View className="flex-row items-center gap-x-2">
-                            <Text variant="muted" className="line-through">{mainPrice.toLocaleString()}</Text>
-                            <Text className="text-green-500">{item.price.toLocaleString()}</Text>
-                        </View>
-                    ) : (
-                        <Text>{item.price.toLocaleString()}</Text>
-                    )}
+                <View className="flex-1">
+                    <InfoRow
+                        leadingElement="Min. Qty"
+                        trailingElement={minQtyText}
+                        primarySide="trailing"
+                    />
+                    <InfoRow
+                        leadingElement="Harga Jual"
+                        trailingElement={hargaContent}
+                        isLast
+                        primarySide="trailing"
+                    />
                 </View>
 
                 {isSelected && selectedQty > 0 && (
-                    <View>
-                        {badge}
+                    <View className="bg-background/25 items-center justify-center border-l border-border px-2">
+                        {qtyBadge}
                     </View>
                 )}
-
             </PressableRow>
         )
     }
 
+    // ----- Render -----
     return (
         <BottomSheetFlatList
             data={flatData}
-            keyExtractor={(item: typeof flatData[0]) => item.type === 'header' ? item.title : String(item.item.key)}
-            renderItem={({ item }: { item: typeof flatData[0] }) => {
+            keyExtractor={(item: FlatDataItem) => item.type === 'header' ? item.title : String(item.item.key)}
+            renderItem={({ item }: { item: FlatDataItem }) => {
                 if (item.type === 'header') {
                     return (
                         <SectionHeader
                             title={item.title}
                             variant="muted"
-                            textClassName="text-xs normal-case"
+                            textClassName="text-xs"
                         />
                     )
-                } else {
-                    return (
-                        <View className="bg-card">
-                            <OptionRow
-                                item={item.item}
-                                isVariation={item.isVariation}
-                                isLast={item.isLast}
-                            />
-                        </View>
-                    )
                 }
+                return (
+                    <OptionRow
+                        item={item.item}
+                        isVariation={item.isVariation}
+                        isLast={item.isLast}
+                    />
+                )
             }}
             showsVerticalScrollIndicator={false}
         />
