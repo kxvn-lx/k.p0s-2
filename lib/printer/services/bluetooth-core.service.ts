@@ -114,7 +114,7 @@ class BluetoothCoreService {
                 await this.waitForCentralManagerReady()
             }
 
-            const result = await BluetoothManager.scanDevices()
+            const result = await BluetoothManager.scanDevices(1.5)
 
             const parsed = typeof result === "string" ? JSON.parse(result) : result
 
