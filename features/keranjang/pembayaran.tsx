@@ -81,7 +81,7 @@ export default function PembayaranScreen() {
     try {
       const result = await createPenjualan({
         staffId: user?.id ?? "unknown",
-        staffName: user?.email ?? "Staff",
+        staffName: user?.email?.split("@")[0] ?? "Staff",
         items,
         cashReceived: paymentAmount,
         tanggal: new Date().toISOString(),
