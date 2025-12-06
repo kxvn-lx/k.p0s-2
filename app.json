@@ -12,16 +12,14 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.kushcedelicorg.kp0s",
       "infoPlist": {
-        "NSBluetoothAlwaysUsageDescription": "Aplikasi memerlukan akses Bluetooth untuk menghubungkan dan mencetak ke printer thermal.",
-        "NSBluetoothPeripheralUsageDescription": "Aplikasi memerlukan akses Bluetooth untuk menghubungkan dan mencetak ke printer thermal."
+        "NSBluetoothAlwaysUsageDescription": "k.p0s perlu mo akses Bluetooth for mo menghubung dg bacetak struk ka printer.",
+        "NSBluetoothPeripheralUsageDescription": "k.p0s perlu mo akses Bluetooth for mo menghubung dg bacetak struk ka printer."
       }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#3D3115",
+        "foregroundImage": "./assets/images/android-icon.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
