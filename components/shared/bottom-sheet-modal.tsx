@@ -46,7 +46,6 @@ const SharedBottomSheetModal = forwardRef<
       snapPoints = ["50%"],
       onChange,
       style,
-      index = 1,
       headerTitle,
       onClose,
       ...rest
@@ -98,8 +97,9 @@ const SharedBottomSheetModal = forwardRef<
     return (
       <BottomSheetModal
         ref={modalRef}
-        index={index}
+        index={0}
         snapPoints={snapPoints}
+        enableDynamicSizing={false}
         backgroundStyle={themeStyles.background}
         handleIndicatorStyle={themeStyles.handleIndicator}
         stackBehavior="push"

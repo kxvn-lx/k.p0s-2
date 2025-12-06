@@ -1,6 +1,6 @@
 import { Text } from "@/components/ui/text"
-import { Pressable, View } from "react-native"
-import { useRef } from "react"
+import { View } from "react-native"
+import { useCallback, useRef } from "react"
 import SharedBottomSheetModal, {
   BottomSheetModalRef,
 } from "@/components/shared/bottom-sheet-modal"
@@ -44,6 +44,7 @@ export default function KeranjangRow({
   const hasVariations = options.length > 0
 
   const badgeModalRef = useRef<BottomSheetModalRef>(null)
+  const handleViewBadge = useCallback(() => badgeModalRef.current?.present(), [])
   const Badge = (
     <>
       <Button
@@ -51,7 +52,7 @@ export default function KeranjangRow({
         size="sm"
         onPress={(e) => {
           e.stopPropagation()
-          badgeModalRef.current?.present()
+          handleViewBadge()
         }}
       >
         <Text>{`QTY: ${selectedQty}`}</Text>
@@ -101,10 +102,11 @@ export default function KeranjangRow({
 
   if (hasVariations) {
     const modalRef = useRef<BottomSheetModalRef>(null)
+    const handleViewVariasi = useCallback(() => modalRef.current?.present(), [])
 
     return (
       <>
-        <PressableRow onPress={() => modalRef.current?.present()}>
+        <PressableRow onPress={handleViewVariasi}>
           {Content}
         </PressableRow>
         <SharedBottomSheetModal snapPoints={["75%"]} ref={modalRef} headerTitle={stock.nama}>

@@ -115,7 +115,7 @@ interface IReceiptView {
 
 export function ReceiptPreview({ result }: IReceiptView) {
   return (
-    <View className="flex-1 items-center justify-center w-[75%] mx-auto">
+    <View className="w-[75%] mx-auto">
       <View className="bg-white overflow-hidden w-full">
         <View className="px-4 py-6">
           <ReceiptContent result={result} />

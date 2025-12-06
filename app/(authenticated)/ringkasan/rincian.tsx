@@ -41,6 +41,7 @@ export default function RincianPage() {
       />
       {parsedTransaction.type === "penjualan" && (
         <PenjualanRingkasanDetail
+          penjualanId={parsedTransaction.id}
           staffName={parsedTransaction.staff_name}
           tanggal={parsedTransaction.tanggal}
           jumlahTotal={parsedTransaction.jumlah_total}
