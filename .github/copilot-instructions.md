@@ -1,13 +1,27 @@
-strictly no genereating summary markdown or any markdowns whatsoever unless explicitly stated by the user - instead just summarize it on the chat itself.
+# Expo React Native - Project Override
 
-no need to run dev server, run build, simply do npx tsc --noEmit to test any ts error.
+> Copy to: `<project>/.github/copilot-instructions.md`  
+> Also symlink to `./AGENTS.md` for Cursor compatibility
 
-follow strictly all instructions under .github/instructions.
+---
 
-UI is from react-native-reusables and nativewind.
-https://reactnativereusables.com/docs
+## Platform: Expo React Native
 
-global state uses zustand: https://github.com/pmndrs/zustand
-querying uses tanstack/query: https://github.com/tanstack/query
+Follow strictly all instructions under `.github/instructions/`.
 
-never update bare components from react-native-reusables or nativewind. only extend them in your own components. place under /components/shared/
+### Tech Stack
+- React 19 + Expo + React Native exclusively (per docs).
+- NativeWind/Tailwind v4 only for styling; fallback to custom styles only where NativeWind fails.
+
+### UI Components
+- UI is from react-native-reusables and NativeWind: https://reactnativereusables.com/docs
+- Never update bare components from react-native-reusables or NativeWind. Only extend them in your own components. Place extensions under `/components/shared/`.
+
+### Images
+- Always use `expo-image` instead of React Native's Image component.
+
+### Documentation
+Always consult the official Expo documentation:
+- https://docs.expo.dev/llms-full.txt - Complete Expo documentation
+- https://docs.expo.dev/llms-eas.txt - EAS documentation
+- https://docs.expo.dev/llms-sdk.txt - SDK documentation
