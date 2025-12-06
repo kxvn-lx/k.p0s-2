@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Icon } from "@/components/ui/icon"
 import { X } from "lucide-react-native"
 import { useThemeStore } from "@/lib/store/theme-store"
-import { getThemeColors } from "@/lib/theme"
+import { getThemeColors } from "@/lib/styles/theme"
 import { hslToRgb, remToPx } from "@/lib/utils"
 
 // ----- Types -----

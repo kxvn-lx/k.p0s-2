@@ -1,4 +1,4 @@
-import type { Session, User } from "@supabase/supabase-js"
+import type {  Session, User } from "@supabase/supabase-js"
 import {
   createContext,
   use,
@@ -8,8 +8,8 @@ import {
   useState,
   type PropsWithChildren,
 } from "react"
-import { useStorageState } from "./hooks/use-storage-state"
-import { supabase } from "./supabase"
+import { useStorageState } from "../hooks/use-storage-state"
+import { supabase } from "../config/supabase"
 
 type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>
@@ -91,7 +91,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event: string, session: Session | null) => {
       updateSession(session)
     })
 

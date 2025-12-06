@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "@/lib/context/auth-context"
 import { isDev } from "@/lib/utils"
 import { useState } from "react"
 import { KeyboardAvoidingView, Platform, View } from "react-native"

@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/config/supabase"
 import type { Database } from "@/lib/types/supabase-types"
 import type { BasketItem } from "@/features/keranjang/types/keranjang.types"
 import type { PostgrestError } from "@supabase/supabase-js"

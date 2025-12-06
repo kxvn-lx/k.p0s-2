@@ -1,4 +1,4 @@
-import { getStackOptions } from "@/lib/navigation"
+import { getStackOptions } from "@/lib/utils/navigation"
 import { useTheme } from "@react-navigation/native"
 import { Stack } from "expo-router"
 

@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native"
 import { Stack } from "expo-router"
 
-import { getStackOptions } from "@/lib/navigation"
+import { getStackOptions } from "@/lib/utils/navigation"
 
 export default function KeranjangLayout() {
   const theme = useTheme()

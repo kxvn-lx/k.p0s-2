@@ -1,4 +1,4 @@
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "@/lib/context/auth-context"
 import { useSalesmanModeStore } from "@/lib/store/salesman-mode-store"
 
 // ----- Types -----

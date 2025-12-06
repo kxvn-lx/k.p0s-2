@@ -1,5 +1,5 @@
 import { Text } from "@/components/ui/text"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "@/lib/context/auth-context"
 import { ScrollView, View } from "react-native"
 import { AuthSection } from "./components/auth-section"
 import PrinterRow from "./components/printer-row"

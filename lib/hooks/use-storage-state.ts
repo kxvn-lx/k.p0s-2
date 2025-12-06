@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from "react"
-import { largeSecureStore } from "../large-secure-store"
+import { largeSecureStore } from "../utils/secure-store"
 
 type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void]
 

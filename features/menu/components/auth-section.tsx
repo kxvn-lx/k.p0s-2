@@ -1,7 +1,7 @@
 import InfoRow from "@/components/shared/info-row"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "@/components/ui/toast"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "@/lib/context/auth-context"
 import { useRole } from "@/lib/hooks/use-role"
 import { LogOut } from "lucide-react-native"
 import { View } from "react-native"
