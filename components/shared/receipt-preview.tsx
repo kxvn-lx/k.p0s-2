@@ -60,7 +60,7 @@ const ReceiptContent = ({ result }: IReceiptContent) => {
       <Divider />
       <View className="flex-row justify-between">
         <Text className="font-mono text-black text-xs">
-          No. #{transactionNo}
+          #{transactionNo}
         </Text>
         <Text className="font-mono text-black text-xs">{staffName}</Text>
       </View>

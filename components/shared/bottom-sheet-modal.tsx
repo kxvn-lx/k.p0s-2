@@ -18,7 +18,7 @@ import { Icon } from "@/components/ui/icon"
 import { X } from "lucide-react-native"
 import { useThemeStore } from "@/lib/store/theme-store"
 import { getThemeColors } from "@/lib/styles/theme"
-import { hslToRgb, remToPx } from "@/lib/utils"
+import { cn, hslToRgb, remToPx } from "@/lib/utils"
 
 // ----- Types -----
 export type BottomSheetModalRef = {
@@ -32,6 +32,7 @@ interface SharedBottomSheetModalProps
     "animateOnMount" | "containerHeight"
   > {
   headerTitle?: string
+  containerClassName?: string
   onClose?: () => void
 }
 
@@ -47,6 +48,7 @@ const SharedBottomSheetModal = forwardRef<
       onChange,
       style,
       headerTitle,
+      containerClassName,
       onClose,
       ...rest
     },
@@ -124,7 +126,7 @@ const SharedBottomSheetModal = forwardRef<
             </Button>
           </View>
 
-          <View className="flex-1">{children as ReactNode}</View>
+          <View className={cn("flex-1", containerClassName)}>{children as ReactNode}</View>
         </View>
       </BottomSheetModal>
     )

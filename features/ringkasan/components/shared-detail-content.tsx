@@ -136,7 +136,7 @@ export function SharedDetailContent<T>({
             </ScrollView>
 
             {/* ----- Receipt Preview Bottom Sheet ----- */}
-            <SharedBottomSheetModal ref={modalRef} snapPoints={["75%"]} headerTitle="Struk">
+            <SharedBottomSheetModal ref={modalRef} snapPoints={["75%"]} headerTitle="Struk" containerClassName="pt-2">
                 {penjualanResult && <ReceiptPreview result={penjualanResult} />}
             </SharedBottomSheetModal>
         </View>

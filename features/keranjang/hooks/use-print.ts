@@ -124,7 +124,7 @@ const generateReceiptCommands = (result: PenjualanResult): PrintCommand[] => {
   const staffName = result.penjualan.staff_name.split('@')[0].charAt(0).toUpperCase()
   commands.push({
     type: "row",
-    left: `no: ${transactionNo}`,
+    left: `#${transactionNo}`,
     right: staffName,
   })
 

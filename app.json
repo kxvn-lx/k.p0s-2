@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#3D3115",
+        "backgroundColor": "#000000",
         "foregroundImage": "./assets/images/android-icon.png"
       },
       "edgeToEdgeEnabled": true,
@@ -52,7 +52,8 @@
         }
       ],
       "expo-secure-store",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
