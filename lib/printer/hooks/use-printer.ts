@@ -278,36 +278,48 @@ export function usePrinter() {
     const connect = useCallback(
         async (
             device: BluetoothDevice,
-            shouldConnect = false
+            stayConnected = false
         ): Promise<boolean> => {
             setLastError(null)
+            setupConnectionListeners()
 
-            // If we just need to select the printer without connecting
-            if (!shouldConnect) {
-                setSelectedPrinter(device)
+            // Save device immediately - even if connection fails during pairing,
+            // the device will be available for subsequent print attempts
+            setSelectedPrinter(device)
+
+            try {
+                // Attempt actual connection to trigger Android pairing dialog
+                await bluetoothCore.connect(device)
+
+                // Disconnect immediately after pairing/connection to clean up
+                // Only keep connected if explicitly requested
+                if (!stayConnected) {
+                    // Small delay to ensure native connection thread is established before stopping
+                    await new Promise((resolve) => setTimeout(resolve, 200))
+                    await bluetoothCore.disconnect(device.address)
+                    setConnectionState("disconnected")
+                }
+
                 toast.success(
                     "Printer Dipilih",
                     `${device.name} dipilih sebagai printer default`
                 )
                 return true
-            }
-
-            // Actually connect to the printer
-            setupConnectionListeners()
-
-            try {
-                await bluetoothCore.connect(device)
-                setSelectedPrinter(device)
-                toast.success("Terhubung", `Terhubung ka ${device.name}`)
-                return true
             } catch (error) {
-                const printerError = error as BluetoothErrorInfo
-                setLastError(printerError)
-                toast.error("Gagal Terhubung", printerError.message)
-                return false
+                // Cleanup connection state but KEEP the device saved
+                // Pairing may have succeeded even if connection failed (user was responding to dialog)
+                await bluetoothCore.disconnect(device.address)
+                setConnectionState("disconnected")
+
+                // Show info toast instead of error - device is saved and will work on retry
+                toast.success(
+                    "Printer Dipilih",
+                    `${device.name} disimpan. Jika baru pairing, coba cetak.`
+                )
+                return true
             }
         },
-        [setupConnectionListeners, setSelectedPrinter, setLastError]
+        [setupConnectionListeners, setSelectedPrinter, setLastError, setConnectionState]
     )
 
     const disconnect = useCallback(async (): Promise<void> => {
@@ -354,7 +366,7 @@ export function usePrinter() {
                 await bluetoothCore.unpair(selectedPrinter.address)
                 toast.success(
                     "Perangkat Dihapus",
-                    `${selectedPrinter.name}tahapus dari daftar`
+                    `${selectedPrinter.name} tahapus dari daftar`
                 )
             } catch (error) {
                 // If unpair fails, at least disconnect

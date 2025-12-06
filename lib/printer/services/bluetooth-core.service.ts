@@ -204,13 +204,15 @@ class BluetoothCoreService {
         }
     }
 
-    async disconnect(): Promise<void> {
-        if (!this.connectedDevice) return
+    async disconnect(address?: string): Promise<void> {
+        const targetAddress = address || this.connectedDevice?.address
 
         try {
-            await BluetoothManager.disconnect(this.connectedDevice.address)
+            if (targetAddress) {
+                await BluetoothManager.disconnect(targetAddress)
+            }
         } catch {
-            // Ignore disconnect errors
+            // Ignore disconnect errors - connection may already be closed
         } finally {
             this.setConnectionState("disconnected")
             this.connectedDevice = null
@@ -224,12 +226,7 @@ class BluetoothCoreService {
                 await this.disconnect()
             }
 
-            const manager = BluetoothManager as unknown as typeof BluetoothManager & {
-                unpaire?: (address: string) => Promise<void>
-            }
-            if (manager.unpaire) {
-                await manager.unpaire(address)
-            }
+            await BluetoothManager.unpair(address)
         } catch (error) {
             throw this.createError(
                 "UNPAIR_FAILED",

@@ -2,6 +2,9 @@ import { BluetoothErrorInfo } from "@/lib/printer/types/bluetooth.types";
 import { bluetoothCore } from "./bluetooth-core.service"
 import { BluetoothDevice } from "lx-react-native-bluetooth-printer";
 
+// Delay after print to ensure printer buffer processes before disconnecting
+const POST_PRINT_DELAY_MS = 500
+
 // ----- Printer Service -----
 // High-level printing service with reconnect logic
 class PrinterService {
@@ -28,6 +31,8 @@ class PrinterService {
 
     try {
       await printFn()
+      // Wait for printer buffer to process before disconnecting
+      await new Promise((resolve) => setTimeout(resolve, POST_PRINT_DELAY_MS))
       return { success: true }
     } catch (error) {
       return { success: false, error: error as BluetoothErrorInfo }
